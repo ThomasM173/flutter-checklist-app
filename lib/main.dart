@@ -12,6 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Plane stuff',
+      debugShowCheckedModeBanner: false,  // ✅ Hides debug banner
       theme: ThemeData.dark().copyWith(
         primaryColor: Colors.red,
         scaffoldBackgroundColor: Colors.black,
@@ -21,3 +22,4 @@ class MyApp extends StatelessWidget {
     );
   }
 }
+

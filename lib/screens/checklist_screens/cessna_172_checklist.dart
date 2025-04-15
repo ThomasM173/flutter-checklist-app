@@ -1,117 +1,296 @@
 import 'package:flutter/material.dart';
-import '../../utils/storage_helper.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:pdf/widgets.dart' as pdfWidgets;
+import 'package:pdf/pdf.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
+import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_emergency_screen.dart';
+
 
 class Cessna172ChecklistScreen extends StatefulWidget {
-  const Cessna172ChecklistScreen({super.key});
-
   @override
   _Cessna172ChecklistScreenState createState() => _Cessna172ChecklistScreenState();
 }
 
 class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
-  Map<String, bool> checklistItems = {
-    // ✅ Cabin Checks
-    "Documents & Certification – Verify aircraft manual, registration, insurance, weight & balance.": false,
-    "Control Lock – REMOVE.": false,
-    "Ignition Key – INSERT (OFF position).": false,
-    "Master Switch – ON, check battery voltage.": false,
-    "Fuel Quantity – CHECK (visually confirm in both tanks).": false,
-    "Flaps – EXTEND to full & check movement.": false,
-    "Avionics Master – ON, check radios & transponder.": false,
-
-    // ✅ External Walkaround
-    "Check propeller & spinner for damage.": false,
-    "Oil level – MIN 6 quarts.": false,
-    "Carb heat intake – CHECK for blockages (icing risk).": false,
-    "Inspect leading edges for ice build-up.": false,
-    "Ailerons & flaps – Free & correct movement.": false,
-    "Static port – Unblocked.": false,
-    "Rudder & elevators – Free movement.": false,
-    "Check for frost accumulation.": false,
-    "Tyre pressure – CHECK (Cold weather: consider slight overinflation).": false,
-    "Brakes – NO hydraulic leaks.": false,
-
-    // ✅ Before Engine Start
-    "Fuel Selector Valve – BOTH.": false,
-    "Mixture – RICH.": false,
-    "Throttle – OPEN 1/4 inch.": false,
-    "Beacon Light – ON.": false,
-    "Brakes – HOLD.": false,
-
-    // ✅ Engine Start & Warm-Up
-    "Prime (if cold start) – 2-4 strokes, then LOCK.": false,
-    "Throttle – Set 1000 RPM after start.": false,
-    "Oil Pressure – Green within 30 sec.": false,
-    "Ammeter & Volts – CHECK charging.": false,
-    "Avionics – ON after 1-minute warm-up.": false,
-
-    // ✅ Before Takeoff
-    "Throttle – 1800 RPM (Check Magnetos, Carb Heat, Suction, Ammeter & Volts).": false,
-    "Flaps – SET for takeoff (as required).": false,
-    "Trim – SET for takeoff.": false,
-    "ATIS & Runway Info – CONFIRM.": false,
-
-    // ✅ Takeoff Briefing
-    "Runway Assigned: 24": false,
-    "Wind Consideration: Left crosswind": false,
-    "Departure Route: VFR to Southampton": false,
-
-    // ✅ Emergency Considerations
-    "🔥 Engine Failure on Takeoff Roll: Throttle idle, brakes apply.": false,
-    "🔥 Engine Failure After Takeoff (<500 ft AGL): Land ahead, avoid turns.": false,
-    "🔥 Engine Fire: Mixture cutoff, fuel selector OFF, master switch OFF.": false,
-  };
+  late Map<String, Map<String, bool>> checklistSections;
 
   @override
-  void initState() {
-    super.initState();
-    loadChecklist();
-  }
+void initState() {
+  super.initState();
+  checklistSections = {
+    "1️⃣ Cabin Checks": {
+      "✅ Control Lock – REMOVE.": false,
+      "✅ Ignition Switch – OFF.": false,
+      "✅ Master Switch – ON.": false,
+      "✅ Flaps – FULL (30°).": false,
+      "✅ Fuel Quantity Indicators – CHECK.": false,
+      "✅ Internal / Exterior Lights – ON/CHECK/OFF.": false,
+      "✅ Pitot Tube Heat – ON/CHECK/OFF.": false,
+      "✅ Master Switch – OFF.": false,
+      "✅ Fuel Shutoff Valve – ON.": false,
+      "✅ Fire Extinguisher / First Aid Kit – GREEN/IN PLACE.": false,
+    },
+    "2️⃣ Empennage": {
+      "✅ Rudder Gust Lock – REMOVE.": false,
+      "✅ Tail Tie-Down – DISCONNECT.": false,
+      "✅ Control Surfaces – CHECK.": false,
+    },
+    "3️⃣ Right Wing": {
+      "✅ Wing Tie-Down – DISCONNECT.": false,
+      "✅ Main Wheel Tire – CHECK.": false,
+      "✅ Fuel Drain, Quantity & Filler Cap – CHECK.": false,
+    },
+    "4️⃣ Right Wing Trailing Edge": {
+      "✅ Aileron & Flap – CHECK.": false,
+    },
+    "5️⃣ Nose": {
+      "✅ Engine Oil Level – CHECK (MIN. 4).": false,
+      "✅ Fuel Drain – CHECK.": false,
+      "✅ Propeller, Spinner, Air Filter – CHECK.": false,
+      "✅ Nose Wheel Strut and Tire – CHECK.": false,
+      "✅ Static Source – CHECK.": false,
+    },
+    "6️⃣ Left Wing": {
+      "✅ Pitot Tube Cover – CONFIRM REMOVED.": false,
+      "✅ Stall Warning, Fuel Tank and Vent Opening – CHECK.": false,
+      "✅ Wing Tie-Down – DISCONNECT.": false,
+      "✅ Main Wheel Tire – CHECK.": false,
+      "✅ Fuel Drain, Quantity & Filler Cap – CHECK.": false,
+    },
+    "7️⃣ Left Wing Trailing Edge": {
+      "✅ Aileron & Flap – CHECK.": false,
+    },
+    "8️⃣ Cockpit Preparation": {
+      "✅ Preflight Inspection – COMPLETE.": false,
+      "✅ Seats, Belts, Shoulder Harness – ADJUST & LOCK.": false,
+      "✅ Fuel Shutoff Valve – ON (HORIZONTAL).": false,
+      "✅ Radios & Electrical Equipment – OFF.": false,
+      "✅ Brakes – CHECKED (PRESS).": false,
+      "✅ Circuit Breakers – ALL IN.": false,
+      "✅ Flight Controls – FREE & CORRECT.": false,
+    },
+    "9️⃣ Before Engine Start": {
+      "✅ Battery Switch – ON.": false,
+      "✅ ATC (Start-Up) – REQUEST/NOTIFY.": false,
+      "✅ Radios – OFF.": false,
+      "✅ Beacon – ON.": false,
+      "✅ Mixture – RICH.": false,
+      "✅ Throttle – OPEN ¼ INCH.": false,
+      "✅ Carb Heat – OFF.": false,
+      "✅ Prime (Up to 3 strokes) – AS REQUIRED.": false,
+      "✅ Propeller Area – CLEAR.": false,
+      "✅ Ignition Switch – START.": false,
+      "✅ Throttle – 1000 RPM.": false,
+    },
+    "🔟 After Engine Start": {
+      "✅ Oil Pressure – GREEN (<30s).": false,
+      "✅ Alternator Switch – ON.": false,
+      "✅ Ammeter / Low Voltage Light – CHECKED.": false,
+      "✅ Navigation Lights – ON (NIGHT FLIGHT).": false,
+      "✅ Radios / Transponder – ON / STBY.": false,
+      "✅ Flaps – UP.": false,
+      "✅ Flight Instruments (FLAGS) – CHECK FLAGS.": false,
+      "✅ Heading Indicator – ALIGNED.": false,
+      "✅ Altimeter – SET & CHECKED.": false,
+      "✅ Navaids – CHECK (IF REQD).": false,
+    },
+    "🛫 Taxi": {
+      "✅ ATC (Taxi) – REQUEST/NOTIFY.": false,
+      "✅ Brake Check – PERFORM.": false,
+      "✅ Flight Instruments – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
+    },
+    "🛫 Before Takeoff": {
+      "✅ Cabin Doors – CLOSED.": false,
+      "✅ Flight Instruments – CHECKED.": false,
+      "✅ Pitot Cover – REMOVED.": false,
+      "✅ Fuel Shutoff Valve – ON (HORIZONTAL).": false,
+      "✅ Elevator Trim – TAKEOFF.": false,
+      "✅ Oil Temperature – GREEN ARC.": false,
+      "✅ Mixture – RICH.": false,
+      "✅ Power Check @1700 RPM – PERFORM.": false,
+      "✅ Magnetos – CHECK.": false,
+      "✅ Elec & Eng Instruments – CHECK.": false,
+      "✅ Suction Gauge – GREEN.": false,
+      "✅ Carburetor Heat – CHECK OPERATION.": false,
+      "✅ Navaids – SET FOR DEP.": false,
+      "✅ Throttle Friction Lock – ADJUSTED.": false,
+      "✅ Flaps – SET (UP / 10°).": false,
+      "✅ T/O Briefing – CONFIRMED.": false,
+      "✅ Landing & Strobe Lights – ON.": false,
+      "✅ Transponder – ALT OR STBY.": false,
+      "✅ QFU/Gyro – CONFIRM/ALIGN.": false,
+    },
+    "🛫 After Takeoff / Climb": {
+      "✅ Flaps – UP.": false,
+      "✅ Landing Light – OFF.": false,
+      "✅ Altimeter – SET (Crossing Transition Altitude).": false,
+    },
+    "✈️ Cruise": {
+      "✅ Throttle – AS REQUIRED.": false,
+      "✅ Mixture – AS REQUIRED.": false,
+    },
+    "🛬 Descent / Approach": {
+      "✅ Seats, Seat Belts & Harnesses – ADJUST & LOCK.": false,
+      "✅ Mixture – RICH.": false,
+      "✅ Carburetor Heat – ON.": false,
+      "✅ Approach Briefing – CONFIRMED.": false,
+      "✅ Altimeter – SET (Crossing Transition Level).": false,
+    },
+    "🛬 Before Landing": {
+      "✅ Landing Light – ON.": false,
+      "✅ Carburetor Heat – ON.": false,
+      "✅ Flaps – 10° (ABEAM or CIRCUIT ENTRY).": false,
+      "✅ Flaps – LDG CONFIG (ON FINAL <300' AGL).": false,
+    },
+    "🛬 After Landing": {
+      "✅ Flaps – UP.": false,
+      "✅ Carburetor Heat – OFF (IN).": false,
+      "✅ Landing & Strobe Lights – OFF.": false,
+      "✅ Transponder – STBY.": false,
+    },
+    "⛔ Shutdown": {
+      "✅ Throttle – 1000 RPM.": false,
+      "✅ Radios – OFF.": false,
+      "✅ Transponder – 7000/OFF.": false,
+      "✅ Navigation Lights – OFF.": false,
+      "✅ Mixture – CUT OFF.": false,
+      "✅ Ignition Switch – OFF.": false,
+      "✅ Beacon – OFF.": false,
+      "✅ Master Switch – OFF.": false,
+      "✅ Time – NOTE.": false,
+    },
+    "🅿️ Parking": {
+      "✅ Trim – RESET (T/O).": false,
+      "✅ Control Lock – INSTALL.": false,
+      "✅ Hobbs (Timer Counter) – RECORD.": false,
+      "✅ Pitot Cover – INSTALL.": false,
+      "✅ Chocks – INSTALL.": false,
+      "✅ Fuel Remaining – CHECK.": false,
+    },
+  };
+  loadChecklist();
+}
 
-  void loadChecklist() async {
-    Map<String, bool> savedChecklist = await StorageHelper.loadChecklist("Cessna172");
+
+  Future<void> loadChecklist() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      checklistItems = savedChecklist.isNotEmpty ? savedChecklist : checklistItems;
+      checklistSections.forEach((section, items) {
+        items.forEach((key, value) {
+          bool? savedValue = prefs.getBool('$section - $key');
+          if (savedValue != null) {
+            checklistSections[section]![key] = savedValue;
+          }
+        });
+      });
     });
   }
 
-  void updateChecklist(String key, bool value) {
+  void updateChecklist(String section, String key, bool value) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      checklistItems[key] = value;
+      checklistSections[section]![key] = value;
     });
-    StorageHelper.saveChecklist("Cessna172", checklistItems);
+    prefs.setBool('$section - $key', value);
+  }
+
+  void resetChecklist() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      checklistSections.forEach((section, items) {
+        items.forEach((key, value) {
+          checklistSections[section]![key] = false;
+          prefs.setBool('$section - $key', false);
+        });
+      });
+    });
+  }
+
+  Future<void> generatePDF() async {
+    final pdf = pdfWidgets.Document();
+
+    // ✅ Load the Unicode-supported font
+    final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+    final pdfFont = pdfWidgets.Font.ttf(fontData);
+
+    pdf.addPage(
+      pdfWidgets.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        theme: pdfWidgets.ThemeData.withFont(base: pdfFont), // ✅ Apply font
+        build: (context) => [
+          pdfWidgets.Text("Cessna 172 Pre-Flight Checklist",
+              style: pdfWidgets.TextStyle(fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
+          pdfWidgets.SizedBox(height: 10),
+          ...checklistSections.entries.map(
+            (entry) => pdfWidgets.Column(children: [
+              pdfWidgets.Text(entry.key,
+                  style: pdfWidgets.TextStyle(fontSize: 18, fontWeight: pdfWidgets.FontWeight.bold)),
+              pdfWidgets.SizedBox(height: 5),
+              ...entry.value.entries.map((item) => pdfWidgets.Text(
+                  "${item.value ? '✅' : '⬜'} ${item.key}",
+                  style: pdfWidgets.TextStyle(fontSize: 14))),
+              pdfWidgets.SizedBox(height: 10),
+            ]),
+          ),
+        ],
+      ),
+    );
+
+    // ✅ Save & Open PDF
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/Cessna_172_Checklist.pdf");
+    await file.writeAsBytes(await pdf.save());
+
+    OpenFile.open(file.path);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900], // Dark Theme
+      backgroundColor: Colors.grey[900],
       appBar: AppBar(title: Text("Cessna 172 - Pre-Flight Checklist"), backgroundColor: Colors.red),
       body: ListView(
         padding: EdgeInsets.all(10),
         children: [
-          // 🌡️ AI Insights
-          AIInsightCard(
-            title: "Cold Weather Detected",
-            message: "Carb heat check essential. Ensure avionics warm-up period before startup.",
+          ...checklistSections.entries.map(
+            (entry) => ChecklistExpansionTile(
+              title: entry.key,
+              items: entry.value,
+              updateChecklist: (key, value) => updateChecklist(entry.key, key, value),
+            ),
           ),
-          AIInsightCard(
-            title: "Gusty Crosswind Takeoff",
-            message: "Be prepared for turbulence. Use appropriate aileron deflection for crosswind takeoff.",
+          SizedBox(height: 20),
+          Center(
+            child: Column(
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: resetChecklist,
+                  child: Text("🔄 Reset Checklist", style: TextStyle(color: Colors.white)),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  onPressed: generatePDF,
+                  child: Text("📄 Download PDF", style: TextStyle(color: Colors.white)),
+                ),
+                SizedBox(height: 10),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Cessna172EmergencyScreen()),
+                    );
+                  },
+                  child: Text("🚨 Emergency Procedures", style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
           ),
-          AIInsightCard(
-            title: "Wet Runway Considerations",
-            message: "Possible braking inefficiencies on landing. Plan for a longer takeoff roll.",
-          ),
-
-          // Checklist Sections
-          ChecklistExpansionTile(title: "1️⃣ Cabin Checks", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "2️⃣ External Walkaround", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "3️⃣ Before Engine Start", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "4️⃣ Engine Start & Warm-Up", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "5️⃣ Before Takeoff", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "6️⃣ Takeoff Briefing & Clearance", items: checklistItems, updateChecklist: updateChecklist),
-          ChecklistExpansionTile(title: "7️⃣ Emergency Considerations", items: checklistItems, updateChecklist: updateChecklist),
         ],
       ),
     );
@@ -124,7 +303,7 @@ class ChecklistExpansionTile extends StatelessWidget {
   final Map<String, bool> items;
   final Function(String, bool) updateChecklist;
 
-  const ChecklistExpansionTile({super.key, required this.title, required this.items, required this.updateChecklist});
+  ChecklistExpansionTile({required this.title, required this.items, required this.updateChecklist});
 
   @override
   Widget build(BuildContext context) {
@@ -149,24 +328,4 @@ class ChecklistExpansionTile extends StatelessWidget {
   }
 }
 
-// AI Insights Card
-class AIInsightCard extends StatelessWidget {
-  final String title;
-  final String message;
 
-  const AIInsightCard({super.key, required this.title, required this.message});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      color: Colors.red[400],
-      elevation: 3,
-      margin: EdgeInsets.symmetric(vertical: 5),
-      child: ListTile(
-        title: Text(title, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        subtitle: Text(message, style: TextStyle(color: Colors.white70)),
-        leading: Icon(Icons.lightbulb, color: Colors.white),
-      ),
-    );
-  }
-}

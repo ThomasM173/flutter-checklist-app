@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'map_screen.dart';
 import 'flight_conditions_screen.dart';
 import 'learning_game_screen.dart';
-import 'aircraft_screens/cessna_172_screen.dart';
+import 'checklist_screens/cessna_172_checklist.dart';
 import 'aircraft_screens/piper_pa28_screen.dart';
 import 'aircraft_screens/diamond_da40_screen.dart';
 
@@ -35,7 +35,7 @@ class HomeScreen extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  AircraftCard(title: "Cessna 172", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Cessna172Screen()))),
+                  AircraftCard(title: "Cessna 172", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => Cessna172ChecklistScreen()))),
                   AircraftCard(title: "Piper PA-28", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => PiperPA28Screen()))),
                   AircraftCard(title: "Diamond DA40", onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => DiamondDA40Screen()))),
                 ],
@@ -44,15 +44,15 @@ class HomeScreen extends StatelessWidget {
 
             Divider(color: Colors.white, thickness: 1, height: 30),
 
-            // Map, Flight Conditions, Learning Game Buttons
+            // contact us, Flight Conditions, Learning Game Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FeatureButton(label: "🌍 Map", icon: Icons.map, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()))),
+                FeatureButton(label: "Contact Us", icon: Icons.map, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => MapScreen()))),
                 SizedBox(width: 10),
                 FeatureButton(label: "🌦 Flight Conditions", icon: Icons.cloud, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => FlightConditionsScreen()))),
                 SizedBox(width: 10),
-                FeatureButton(label: "🎮 Learning Game", icon: Icons.videogame_asset, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LearningGameScreen()))),
+                FeatureButton(label: "Game", icon: Icons.videogame_asset, onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => LearningGameScreen()))),
               ],
             ),
             SizedBox(height: 30),
