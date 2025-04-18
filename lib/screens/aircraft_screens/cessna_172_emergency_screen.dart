@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_emergency_game.dart';
 
 class Cessna172EmergencyScreen extends StatelessWidget {
-  final Map<String, List<String>> emergencyProcedures = {
+  static const Map<String, List<String>> emergencyProcedures = {
     "🛑 Engine Failure During Takeoff Roll": [
       "Throttle – IDLE",
       "Flaps – UP",
@@ -119,47 +119,58 @@ class Cessna172EmergencyScreen extends StatelessWidget {
     ],
   };
 
+  const Cessna172EmergencyScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: Text("Cessna 172 – Emergency Procedures"),
+        title: const Text("Cessna 172 – Emergency Procedures"),
         backgroundColor: Colors.red,
       ),
       body: ListView(
-        padding: EdgeInsets.all(10),
+        padding: const EdgeInsets.all(10),
         children: [
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CessnaEmergencyGame()),
+                MaterialPageRoute(builder: (context) => const Cessna172EmergencyGame()),
               );
             },
-            child: Text("🎮 Play Emergency Learning Game", style: TextStyle(color: Colors.white)),
+            child: const Text(
+              "🎮 Play Emergency Learning Game",
+              style: TextStyle(color: Colors.white),
+            ),
           ),
-          SizedBox(height: 10),
-
-          // Now include the checklist expansion tiles
+          const SizedBox(height: 10),
           ...emergencyProcedures.entries.map((entry) {
             return Card(
               color: Colors.grey[850],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              margin: EdgeInsets.symmetric(vertical: 8),
+              margin: const EdgeInsets.symmetric(vertical: 8),
               child: ExpansionTile(
-                title: Text(entry.key,
-                    style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                title: Text(
+                  entry.key,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 children: entry.value
-                    .map((item) => ListTile(
-                          title: Text(item, style: TextStyle(color: Colors.white)),
-                          dense: true,
-                        ))
+                    .map(
+                      (item) => ListTile(
+                        title: Text(item, style: const TextStyle(color: Colors.white)),
+                        dense: true,
+                      ),
+                    )
                     .toList(),
               ),
             );
-          }).toList(),
+          }),
         ],
       ),
     );

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 
-class Cessna172EmergencyGame extends StatefulWidget {
-  const Cessna172EmergencyGame({super.key});
+class CirrusSr22EmergencyGame extends StatefulWidget {
+  const CirrusSr22EmergencyGame({super.key});
 
   @override
-  _Cessna172EmergencyGameState createState() => _Cessna172EmergencyGameState();
+  _CirrusSr22EmergencyGameState createState() => _CirrusSr22EmergencyGameState();
 }
 
-class _Cessna172EmergencyGameState extends State<Cessna172EmergencyGame> {
+class _CirrusSr22EmergencyGameState extends State<CirrusSr22EmergencyGame> {
   final List<Map<String, dynamic>> allQuestions = [
     {
       "question": "First action for engine failure during takeoff roll:",
