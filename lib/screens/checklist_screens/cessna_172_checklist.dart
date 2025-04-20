@@ -1,13 +1,15 @@
+// flutter_application_1/screens/aircraft_screens/cessna_172_checklist_screen.dart
+
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_emergency_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_screen.dart';
+import '../aircraft_screens/cessna_172_emergency_screen.dart';
+import '../aircraft_screens/cessna_172_screen.dart';
 
 class Cessna172ChecklistScreen extends StatefulWidget {
   const Cessna172ChecklistScreen({super.key});
@@ -18,6 +20,63 @@ class Cessna172ChecklistScreen extends StatefulWidget {
 
 class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
   late Map<String, Map<String, bool>> checklistSections;
+  final TextEditingController _airportController = TextEditingController();
+
+  final Map<String, Map<String, List<String>>> _weatherChecklistItems = {
+    'cold': {
+      '1️⃣ Cabin Checks': [
+        '✅ Check for frost or ice on wings, control surfaces, and pitot-static system.',
+        '✅ Drain fuel sumps carefully to check for ice crystals.',
+        '✅ Ensure oil viscosity is suitable for cold weather.',
+        '✅ Check cabin heater and defroster operation.',
+      ],
+      '🔟 After Engine Start': [
+        '✅ Allow longer warm-up at 1000 RPM.',
+      ],
+    },
+    'hot': {
+      '5️⃣ Nose': [
+        '✅ Check for vapor lock potential.',
+        '✅ Inspect for soft or expanded tires due to heat.',
+      ],
+      '✈️ Cruise': [
+        '✅ Calculate density altitude.',
+      ],
+    },
+    'rain': {
+      '6️⃣ Left Wing': [
+        '✅ Confirm pitot heat ON and pitot cover removed.',
+        '✅ Check seals for water intrusion.',
+      ],
+      '🛫 Taxi': [
+        '✅ Taxi cautiously to avoid hydroplaning.',
+        '✅ Test brakes early.',
+      ],
+    },
+    'ifrc': {
+      '🌧 IFR Conditions': [
+        '✅ Check lights (beacon, nav, strobe).',
+        '✅ Confirm vacuum/suction system operational.',
+        '✅ Cross-check alternate airports.',
+        '✅ File IFR flight plan if necessary.',
+      ]
+    },
+    'windy': {
+      '🛫 Taxi': [
+        '✅ Use control inputs for wind correction during taxi.',
+      ],
+      '🛫 Before Takeoff': [
+        '✅ Prepare for crosswind takeoff technique.',
+      ]
+    },
+    'storm': {
+      '⚠️ Weather Avoidance': [
+        '✅ Avoid thunderstorm cells and icing conditions.',
+        '✅ Confirm pitot heat functional.',
+        '✅ Review escape strategy for weather deviations.',
+      ]
+    }
+  };
 
   @override
   void initState() {
@@ -202,7 +261,7 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       checklistSections.forEach((section, items) {
-        items.forEach((key, value) {
+        items.forEach((key, _) {
           checklistSections[section]![key] = false;
           prefs.setBool('$section - $key', false);
         });
@@ -210,141 +269,170 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
     });
   }
 
-Future<void> generatePDF() async {
-  if (!mounted) return; // ✅ Avoid setState on unmounted widget
+  void applyWeatherCondition(String key) {
+    final items = _weatherChecklistItems[key];
+    if (items == null) return;
 
-  // ✅ Platform check (PDF save only works on Android/iOS)
-  if (!(Platform.isAndroid || Platform.isIOS)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("PDF generation is only supported on Android and iOS.")),
-    );
-    return;
+    setState(() {
+      items.forEach((section, additions) {
+        if (!checklistSections.containsKey(section)) {
+          checklistSections[section] = {};
+        }
+        for (var item in additions) {
+          if (!checklistSections[section]!.containsKey(item)) {
+            checklistSections[section]![item] = false;
+          }
+        }
+      });
+    });
   }
 
-  final pdf = pdfWidgets.Document();
+  Future<void> fetchWeatherAndApply(String airportCode) async {
+    String exampleCondition = 'cold';
+    applyWeatherCondition(exampleCondition);
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Applied "\$exampleCondition" checklist for \$airportCode')),
+    );
+  }
 
-  try {
-    final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
-    final pdfFont = pdfWidgets.Font.ttf(fontData);
+  Future<void> generatePDF() async {
+    if (!mounted) return;
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("PDF generation only works on Android/iOS")),
+      );
+      return;
+    }
 
-    pdf.addPage(
-      pdfWidgets.MultiPage(
-        pageFormat: PdfPageFormat.a4,
-        theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
-        build: (context) => [
-          pdfWidgets.Text("Cessna 172 Pre-Flight Checklist",
-              style: pdfWidgets.TextStyle(fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
-          pdfWidgets.SizedBox(height: 10),
-          ...checklistSections.entries.map(
-            (entry) => pdfWidgets.Column(children: [
-              pdfWidgets.Text(entry.key,
-                  style: pdfWidgets.TextStyle(fontSize: 18, fontWeight: pdfWidgets.FontWeight.bold)),
+    final pdf = pdfWidgets.Document();
+    try {
+      final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final pdfFont = pdfWidgets.Font.ttf(fontData);
+
+      pdf.addPage(
+        pdfWidgets.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
+          build: (context) => [
+            pdfWidgets.Text("Cessna 172 Checklist", style: pdfWidgets.TextStyle(fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
+            pdfWidgets.SizedBox(height: 10),
+            ...checklistSections.entries.map((entry) => pdfWidgets.Column(children: [
+              pdfWidgets.Text(entry.key, style: pdfWidgets.TextStyle(fontSize: 18, fontWeight: pdfWidgets.FontWeight.bold)),
               pdfWidgets.SizedBox(height: 5),
               ...entry.value.entries.map((item) => pdfWidgets.Text(
-                  "${item.value ? '[x]' : '[ ]'} ${item.key}",
-                  style: pdfWidgets.TextStyle(fontSize: 14))),
+                "\${item.value ? '[x]' : '[ ]'} \${item.key}",
+                style: pdfWidgets.TextStyle(fontSize: 14),
+              )),
               pdfWidgets.SizedBox(height: 10),
-            ]),
-          ),
-        ],
-      ),
-    );
-
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/Cessna_172_Checklist.pdf");
-    await file.writeAsBytes(await pdf.save());
-    OpenFile.open(file.path);
-  } catch (e) {
-    print("PDF Error: $e");
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to generate PDF. Please try again.")),
+            ])),
+          ],
+        ),
       );
+
+      final output = await getTemporaryDirectory();
+      final file = File("\${output.path}/Cessna_172_Checklist.pdf");
+      await file.writeAsBytes(await pdf.save());
+      OpenFile.open(file.path);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("PDF error occurred.")),
+        );
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[900],
-      appBar: AppBar(title: Text("Cessna 172 - Pre-Flight Checklist"), backgroundColor: Colors.red),
+      appBar: AppBar(
+        title: Text("Cessna 172 - Pre-Flight Checklist"),
+        backgroundColor: Colors.red,
+      ),
       body: ListView(
         padding: EdgeInsets.all(10),
         children: [
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: EdgeInsets.symmetric(vertical: 16),
-              textStyle: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Cessna172EmergencyScreen()),
-              );
-            },
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => Cessna172EmergencyScreen())),
             child: Text("🚨 Emergency Procedures"),
           ),
-          SizedBox(height: 20),
-          ...checklistSections.entries.map(
-            (entry) => ChecklistExpansionTile(
-              title: entry.key,
-              items: entry.value,
-              updateChecklist: (key, value) => updateChecklist(entry.key, key, value),
+          SizedBox(height: 12),
+          Row(children: [
+            Expanded(
+              child: TextField(
+                controller: _airportController,
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  hintText: 'Enter ICAO (e.g. EGLL)',
+                  hintStyle: TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.grey[800],
+                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: BorderSide.none),
+                ),
+              ),
             ),
-          ),
+            IconButton(
+              icon: Icon(Icons.cloud, color: Colors.white),
+              onPressed: () => fetchWeatherAndApply(_airportController.text.trim()),
+            )
+          ]),
+          SizedBox(height: 10),
+          Wrap(spacing: 10, children: [
+            _weatherButton('Cold', Icons.ac_unit, 'cold'),
+            _weatherButton('Hot', Icons.wb_sunny, 'hot'),
+            _weatherButton('Rain', Icons.grain, 'rain'),
+            _weatherButton('IFR', Icons.cloud, 'ifrc'),
+            _weatherButton('Windy', Icons.air, 'windy'),
+            _weatherButton('Storm', Icons.flash_on, 'storm'),
+          ]),
+          SizedBox(height: 20),
+          ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
+            title: entry.key,
+            items: entry.value,
+            updateChecklist: (key, value) => updateChecklist(entry.key, key, value),
+          )),
           SizedBox(height: 30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildIconButton(
-                icon: Icons.refresh,
-                label: "Reset",
-                color: Colors.red,
-                onTap: resetChecklist,
-              ),
-              _buildIconButton(
-                icon: Icons.picture_as_pdf,
-                label: "PDF",
-                color: Colors.blue,
-                onTap: generatePDF,
-              ),
-              _buildIconButton(
-                icon: Icons.info_outline,
-                label: "Details",
-                color: Colors.orange,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Cessna172Screen()),
-                  );
-                },
-              ),
+              _iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
+              _iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+              _iconButton(Icons.info_outline, 'Details', Colors.orange, () => Navigator.push(context, MaterialPageRoute(builder: (_) => Cessna172Screen()))),
             ],
-          ),
+          )
         ],
       ),
     );
   }
 
-  Widget _buildIconButton({
-    required IconData icon,
-    required String label,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
+  Widget _weatherButton(String label, IconData icon, String conditionKey) {
+    return InkWell(
+      onTap: () => applyWeatherCondition(conditionKey),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(color: Colors.blueGrey, shape: BoxShape.circle),
+            padding: EdgeInsets.all(14),
+            child: Icon(icon, color: Colors.white, size: 26),
+          ),
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _iconButton(IconData icon, String label, Color color, VoidCallback onTap) {
     return Column(
       children: [
         InkWell(
           onTap: onTap,
           child: Container(
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: color,
-            ),
+            decoration: BoxDecoration(shape: BoxShape.circle, color: color),
             padding: EdgeInsets.all(18),
-            child: Icon(icon, color: Colors.white, size: 30),
+            child: Icon(icon, color: Colors.white, size: 28),
           ),
         ),
         SizedBox(height: 8),
@@ -373,9 +461,7 @@ class ChecklistExpansionTile extends StatelessWidget {
           return CheckboxListTile(
             title: Text(item, style: TextStyle(color: Colors.white)),
             value: items[item],
-            onChanged: (bool? value) {
-              updateChecklist(item, value ?? false);
-            },
+            onChanged: (bool? value) => updateChecklist(item, value ?? false),
             activeColor: Colors.red,
           );
         }).toList(),
