@@ -1,39 +1,43 @@
+// lib/screens/flight_conditions_screen.dart
+
 import 'package:flutter/material.dart';
 import '../utils/weather_service.dart';
 import '../widget/bottom_nav_bar.dart';
 
 class FlightConditionsScreen extends StatefulWidget {
-  const FlightConditionsScreen({super.key});
+  const FlightConditionsScreen({Key? key}) : super(key: key);
+
   @override
-  State<FlightConditionsScreen> createState() => _FlightConditionsScreenState();
+  State<FlightConditionsScreen> createState() =>
+      _FlightConditionsScreenState();
 }
 
-class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
-  final _icaoController = TextEditingController(text: "EGLL");
+class _FlightConditionsScreenState
+    extends State<FlightConditionsScreen> {
+  final TextEditingController _icaoController =
+      TextEditingController(text: 'EGLL');
   bool _loading = false;
   String? _error;
-  Map<String, dynamic>? _metar;
-  List<Map<String, dynamic>> _taf = [];
+  Map<String, String>? _metar;
+  List<Map<String, String>> _taf = [];
 
   @override
   void initState() {
     super.initState();
-    _load("EGLL");
+    _fetch('EGLL');
   }
 
-  Future<void> _load(String code) async {
+  Future<void> _fetch(String code) async {
     setState(() {
       _loading = true;
       _error = null;
+      _metar = null;
+      _taf = [];
     });
 
     try {
       final metar = await WeatherService.getDecodedMETAR(code);
-      if (metar.containsKey('error')) {
-        throw Exception(metar['error']);
-      }
       final taf = await WeatherService.getForecast(code);
-
       setState(() {
         _metar = metar;
         _taf = taf;
@@ -49,7 +53,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Flight Conditions"),
+        title: const Text('Flight Conditions'),
         backgroundColor: Colors.redAccent,
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 1),
@@ -58,7 +62,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Search row
+            // ICAO search bar
             Row(
               children: [
                 Expanded(
@@ -68,114 +72,221 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.grey[800],
-                      hintText: "ICAO (e.g. EGLL)",
-                      hintStyle: const TextStyle(color: Colors.white60),
+                      hintText: 'ICAO (e.g. EGLL)',
+                      hintStyle:
+                          const TextStyle(color: Colors.white60),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 12),
                     ),
-                    onSubmitted: (v) => _load(v.trim()),
+                    onSubmitted: (v) => _fetch(v.trim()),
                   ),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
-                  onPressed: () => _load(_icaoController.text.trim()),
+                  onPressed: () =>
+                      _fetch(_icaoController.text.trim()),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
                     padding: const EdgeInsets.all(14),
                   ),
-                  child: const Icon(Icons.search, color: Colors.white),
+                  child: const Icon(Icons.search,
+                      color: Colors.white),
                 ),
               ],
             ),
 
             const SizedBox(height: 20),
 
-            // Loading / error / content
+            // Loading / error / data
             if (_loading)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
+              const Expanded(
+                  child:
+                      Center(child: CircularProgressIndicator()))
             else if (_error != null)
               Expanded(
                 child: Center(
                   child: Text(
                     _error!,
-                    style: const TextStyle(color: Colors.redAccent),
+                    style: const TextStyle(
+                        color: Colors.redAccent,
+                        fontSize: 16),
                   ),
                 ),
               )
             else if (_metar != null)
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Station & time
-                    Text(
-                      _metar!['station'] ?? '',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start,
+                    children: [
+                      // Station Info
+                      _sectionTitle('Station Info'),
+                      Card(
+                        color: Colors.grey[900],
+                        margin: const EdgeInsets.symmetric(vertical: 8),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            children: [
+                              _infoRow('ICAO', _metar!['icao']!),
+                              _infoRow('Name', _metar!['name']!),
+                              _infoRow(
+                                  'Location', _metar!['location']!),
+                              _infoRow(
+                                  'Latitude', _metar!['latitude']!),
+                              _infoRow(
+                                  'Longitude', _metar!['longitude']!),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _metar!['observed'] ?? '',
-                      style: const TextStyle(color: Colors.white70),
-                    ),
-                    const SizedBox(height: 16),
 
-                    // 6‑hour TAF scroll
-                    SizedBox(
-                      height: 160,
-                      child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _taf.length,
-                        itemBuilder: (_, i) {
-                          final f = _taf[i];
-                          return Container(
-                            width: 140,
-                            margin: const EdgeInsets.only(right: 12),
-                            child: Card(
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              child: Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      f['time'] ?? '',
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    const SizedBox(height: 6),
-                                    Text("Cat: ${f['category']}", style: const TextStyle(fontSize: 12)),
-                                    Text("T: ${f['temp']}°C",  style: const TextStyle(fontSize: 12)),
-                                    Text("Wind: ${f['wind_speed']}kt", style: const TextStyle(fontSize: 12)),
-                                    Text("Vis: ${f['visibility']}m",  style: const TextStyle(fontSize: 12)),
-                                    const Spacer(),
-                                    Text(
-                                      f['clouds'] ?? 'Clear',
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                  ],
+                      // METAR Observed
+                      const Divider(color: Colors.white24),
+                      _sectionTitle('METAR Observed'),
+                      _infoRow('Time', _metar!['observed']!),
+
+                      // Current Conditions
+                      const Divider(color: Colors.white24),
+                      _sectionTitle('Current Conditions'),
+                      _infoRow('Temperature',
+                          '${_metar!['temperature']}°C'),
+                      _infoRow('Wind', _metar!['wind']!),
+                      _infoRow('Visibility',
+                          '${_metar!['visibility']} m'),
+                      _infoRow('Clouds', _metar!['clouds']!),
+
+                      // TAF Forecast
+                      const Divider(color: Colors.white24),
+                      _sectionTitle('TAF (next 6 periods)'),
+                      SizedBox(
+                        height: 180,
+                        child: ListView.separated(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: _taf.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(width: 12),
+                          itemBuilder: (_, i) {
+                            final f = _taf[i];
+                            return SizedBox(
+                              width: 160,
+                              child: Card(
+                                color: Colors.grey[850],
+                                shape:
+                                    RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.circular(8),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.all(12),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        f['time']!,
+                                        style:
+                                            const TextStyle(
+                                          fontWeight:
+                                              FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                          height: 6),
+                                      _miniRow(
+                                          'Cat', f['category']!),
+                                      _miniRow('T',
+                                          '${f['temperature']}°C'),
+                                      _miniRow('Wind', f['wind']!),
+                                      _miniRow('Vis',
+                                          '${f['visibility']}m'),
+                                      const Spacer(),
+                                      Text(
+                                        f['clouds']!,
+                                        style: const TextStyle(
+                                            fontSize: 12,
+                                            color:
+                                                Colors.white70),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
+
+                      const SizedBox(height: 16),
+                    ],
+                  ),
                 ),
               )
             else
-              const Expanded(child: SizedBox()), // should never hit
+              const Expanded(child: SizedBox()),
           ],
         ),
       ),
     );
   }
+
+  Widget _infoRow(String label, String value) =>
+      Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          children: [
+            Text(
+              '$label:',
+              style: const TextStyle(
+                  color: Colors.white70,
+                  fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(value,
+                  style:
+                      const TextStyle(color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+
+  Widget _miniRow(String label, String value) =>
+      Row(
+        children: [
+          Text(
+            '$label:',
+            style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white70,
+                fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            child: Text(value,
+                style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.white)),
+          ),
+        ],
+      );
+
+  Widget _sectionTitle(String text) =>
+      Padding(
+        padding: const EdgeInsets.only(top: 12, bottom: 4),
+        child: Text(
+          text,
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold),
+        ),
+      );
 }

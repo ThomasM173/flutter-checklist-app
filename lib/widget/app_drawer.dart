@@ -6,7 +6,6 @@ import 'package:flutter_application_1/screens/caa_compliance_screen.dart';
 import 'package:flutter_application_1/screens/faq_screen.dart';
 import 'package:flutter_application_1/screens/recent_updates_screen.dart';
 import '../widget/bottom_nav_bar.dart';
-import '../screens/home_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final int currentIndex;
@@ -27,8 +26,8 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          DrawerHeader(
-            decoration: const BoxDecoration(color: Colors.redAccent),
+          const DrawerHeader(
+            decoration: BoxDecoration(color: Colors.redAccent),
             child: Center(
               child: Text(
                 'ClearedToGo',
@@ -36,39 +35,56 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
+
+          // Home button (go back to first route)
+          ListTile(
+            leading: const Icon(Icons.home, color: Colors.white),
+            title: const Text('Home', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context); // close drawer
+              Navigator.popUntil(context, (route) => route.isFirst);
+            },
+          ),
+
+          // Contact Us
           ListTile(
             leading: const Icon(Icons.map, color: Colors.white),
-            title:
-                const Text('Contact Us', style: TextStyle(color: Colors.white)),
+            title: const Text('Contact Us', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const MapScreen()),
           ),
+
+          // About Us
           ListTile(
             leading: const Icon(Icons.info, color: Colors.white),
-            title:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
+            title: const Text('About Us', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const AboutUsScreen()),
           ),
+
+          // Privacy Policy
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.white),
-            title: const Text('Privacy Policy',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('Privacy Policy', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const PrivacyPolicyScreen()),
           ),
+
+          // CAA Compliance
           ListTile(
             leading: const Icon(Icons.gavel, color: Colors.white),
-            title: const Text('CAA Compliance',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('CAA Compliance', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const CAAComplianceScreen()),
           ),
+
+          // FAQ
           ListTile(
             leading: const Icon(Icons.question_answer, color: Colors.white),
             title: const Text('FAQ', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const FAQScreen()),
           ),
+
+          // Recent Updates
           ListTile(
             leading: const Icon(Icons.update, color: Colors.white),
-            title: const Text('Recent Updates',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('Recent Updates', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const RecentUpdatesScreen()),
           ),
         ],
