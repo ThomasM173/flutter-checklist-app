@@ -4,73 +4,91 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WeatherService {
-  static const String _apiKey = '6ebb11e27af34b20899f9da2dc74b448';
+  // Replace with your AVWX token
+  static const String _token = 'YOUR_AVWX_TOKEN';
+  static const String _baseUrl = 'https://avwx.rest/api';
 
-  /// Fetches and flattens decoded METAR for [icao].
-  /// Throws on non‑200 or no results.
+  /// Fetches and flattens METAR data for [icao].
+  /// Throws on non-200 or no-data.
   static Future<Map<String, String>> getDecodedMETAR(String icao) async {
-    final uri = Uri.parse('https://api.checkwx.com/metar/$icao/decoded');
-    final resp = await http.get(uri, headers: {'X-API-Key': _apiKey});
-
+    final uri = Uri.parse('$_baseUrl/metar/$icao?options=info');
+    final resp = await http.get(uri, headers: {'Authorization': _token});
     if (resp.statusCode != 200) {
-      throw Exception('METAR request failed: ${resp.statusCode}');
+      throw Exception('METAR error: ${resp.statusCode}');
     }
 
     final body = jsonDecode(resp.body) as Map<String, dynamic>;
-    if ((body['results'] as int? ?? 0) == 0) {
-      throw Exception('No METAR data for $icao');
+
+    // Station & metadata
+    final station  = (body['station']  as String?) ?? '';
+    final name     = (body['info']?['name'] as String?) ?? '';
+    final coords   = body['info']?['coordinates'] as List<dynamic>?; 
+    final latitude = coords != null && coords.length >= 2 ? coords[1].toString() : '';
+    final longitude=
+        coords != null && coords.length >= 2 ? coords[0].toString() : '';
+
+    // Time
+    final observed = (body['time']?['dt'] as String?) ?? '';
+
+    // Conditions
+    final tempVal  = body['temperature']?['value']?.toString() ?? '';
+    final windDeg  = body['wind']?['value']?.toString()         ?? '';
+    final windKts  = body['wind']?['speed']?.toString()         ?? '';
+    final windUnit = (body['wind']?['unit_speed'] as String?)    ?? 'kt';
+    final visibilityVal = body['visibility']?['value']?.toString() ?? '';
+    final visibilityUnit= (body['visibility']?['unit'] as String?)   ?? '';
+
+    // Clouds array → e.g. "FEW,", "SCT,"
+    String clouds = 'Clear skies';
+    if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
+      clouds = (body['clouds'] as List)
+          .map((c) => c['repr'] as String? ?? '')
+          .where((s) => s.isNotEmpty)
+          .join(', ');
     }
 
-    final raw = body['data'][0] as Map<String, dynamic>;
-
-    // geometry -> [lon, lat]
-    final coords = raw['geometry']?['coordinates'] as List<dynamic>?;
-    final lon = coords != null && coords.length >= 2 ? coords[0].toString() : '';
-    final lat = coords != null && coords.length >= 2 ? coords[1].toString() : '';
-
     return {
-      'icao'        : raw['station']?.toString()    ?? '',
-      'name'        : raw['name']?.toString()       ?? '',
-      'location'    : raw['location']?.toString()   ?? '',
-      'latitude'    : lat,
-      'longitude'   : lon,
-      'observed'    : raw['observed']?.toString()   ?? '',
-      'temperature' : raw['temperature']?['celsius']?.toString() ?? '',
-      'wind'        : '${raw['wind']?['degrees'] ?? ''}° @ ${raw['wind']?['speed_kts'] ?? ''} kt',
-      'visibility'  : raw['visibility']?['meters']?.toString() ?? '',
-      'clouds'      : (raw['clouds'] is List && (raw['clouds'] as List).isNotEmpty)
-                         ? (raw['clouds'] as List).first['text'].toString()
-                         : 'Clear skies',
+      'icao'       : station,
+      'name'       : name,
+      'latitude'   : latitude,
+      'longitude'  : longitude,
+      'observed'   : observed,
+      'temperature': '$tempVal°C',
+      'wind'       : '$windDeg° @ $windKts $windUnit',
+      'visibility' : '$visibilityVal $visibilityUnit',
+      'clouds'     : clouds,
     };
   }
 
-  /// Fetches up to 6 decoded TAF periods for [icao], flattened to strings.
-  /// Throws on non‑200.
+  /// Fetches up to 6 decoded TAF periods for [icao].
+  /// Throws on non-200.
   static Future<List<Map<String, String>>> getForecast(String icao) async {
-    final uri = Uri.parse('https://api.checkwx.com/taf/$icao/decoded');
-    final resp = await http.get(uri, headers: {'X-API-Key': _apiKey});
-
+    final uri = Uri.parse('$_baseUrl/taf/$icao?options=');
+    final resp = await http.get(uri, headers: {'Authorization': _token});
     if (resp.statusCode != 200) {
-      throw Exception('TAF request failed: ${resp.statusCode}');
+      throw Exception('TAF error: ${resp.statusCode}');
     }
 
     final body = jsonDecode(resp.body) as Map<String, dynamic>;
-    if ((body['results'] as int? ?? 0) == 0) return [];
-
-    final taf = body['data'][0] as Map<String, dynamic>;
-    final periods = (taf['forecast'] as List<dynamic>? ?? []).take(6);
+    final periods = (body['forecast'] as List<dynamic>? ?? []).take(6);
 
     return periods.map((item) {
       final m = item as Map<String, dynamic>;
+
+      // AVWX TAF uses start_time/end_time
+      final start = (m['start_time'] as String?) 
+                      ?? (m['time']?['from'] as String?) 
+                      ?? '';
+      final end   = (m['end_time']   as String?) 
+                      ?? (m['time']?['to']   as String?) 
+                      ?? '';
+      final cat   = (m['flight_rules'] as String?) 
+                      ?? (m['flight_category'] as String?) 
+                      ?? '';
+
       return {
-        'time'        : m['timestamp']?['from']?.toString()      ?? '',
-        'category'    : m['flight_category']?.toString()        ?? '',
-        'temperature' : m['temperature']?['celsius']?.toString() ?? '',
-        'wind'        : '${m['wind']?['degrees'] ?? ''}° @ ${m['wind']?['speed_kts'] ?? ''} kt',
-        'visibility'  : m['visibility']?['meters']?.toString()   ?? '',
-        'clouds'      : (m['clouds'] is List && (m['clouds'] as List).isNotEmpty)
-                           ? (m['clouds'] as List).first['text'].toString()
-                           : 'Clear skies',
+        'time'    : '$start → $end',
+        'category': cat,
       };
     }).toList();
   }
