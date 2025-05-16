@@ -5,14 +5,18 @@ import 'package:http/http.dart' as http;
 
 class WeatherService {
   // Replace with your AVWX token
-  static const String _token = 'YOUR_AVWX_TOKEN';
+  static const String _token = 'LMcMjiwwjVe0RNp5iLGOw4dBTkLk3r9SAYFc7Q5eNHU';
   static const String _baseUrl = 'https://avwx.rest/api';
 
   /// Fetches and flattens METAR data for [icao].
   /// Throws on non-200 or no-data.
   static Future<Map<String, String>> getDecodedMETAR(String icao) async {
     final uri = Uri.parse('$_baseUrl/metar/$icao?options=info');
-    final resp = await http.get(uri, headers: {'Authorization': _token});
+    final resp = await http.get(
+  uri,
+  headers: {'Authorization': 'Bearer $_token'},
+);
+
     if (resp.statusCode != 200) {
       throw Exception('METAR error: ${resp.statusCode}');
     }
@@ -64,7 +68,7 @@ class WeatherService {
   /// Throws on non-200.
   static Future<List<Map<String, String>>> getForecast(String icao) async {
     final uri = Uri.parse('$_baseUrl/taf/$icao?options=');
-    final resp = await http.get(uri, headers: {'Authorization': _token});
+    final resp = await http.get(uri, headers: {'Authorization': 'Bearer $_token'});
     if (resp.statusCode != 200) {
       throw Exception('TAF error: ${resp.statusCode}');
     }
