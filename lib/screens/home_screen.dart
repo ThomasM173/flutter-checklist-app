@@ -3,6 +3,8 @@ import 'package:flutter_application_1/screens/map_screen.dart';
 import 'package:flutter_application_1/screens/flight_conditions_screen.dart';
 import 'package:flutter_application_1/screens/learning_game_screen.dart';
 import 'package:flutter_application_1/screens/checklist_screens/cessna_172_checklist.dart';
+import 'package:flutter_application_1/screens/checklist_screens/cessna_152_checklist.dart';
+import 'package:flutter_application_1/screens/checklist_screens/piper_pa28_checklist.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_screen.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/diamond_da40_screen.dart';
 import '../widget/app_drawer.dart';
@@ -45,7 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'title': 'Cessna 152',
         'image': 'assets/images/cessna152.jpeg',
-        'screen': const Cessna172ChecklistScreen(), // replace with actual 152 screen if available
+        'screen': const Cessna152ChecklistScreen(),
       },
       {
         'title': 'Cessna 172',
@@ -75,7 +77,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'title': 'Piper PA-28',
         'image': 'assets/images/piper.jpeg',
-        'screen': const PiperPA28Screen(),
+        'screen': const PiperPA28ChecklistScreen(),
       },
       {
         'title': 'Tecnam P2002',
@@ -117,81 +119,81 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              "Select Your Aircraft",
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Expanded(
-              child: GridView.count(
-                crossAxisCount: 2,
-                mainAxisSpacing: 16,
-                crossAxisSpacing: 16,
-                childAspectRatio: 1.1,
-                children: aircraftList.map((aircraft) {
-                  return GestureDetector(
-                    onTap: aircraft['screen'] != null
-                        ? () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) => aircraft['screen']),
-                            )
-                        : () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Coming soon!')),
-                            );
-                          },
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Colors.black, width: 1.5),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.shade400,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Image.asset(
-                              aircraft['image'],
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            aircraft['title'],
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }).toList(),
-              ),
-            ),
-          ],
+  padding: const EdgeInsets.all(16.0),
+  child: Column(
+    children: [
+      const SizedBox(height: 10),
+      const Text(
+        "Select Your Aircraft",
+        style: TextStyle(
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+          color: Colors.black87,
         ),
       ),
+      const SizedBox(height: 10),
+      Expanded(
+        child: GridView.count(
+          crossAxisCount: 2,
+          mainAxisSpacing: 16,
+          crossAxisSpacing: 16,
+          childAspectRatio: 1.1,
+          children: aircraftList.map((aircraft) {
+            return GestureDetector(
+              onTap: aircraft['screen'] != null
+                  ? () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => aircraft['screen']),
+                      )
+                  : () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Coming soon!')),
+                      );
+                    },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black, width: 1.5),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.shade400,
+                      blurRadius: 5,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: Image.asset(
+                        aircraft['image'],
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      aircraft['title'],
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    ],
+  ),
+),
+
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

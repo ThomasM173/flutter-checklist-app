@@ -105,28 +105,24 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
         "✅ Wing Tie-Down – DISCONNECT.": false,
         "✅ Main Wheel Tire – CHECK.": false,
         "✅ Fuel Drain, Quantity & Filler Cap – CHECK.": false,
-      },
-      "4️⃣ Right Wing Trailing Edge": {
         "✅ Aileron & Flap – CHECK.": false,
       },
-      "5️⃣ Nose": {
+      "4️⃣ Nose": {
         "✅ Engine Oil Level – CHECK (MIN. 4).": false,
         "✅ Fuel Drain – CHECK.": false,
         "✅ Propeller, Spinner, Air Filter – CHECK.": false,
         "✅ Nose Wheel Strut and Tire – CHECK.": false,
         "✅ Static Source – CHECK.": false,
       },
-      "6️⃣ Left Wing": {
+      "5️⃣ Left Wing": {
         "✅ Pitot Tube Cover – CONFIRM REMOVED.": false,
         "✅ Stall Warning, Fuel Tank and Vent Opening – CHECK.": false,
         "✅ Wing Tie-Down – DISCONNECT.": false,
         "✅ Main Wheel Tire – CHECK.": false,
         "✅ Fuel Drain, Quantity & Filler Cap – CHECK.": false,
-      },
-      "7️⃣ Left Wing Trailing Edge": {
         "✅ Aileron & Flap – CHECK.": false,
       },
-      "8️⃣ Cockpit Preparation": {
+      "6️⃣ Cockpit Preparation": {
         "✅ Preflight Inspection – COMPLETE.": false,
         "✅ Seats, Belts, Shoulder Harness – ADJUST & LOCK.": false,
         "✅ Fuel Shutoff Valve – ON (HORIZONTAL).": false,
@@ -135,7 +131,7 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
         "✅ Circuit Breakers – ALL IN.": false,
         "✅ Flight Controls – FREE & CORRECT.": false,
       },
-      "9️⃣ Before Engine Start": {
+      "7️⃣ Before Engine Start": {
         "✅ Battery Switch – ON.": false,
         "✅ ATC (Start-Up) – REQUEST/NOTIFY.": false,
         "✅ Radios – OFF.": false,
@@ -148,7 +144,7 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
         "✅ Ignition Switch – START.": false,
         "✅ Throttle – 1000 RPM.": false,
       },
-      "🔟 After Engine Start": {
+      "8️⃣ After Engine Start": {
         "✅ Oil Pressure – GREEN (<30s).": false,
         "✅ Alternator Switch – ON.": false,
         "✅ Ammeter / Low Voltage Light – CHECKED.": false,
@@ -184,7 +180,7 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
         "✅ Flaps – SET (UP / 10°).": false,
         "✅ T/O Briefing – CONFIRMED.": false,
         "✅ Landing & Strobe Lights – ON.": false,
-        "✅ Transponder – ALT OR STBY.": false,
+        "✅ Transponder – ALT.": false,
         "✅ QFU/Gyro – CONFIRM/ALIGN.": false,
       },
       "🛫 After Takeoff / Climb": {
