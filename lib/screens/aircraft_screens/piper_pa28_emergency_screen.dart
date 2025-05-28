@@ -3,121 +3,118 @@ import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_emerge
 
 class PiperPA28EmergencyScreen extends StatelessWidget {
   static const Map<String, List<String>> emergencyProcedures = {
-    "🛑 Engine Failure During Takeoff Roll": [
-      "Throttle – IDLE",
-      "Flaps – UP",
-      "Mixture – CUT OFF",
-      "Ignition Switch – OFF",
-      "Master Switch – OFF",
-      "Fuel Shutoff Valve – OFF",
+  "🚒 ENGINE FIRE DURING START-UP": [
+    "Starter                          – Crank engine",
+    "Mixture                          – Idle cut-off",
+    "Throttle                         – OPEN",
+    "Electrical Fuel Pump             – OFF",
+    "Fuel Selector                    – OFF",
+    "If fire continues                – Abandon, brake OFF, take extinguisher, alert ground crew",
+  ],
+
+  "✈️ ENGINE POWER LOSS DURING TAKE-OFF": [
+    "If runway remains               – Land straight ahead",
+    "If insufficient runway"
+      "Maintain safe airspeed        – Lower nose",
+      "Turn                          – Shallow only to avoid obstructions",
+      "Flaps                         – As situation requires",
+      "Do not turn back              – On initial climb-out",
+    "If altitude for restart"
+      "Maintain safe airspeed        – True",
+      "Fuel Selector                 – Change tanks",
+      "Electric Pump                 – Check ON",
+      "Mixture                       – Check RICH",
+      "Carburettor Heat              – ON",
+      "Primer                        – LOCKED",
+    "If no restart                   – Proceed power-off landing",
+    "After landing                   – Master OFF / Fuel OFF / MAYDAY if time permits",
+  ],
+
+  "🛫 ENGINE POWER LOSS IN FLIGHT": [
+    "Turn down-wind                  – Increases glide range",
+    "Establish glide attitude        – Trim for best glide",
+    "Select field                    – Towards wing-tip if possible",
+    "Plan approach                   – Constant aspect technique",
+    "Then check cause of loss"
+      "Fuel Selector                 – Switch tanks",
+      "Electric Fuel Pump            – ON",
+      "Mixture                       – RICH",
+      "Carburettor Heat              – ON",
+      "Engine Gauges                 – Check for cause indication",
+      "Primer                        – Check LOCKED"
+    "If no fuel pressure"
+      "Fuel Selector                 – Ensure tank contains fuel",
+    "If power restored"
+      "Carburettor Heat              – OFF",
+      "Electric Fuel Pump            – OFF",
+    "If still no power               – Prepare power-off landing",
+    "MAYDAY                          – Call and set 7700",
+    "Landing touchdown               – Lowest airspeed, full flaps",
+    "When committed"
+      "Fuel                          – OFF",
+      "Ignition                      – OFF",
+      "Electrics (Master)            – ALL OFF",
+      "Lap Strap                     – TIGHT",
+      "Door                          – CRACKED OPEN",
     ],
-    "🛬 Engine Failure After Takeoff (RWY Available)": [
-      "Land on remaining runway",
-      "Mixture – CUT OFF",
-      "Ignition Switch – OFF",
-      "Master Switch – OFF",
-      "Fuel Shutoff Valve – OFF",
+
+  "🔥 FIRE IN FLIGHT": [
+    "Electrical Fire (smoke):"
+      "Master Switch                 – OFF",
+      "Vents                         – OPEN",
+      "Cabin Heat                    – OFF",
+      "Fire Extinguisher             – Use only if absolutely necessary",
+      "If source apparent            – Restore other services",
+      "Land                          – As soon as practicable",
     ],
-    "🛫 Engine Failure in Flight": [
-      "Airspeed – 60 KTS",
-      "Best Field – CHOOSE",
-      "Fuel Shutoff Valve – ON",
-      "Mixture – RICH",
-      "Carburetor Heat – ON",
-      "Primer – IN & LOCKED",
-      "Ignition Switch – BOTH / START",
+    "Engine Fire:": [
+      "Fuel Selector                 – OFF",
+      "Throttle                      – CLOSED",
+      "Mixture                       – Idle cut-off",
+      "Fuel Pump                     – Check OFF",
+      "Heater                        – OFF",
+      "Defroster                     – OFF",
+      "Do not restart                – Proceed with power-off landing",
     ],
-    "⛔ If Restart Unsuccessful": [
-      "Throttle – IDLE",
-      "Mixture – CUT OFF",
-      "Ignition Switch – OFF",
-      "Fuel Shutoff Valve – OFF",
-      "Radio (MAYDAY) – TRANSMIT",
-      "Flaps – AS REQUIRED",
-      "Doors – UNLATCH",
+
+  "⚠️ LOSS OF OIL PRESSURE": [
+    "Check oil temp gauge            – If normal, suspect gauge failure",
+    "Land                            – As soon as possible",
+    "Prepare                         – POWER-OFF LANDING",
+  ],
+
+  "🌡️ HIGH OIL TEMPERATURE": [
+    "Check oil pressure              – If low/zero, prepare POWER-OFF LANDING",
+    "If pressure normal:" 
+      "Reduce power                  – Richen mixture",
+      "Increase airspeed             – If in climb",
+    "Land                            – Nearest airport, investigate",
+    "Prepare                         – POWER-OFF LANDING",
+  ],
+
+  "🔋 ALTERNATOR FAILURE": [
+    "ALT light on / low-volt flashing– Ammeter: verify alternator inoperative",
+    "If ammeter zero                 – Check circuit breaker",
+    "If breaker normal:"
+      "ALT Switch                    – OFF, wait 5s, ON again",
+    "If still no power"
+      "ALT Switch                    – OFF",
+      "Electrical loads              – Reduce to essential",
+      "Land                          – As soon as practicable",
+      "Advise ATC                    – 121.50 if required",
+      "Anticipate                    – Complete electrical failure",
     ],
-    "🔥 Engine Fire During Start": [
-      "Cranking – CONTINUE",
-      "If Engine Starts: Power – 1700 RPM → Engine – SHUTDOWN",
-      "If Engine Fails to Start: Throttle – FULL OPEN",
-      "Mixture – CUT OFF",
-      "Cranking – CONTINUE",
-      "Fire Extinguisher – OBTAIN",
-      "Engine – SECURE (Ignition, Master, Fuel OFF)",
-      "Fire – EXTINGUISH",
-    ],
-    "🔥 Engine Fire In Flight": [
-      "Mixture – CUT OFF",
-      "Fuel Shutoff Valve – OFF",
-      "Master Switch – OFF",
-      "Cabin Heat & Air – OFF",
-      "Airspeed – 85 KTS",
-      "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
-    ],
-    "⚡ Electrical Fire In Flight": [
-      "Master Switch – OFF",
-      "All Switches (except ignition) – OFF",
-      "Vents & Cabin Air/Heat – CLOSED",
-      "Fire Extinguisher – ACTIVATE",
-      "If Fire Out & Electrical Power Needed:",
-      "Master Switch – ON",
-      "Circuit Breakers – CHECK TRIPPED",
-      "Radios – ON (ONE AT A TIME)",
-      "Vents & Cabin Air/Heat – OPEN",
-    ],
-    "🔥 Cabin Fire": [
-      "Master Switch – OFF",
-      "Vents & Cabin Air/Heat – CLOSED",
-      "Fire Extinguisher – ACTIVATE",
-    ],
-    "🔥 Wing Fire": [
-      "Navigation Light – OFF",
-      "Strobe Light – OFF",
-      "Pitot Heat – OFF",
-    ],
-    "✈️ Emergency Landing Without Engine Power": [
-      "Airspeed – 65 KTS (Flaps UP), 60 KTS (Flaps 30°)",
-      "Mixture – CUT OFF",
-      "Fuel Shutoff Valve – OFF",
-      "Ignition Switch – OFF",
-      "Flaps – AS REQUIRED",
-      "Master Switch – OFF",
-      "Doors (Prior Touchdown) – UNLATCH",
-    ],
-    "🟡 Precautionary Landing With Engine Power": [
-      "Airspeed – 60 KTS",
-      "Radios & Electrical Equipment – OFF",
-      "Flaps – 30° (On final)",
-      "Airspeed – 55 KTS",
-      "Master Switch – OFF",
-      "Doors – UNLATCH",
-      "Ignition Switch (After Touchdown) – OFF",
-    ],
-    "🌊 Ditching": [
-      "Radio – MAYDAY",
-      "Heavy Objects – SECURE",
-      "Approach – INTO WIND / PARALLEL TO SWELLS",
-      "Flaps – FULL",
-      "Descent – 300 FT/MIN",
-      "Doors – UNLATCH",
-      "Touchdown – LEVEL ATTITUDE",
-      "Life Vests – INFLATE",
-    ],
-    "🔋 Electrical Malfunction": [
-      "If Ammeter Shows Discharge:",
-      "Alternator – OFF",
-      "Nonessential Electrical – OFF",
-      "⚠️ LAND ASAP",
-      "If Low Voltage Light:",
-      "Radios – OFF",
-      "Alt Circuit Breaker – CHECK IN",
-      "Master – OFF THEN ON",
-      "If Light Remains:",
-      "Alternator – OFF",
-      "Nonessential Electrical – OFF",
-      "⚠️ LAND ASAP",
-    ],
-  };
+  
+
+  "📻 RADIO FAILURE": [
+    "Radio                           – Check freq, volume, squelch, switches, Radio Master",
+    "Headset                         – Check plugs secure, try spare",
+    "Ammeter/Master/Circuit Breakers – Check, reset once only",
+    "Transponder                     – Set 7600",
+    "Procedure                       – Speechless/transmit blind as appropriate",
+  ],
+};
+
 
   const PiperPA28EmergencyScreen({super.key});
 

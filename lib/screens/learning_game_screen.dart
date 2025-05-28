@@ -36,7 +36,7 @@ class LearningGameScreen extends StatelessWidget {
 
             _buildGameButton(context, "Cessna 172", Cessna172EmergencyGame()),
             _buildGameButton(context, "Cessna 152", Cessna152EmergencyGame()),
-            _buildGameButton(context, "Piper PA-28", CirrusSr22EmergencyGame()),
+            _buildGameButton(context, "Piper PA-28", PiperPA28EmergencyGame()),
             _buildGameButton(context, "Diamond DA40", CirrusSr22EmergencyGame()),
             _buildGameButton(context, "Diamond DA42", CirrusSr22EmergencyGame()),
             _buildGameButton(context, "Cirrus SR20", CirrusSr20EmergencyGame()),

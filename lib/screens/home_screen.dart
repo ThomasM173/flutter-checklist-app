@@ -55,6 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
         'screen': const Cessna172ChecklistScreen(),
       },
       {
+        'title': 'Piper PA-28',
+        'image': 'assets/images/piper.jpeg',
+        'screen': const PiperPA28ChecklistScreen(),
+      },
+      {
         'title': 'Cirrus SR20',
         'image': 'assets/images/cirrussr20.jpeg',
         'screen': null,
@@ -73,11 +78,6 @@ class _HomeScreenState extends State<HomeScreen> {
         'title': 'Diamond DA42',
         'image': 'assets/images/diamondda42.jpeg',
         'screen': null,
-      },
-      {
-        'title': 'Piper PA-28',
-        'image': 'assets/images/piper.jpeg',
-        'screen': const PiperPA28ChecklistScreen(),
       },
       {
         'title': 'Tecnam P2002',
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () => Scaffold.of(ctx).openDrawer(),
           ),
         ),
-        title: const Text("✈ ClearedToGo"),
+        title: const Text("ClearedToGo"),
         centerTitle: true,
         actions: [
           Padding(
@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
     children: [
       const SizedBox(height: 10),
       const Text(
-        "Select Your Aircraft",
+        "Select Aircraft",
         style: TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
