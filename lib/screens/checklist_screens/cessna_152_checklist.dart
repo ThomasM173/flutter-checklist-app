@@ -370,7 +370,7 @@ void toggleWeatherCondition(String key) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.grey[100],
       appBar: AppBar(
         title: Text("Cessna 152 - Pre-Flight Checklist"),
         backgroundColor: Colors.red,
@@ -396,12 +396,12 @@ void toggleWeatherCondition(String key) {
               Expanded(
                 child: TextField(
                   controller: _airportController,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     hintText: 'Enter ICAO (e.g. EGLL)',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Colors.black),
                     filled: true,
-                    fillColor: Colors.grey[800],
+                    fillColor: Colors.grey,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none),
@@ -411,7 +411,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.cloud, color: Colors.white),
+  icon: Icon(Icons.cloud, color: Colors.grey[700]),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -422,7 +422,7 @@ void toggleWeatherCondition(String key) {
 
                   SizedBox(height: 2),
                   Text("Search",
-                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                      style: TextStyle(color: Colors.grey[700], fontSize: 12)),
                 ],
               )
             ]),
@@ -446,7 +446,7 @@ void toggleWeatherCondition(String key) {
             ),
             SizedBox(height: 14),
             Text(getCompletionProgress(),
-                style: TextStyle(color: Colors.white70, fontSize: 14)),
+                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
             SizedBox(height: 14),
             ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
                   key: ValueKey(entry.key),
@@ -490,10 +490,12 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
         Container(
           decoration: BoxDecoration(
             color: isActive ? Colors.amber.shade700 : Colors.blueGrey.shade700,
-            shape: BoxShape.circle,
+            shape: BoxShape.rectangle,
+            border: Border.all(color: Colors.black, width: 1.5),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: Colors.black45,
+                color: Colors.grey,
                 blurRadius: 4,
                 offset: Offset(1, 2),
               ),

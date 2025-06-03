@@ -152,6 +152,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
               child: Container(
                 decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
                   color: Colors.white,
                   border: Border.all(color: Colors.black, width: 1.5),
                   borderRadius: BorderRadius.circular(16),

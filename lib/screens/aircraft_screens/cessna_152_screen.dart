@@ -43,7 +43,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Cessna 152"),
         backgroundColor: Colors.redAccent,
@@ -76,14 +76,14 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
 
                   // Real-time fetched data
                   Card(
-                    color: Colors.grey[850],
+                    color: Colors.white,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -93,7 +93,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                       child: Text(
                         aircraftInfo,
                         style: const TextStyle(
-                          color: Colors.white70,
+                          color: Colors.black,
                           fontSize: 16,
                         ),
                       ),

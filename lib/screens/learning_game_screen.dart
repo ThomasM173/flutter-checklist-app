@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/bottom_nav_bar.dart';
+import '../screens/home_screen.dart';
 
 // Import all emergency game screens
 import 'aircraft_screens/cessna_172_emergency_game.dart';
@@ -47,8 +48,14 @@ class LearningGameScreen extends StatelessWidget {
             const Spacer(),
 
             ElevatedButton.icon(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const HomeScreen()),
+                  (route) => false, // removes all previous routes
+                );
+              },
+              icon: const Icon(Icons.home),
               label: const Text("Return to Home"),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,

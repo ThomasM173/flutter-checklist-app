@@ -1,199 +1,90 @@
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_EFATRA.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_EFATRNA.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_EFDTR.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_ElecFire.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_FDS.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_FIF.dart';
+import 'package:flutter_application_1/screens/game_screens/cessna_152_PFL.dart';
 
 class Cessna152EmergencyGame extends StatefulWidget {
   const Cessna152EmergencyGame({super.key});
 
   @override
-  _Cessna152EmergencyGameState createState() => _Cessna152EmergencyGameState();
+  State<Cessna152EmergencyGame> createState() => _Cessna152EmergencyGameState();
 }
 
 class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
-  final List<Map<String, dynamic>> allQuestions = [
-    {
-      "question": "First action for engine failure during takeoff roll:",
-      "correct": "Throttle – IDLE",
-      "options": ["Throttle – IDLE", "Flaps – UP", "Master Switch – OFF"]
-    },
-    {
-      "question": "Airspeed for engine failure in flight:",
-      "correct": "60 KTS",
-      "options": ["85 KTS", "60 KTS", "70 KTS"]
-    },
-    {
-      "question": "Mixture setting for engine fire in flight:",
-      "correct": "Mixture – CUT OFF",
-      "options": ["Mixture – RICH", "Mixture – CUT OFF", "Throttle – IDLE"]
-    },
-    {
-      "question": "Final step before ditching:",
-      "correct": "Life Vests – INFLATE",
-      "options": ["Touchdown – LEVEL ATTITUDE", "Life Vests – INFLATE", "Doors – UNLATCH"]
-    },
-    {
-      "question": "If low voltage light remains on:",
-      "correct": "Alternator – OFF",
-      "options": ["Transponder – STBY", "Alternator – OFF", "Flaps – UP"]
-    },
-    {
-      "question": "Speed for emergency landing with flaps:",
-      "correct": "60 KTS",
-      "options": ["60 KTS", "55 KTS", "65 KTS"]
-    },
-    {
-      "question": "Initial fire response in flight:",
-      "correct": "Master Switch – OFF",
-      "options": ["Master Switch – OFF", "Cabin Heat – ON", "Radios – OFF"]
-    },
-    {
-      "question": "What to do with ignition switch if restart fails:",
-      "correct": "OFF",
-      "options": ["BOTH", "START", "OFF"]
-    },
-    {
-      "question": "Cabin fire – first action:",
-      "correct": "Master Switch – OFF",
-      "options": ["Cabin Heat – OFF", "Master Switch – OFF", "Flaps – AS REQUIRED"]
-    },
-  ];
-
-  late List<Map<String, dynamic>> questions;
-  int currentIndex = 0;
-  int score = 0;
-  bool answered = false;
-  String? selectedAnswer;
-
-  @override
-  void initState() {
-    super.initState();
-    questions = List.from(allQuestions)..shuffle(Random());
-  }
-
-  void checkAnswer(String answer) {
-    setState(() {
-      selectedAnswer = answer;
-      answered = true;
-      if (answer == questions[currentIndex]["correct"]) {
-        score++;
-      }
-    });
-  }
-
-  void nextQuestion() {
-    setState(() {
-      if (currentIndex < questions.length - 1) {
-        currentIndex++;
-        answered = false;
-        selectedAnswer = null;
-      } else {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
-          ),
-        );
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final question = questions[currentIndex];
+    final emergencyOptions = [
+      {
+        'title': 'Engine Failure In Flight / PFL',
+        'screen': const Cessna152PFL(),
+      },
+      {
+        'title': 'Engine Failure After Takeoff (RWY Available)',
+        'screen': const Cessna152EFATRA(),
+      },
+      {
+        'title': 'Engine Failure After Takeoff (RWY NOT Available)',
+        'screen': const Cessna152EFATRNA(),
+      },
+      {
+        'title': 'Engine Failure During Takeoff Roll',
+        'screen': const Cessna152EFDTR(),
+      },
+      {
+        'title': 'Electrical Fire',
+        'screen': const Cessna152ElecFire(),
+      },
+      {
+        'title': 'Fire During Start',
+        'screen': const Cessna152FDS(),
+      },
+      {
+        'title': 'Fire In Flight',
+        'screen': const Cessna152FIF(),
+      },
+    ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[900],
       appBar: AppBar(
-        title: Text("🚨 Emergency Learning Game"),
+        title: const Text('Select Emergency Game Scenario'),
         backgroundColor: Colors.orange,
+        elevation: 6,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Question ${currentIndex + 1} of ${questions.length}",
-              style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-            SizedBox(height: 10),
-            Text(
-              question['question'],
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-            SizedBox(height: 20),
-            ...question["options"].map<Widget>((option) {
-              final isCorrect = option == question["correct"];
-              final isSelected = option == selectedAnswer;
-              Color tileColor = Colors.grey[850]!;
-              if (answered) {
-                if (isSelected && isCorrect) {
-                  tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
-              }
-              return Card(
-                color: tileColor,
-                child: ListTile(
-                  title: Text(option, style: TextStyle(color: Colors.white)),
-                  onTap: () => answered ? null : checkAnswer(option),
+        child: GridView.count(
+          crossAxisCount: 3,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          children: emergencyOptions.map((option) {
+            return ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.orangeAccent,
+                foregroundColor: Colors.white,
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              );
-            }).toList(),
-            SizedBox(height: 20),
-            if (answered)
-              Center(
-                child: ElevatedButton(
-                  onPressed: nextQuestion,
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: Text("Next"),
-                ),
-              )
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class GameOverScreen extends StatelessWidget {
-  final int score;
-  final int total;
-
-  const GameOverScreen({super.key, required this.score, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[900],
-      appBar: AppBar(
-        title: Text("Game Over"),
-        backgroundColor: Colors.orange,
-      ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text("✅ You scored $score out of $total!",
-                  style: TextStyle(color: Colors.white, fontSize: 24)),
-              SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 Play Again", style: TextStyle(color: Colors.white)),
               ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to Home", style: TextStyle(color: Colors.white)),
-              )
-            ],
-          ),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => option['screen'] as Widget),
+                );
+              },
+              child: Center(
+                child: Text(
+                  option['title'] as String,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            );
+          }).toList(),
         ),
       ),
     );
