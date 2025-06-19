@@ -13,7 +13,7 @@ class AppDrawer extends StatelessWidget {
   const AppDrawer({super.key, required this.currentIndex});
 
   void _navigate(BuildContext context, Widget page) {
-    Navigator.pop(context); // close drawer
+    Navigator.pop(context); // Close drawer
     Navigator.push(
       context,
       MaterialPageRoute(builder: (_) => page),
@@ -37,27 +37,34 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           ListTile(
+            leading: const Icon(Icons.home, color: Colors.white),
+            title: const Text('Home', style: TextStyle(color: Colors.white)),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.map, color: Colors.white),
-            title:
-                const Text('Contact Us', style: TextStyle(color: Colors.white)),
+            title: const Text('Contact Us', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const MapScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.info, color: Colors.white),
-            title:
-                const Text('About Us', style: TextStyle(color: Colors.white)),
+            title: const Text('About Us', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const AboutUsScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.white),
-            title: const Text('Privacy Policy',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('Privacy Policy', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const PrivacyPolicyScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.gavel, color: Colors.white),
-            title: const Text('CAA Compliance',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('CAA Compliance', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const CAAComplianceScreen()),
           ),
           ListTile(
@@ -67,9 +74,14 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.update, color: Colors.white),
-            title: const Text('Recent Updates',
-                style: TextStyle(color: Colors.white)),
+            title: const Text('Recent Updates', style: TextStyle(color: Colors.white)),
             onTap: () => _navigate(context, const RecentUpdatesScreen()),
+          ),
+          const Divider(color: Colors.white54),
+          ListTile(
+            leading: const Icon(Icons.close, color: Colors.white),
+            title: const Text('Close Menu', style: TextStyle(color: Colors.white)),
+            onTap: () => Navigator.pop(context),
           ),
         ],
       ),
