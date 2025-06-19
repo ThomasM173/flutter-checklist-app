@@ -123,7 +123,7 @@ class _Cessna152EFDTR extends State<Cessna152EFDTR> {
               return Card(
                 color: tileColor,
                 child: ListTile(
-                  title: Text(option, style: TextStyle(color: Colors.white)),
+                  title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
               );

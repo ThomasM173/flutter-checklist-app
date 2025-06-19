@@ -165,7 +165,7 @@ class _Cessna152PFL extends State<Cessna152PFL> {
               return Card(
                 color: tileColor,
                 child: ListTile(
-                  title: Text(option, style: TextStyle(color: Colors.white)),
+                  title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
               );

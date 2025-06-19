@@ -130,7 +130,7 @@ class _Cessna152FDS extends State<Cessna152FDS> {
               return Card(
                 color: tileColor,
                 child: ListTile(
-                  title: Text(option, style: TextStyle(color: Colors.white)),
+                  title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
               );
