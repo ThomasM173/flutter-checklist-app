@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/home_screen.dart';
-import 'screens/map_screen.dart';
+import 'screens/contact_us.dart';
 import 'screens/flight_conditions_screen.dart';
 import 'screens/learning_game_screen.dart';
 import 'screens/aircraft_screens/cessna_172_screen.dart';
@@ -13,7 +13,7 @@ import 'screens/checklist_screens/cessna_152_checklist.dart';
 
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => HomeScreen(),
-  '/map': (context) => MapScreen(),
+  '/map': (context) => ContactUs(),
   '/flight_conditions': (context) => FlightConditionsScreen(),
   '/learning_game': (context) => LearningGameScreen(), 
   '/cessna_172': (context) => Cessna172Screen(),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/map_screen.dart';
+import 'package:flutter_application_1/screens/contact_us.dart';
 import 'package:flutter_application_1/screens/about_us.dart';
 import 'package:flutter_application_1/screens/privacy_policy.dart';
 import 'package:flutter_application_1/screens/caa_compliance_screen.dart';
@@ -50,7 +50,7 @@ class AppDrawer extends StatelessWidget {
           ListTile(
             leading: const Icon(Icons.map, color: Colors.white),
             title: const Text('Contact Us', style: TextStyle(color: Colors.white)),
-            onTap: () => _navigate(context, const MapScreen()),
+            onTap: () => _navigate(context, const ContactUs()),
           ),
           ListTile(
             leading: const Icon(Icons.info, color: Colors.white),

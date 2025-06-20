@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/map_screen.dart';
+import 'package:flutter_application_1/screens/contact_us.dart';
 import 'package:flutter_application_1/screens/flight_conditions_screen.dart';
 import 'package:flutter_application_1/screens/learning_game_screen.dart';
 import 'package:flutter_application_1/screens/checklist_screens/cessna_172_checklist.dart';

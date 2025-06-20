@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class MapScreen extends StatelessWidget {
-  const MapScreen({super.key});
+class ContactUs extends StatelessWidget {
+  const ContactUs({super.key});
 
   // Email launcher
   void _launchEmail() async {
