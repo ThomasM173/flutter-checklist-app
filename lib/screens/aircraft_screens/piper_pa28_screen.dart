@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '/utils/web_scraper.dart'; // Utility to fetch real-time data
 import '/widget/bottom_nav_bar.dart';
 import 'package:flutter_application_1/screens/checklist_screens/piper_pa28_checklist.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_emergency_screen.dart';
@@ -16,19 +15,6 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
   String aircraftInfo = "Loading aircraft details...";
 
 
-  @override
-  void initState() {
-    super.initState();
-    fetchAircraftData();
-  }
-
-  void fetchAircraftData() async {
-    String data = await WebScraper.getCessnaData(); // Fetches website data
-    if (!mounted) return;
-    setState(() {
-      aircraftInfo = data;
-    });
-  }
 
   Future<void> _launchMoreInfo() async {
     const url = 'https://en.wikipedia.org/wiki/PiperPA28';

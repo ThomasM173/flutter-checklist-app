@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/contact_us.dart';
 import 'package:flutter_application_1/screens/flight_conditions_screen.dart';
 import 'package:flutter_application_1/screens/learning_game_screen.dart';
 import 'package:flutter_application_1/screens/checklist_screens/cessna_172_checklist.dart';
 import 'package:flutter_application_1/screens/checklist_screens/cessna_152_checklist.dart';
 import 'package:flutter_application_1/screens/checklist_screens/piper_pa28_checklist.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_screen.dart';
 import '../widget/app_drawer.dart';
-import '../widget/bottom_nav_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -58,36 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
         'image': 'assets/images/piper.jpeg',
         'screen': const PiperPA28ChecklistScreen(),
       },
-      {
-        'title': 'Cirrus SR20',
-        'image': 'assets/images/cirrussr20.jpeg',
-        'screen': null,
-      },
-      {
-        'title': 'Cirrus SR22',
-        'image': 'assets/images/cirrussr22.jpeg',
-        'screen': null,
-      },
-      {
-        'title': 'Diamond DA40',
-        'image': 'assets/images/diamondda40.jpeg',
-        'screen': null,
-      },
-      {
-        'title': 'Diamond DA42',
-        'image': 'assets/images/diamondda42.jpeg',
-        'screen': null,
-      },
-      {
-        'title': 'Tecnam P2002',
-        'image': 'assets/images/tecnamp2002.jpeg',
-        'screen': null,
-      },
-      {
-        'title': 'Tecnam P2010',
-        'image': 'assets/images/tecnamp2010.jpeg',
-        'screen': null,
-      },
     ];
 
     return Scaffold(
@@ -109,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 9),
             child: Image.asset(
-              'assets/images/logo.jpg',
+              'assets/images/Newlogo.pg',
               width: 50,
               height: 50,
             ),
@@ -118,82 +85,76 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
 
       body: Padding(
-  padding: const EdgeInsets.all(16.0),
-  child: Column(
-    children: [
-      const SizedBox(height: 10),
-      const Text(
-        "Select Aircraft",
-        style: TextStyle(
-          fontSize: 24,
-          fontWeight: FontWeight.bold,
-          color: Colors.black87,
-        ),
-      ),
-      const SizedBox(height: 10),
-      Expanded(
-        child: GridView.count(
-          crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 1.1,
-          children: aircraftList.map((aircraft) {
-            return GestureDetector(
-              onTap: aircraft['screen'] != null
-                  ? () => Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (_) => aircraft['screen']),
-                      )
-                  : () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Coming soon!')),
-                      );
-                    },
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.rectangle,
-                  color: Colors.white,
-                  border: Border.all(color: Colors.black, width: 1.5),
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.shade400,
-                      blurRadius: 5,
-                      offset: const Offset(0, 3),
-                    ),
-                  ],
-                ),
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Expanded(
-                      child: Image.asset(
-                        aircraft['image'],
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      aircraft['title'],
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 10),
+            const Text(
+              "Select Aircraft",
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
               ),
-            );
-          }).toList(),
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 1, // one column
+                mainAxisSpacing: 16,
+                childAspectRatio: 2.2, // larger boxes
+                children: aircraftList.map((aircraft) {
+                  return GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => aircraft['screen']),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        color: Colors.white,
+                        border: Border.all(color: Colors.black, width: 1.5),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.shade400,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      padding: const EdgeInsets.all(12),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            flex: 2,
+                            child: Image.asset(
+                              aircraft['image'],
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              aircraft['title'],
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+          ],
         ),
       ),
-    ],
-  ),
-),
-
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,

@@ -5,7 +5,6 @@ import 'package:flutter_application_1/screens/privacy_policy.dart';
 import 'package:flutter_application_1/screens/caa_compliance_screen.dart';
 import 'package:flutter_application_1/screens/faq_screen.dart';
 import 'package:flutter_application_1/screens/recent_updates_screen.dart';
-import '../widget/bottom_nav_bar.dart';
 import '../screens/home_screen.dart';
 
 class AppDrawer extends StatelessWidget {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '/utils/web_scraper.dart'; // Utility to fetch real-time data
 import '/widget/bottom_nav_bar.dart';
 
 class Cessna172Screen extends StatefulWidget {
@@ -13,19 +12,7 @@ class Cessna172Screen extends StatefulWidget {
 class _Cessna172ScreenState extends State<Cessna172Screen> {
   String aircraftInfo = "Loading aircraft details...";
 
-  @override
-  void initState() {
-    super.initState();
-    fetchAircraftData();
-  }
-
-  void fetchAircraftData() async {
-    String data = await WebScraper.getCessnaData(); // Fetches website data
-    if (!mounted) return;
-    setState(() {
-      aircraftInfo = data;
-    });
-  }
+ 
 
   Future<void> _launchMoreInfo() async {
     const url = 'https://en.wikipedia.org/wiki/Cessna_172';
