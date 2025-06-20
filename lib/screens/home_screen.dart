@@ -6,7 +6,6 @@ import 'package:flutter_application_1/screens/checklist_screens/cessna_172_check
 import 'package:flutter_application_1/screens/checklist_screens/cessna_152_checklist.dart';
 import 'package:flutter_application_1/screens/checklist_screens/piper_pa28_checklist.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/diamond_da40_screen.dart';
 import '../widget/app_drawer.dart';
 import '../widget/bottom_nav_bar.dart';
 
@@ -72,7 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'title': 'Diamond DA40',
         'image': 'assets/images/diamondda40.jpeg',
-        'screen': const DiamondDA40Screen(),
+        'screen': null,
       },
       {
         'title': 'Diamond DA42',

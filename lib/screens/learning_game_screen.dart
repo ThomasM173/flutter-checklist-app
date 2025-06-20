@@ -6,12 +6,6 @@ import '../screens/home_screen.dart';
 import 'aircraft_screens/cessna_172_emergency_game.dart';
 import 'aircraft_screens/cessna_152_emergency_game.dart';
 import 'aircraft_screens/piper_pa28_emergency_game.dart';
-import 'aircraft_screens/diamond_da40_emergency_game.dart';
-import 'aircraft_screens/diamond_da42_emergency_game.dart';
-import 'aircraft_screens/cirrus_sr20_emergency_game.dart';
-import 'aircraft_screens/cirrus_sr22_emergency_game.dart';
-import 'aircraft_screens/tecnam_p2002_emergency_game.dart';
-import 'aircraft_screens/tecnam_p2010_emergency_game.dart';
 
 class LearningGameScreen extends StatelessWidget {
   const LearningGameScreen({super.key});
@@ -38,12 +32,6 @@ class LearningGameScreen extends StatelessWidget {
             _buildGameButton(context, "Cessna 172", Cessna172EmergencyGame()),
             _buildGameButton(context, "Cessna 152", Cessna152EmergencyGame()),
             _buildGameButton(context, "Piper PA-28", PiperPA28EmergencyGame()),
-            _buildGameButton(context, "Diamond DA40", CirrusSr22EmergencyGame()),
-            _buildGameButton(context, "Diamond DA42", CirrusSr22EmergencyGame()),
-            _buildGameButton(context, "Cirrus SR20", CirrusSr20EmergencyGame()),
-            _buildGameButton(context, "Cirrus SR22", CirrusSr22EmergencyGame()),
-            _buildGameButton(context, "Tecnam P2002", CirrusSr22EmergencyGame()),
-            _buildGameButton(context, "Tecnam P2010", CirrusSr22EmergencyGame()),
 
             const Spacer(),
 
