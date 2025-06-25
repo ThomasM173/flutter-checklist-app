@@ -85,8 +85,8 @@ void initState() {
   super.initState();
   checklistSections = {
     "1️⃣ Cabin Checks": {
-      "Control Lock                     – REMOVE.": false,
-      "Ignition Switch                  – OFF.": false,
+      "Control Lock – REMOVE.": false,
+      "Ignition Switch – OFF.": false,
       "Master Switch                    – ON.": false,
       "Flaps                            – FULL (30°).": false,
       "Fuel Quantity Indicators         – CHECK.": false,
@@ -411,7 +411,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.cloud, color: Colors.grey[700]),
+  icon: Icon(Icons.search, color: Colors.grey[700]),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -422,7 +422,7 @@ void toggleWeatherCondition(String key) {
 
                   SizedBox(height: 2),
                   Text("Search",
-                      style: TextStyle(color: Colors.grey[700], fontSize: 12)),
+                      style: TextStyle(color: Colors.black, fontSize: 12)),
                 ],
               )
             ]),
@@ -446,7 +446,7 @@ void toggleWeatherCondition(String key) {
             ),
             SizedBox(height: 14),
             Text(getCompletionProgress(),
-                style: TextStyle(color: Colors.grey[400], fontSize: 14)),
+                style: TextStyle(color: Colors.black, fontSize: 14)),
             SizedBox(height: 14),
             ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
                   key: ValueKey(entry.key),
@@ -505,7 +505,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           child: Icon(icon, color: Colors.white, size: 26),
         ),
         SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
+        Text(label, style: TextStyle(color: Colors.black, fontSize: 12)),
       ],
     ),
   );
@@ -534,7 +534,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           ),
         ),
         SizedBox(height: 8),
-        Text(label, style: TextStyle(color: Colors.white)),
+        Text(label, style: TextStyle(color: Colors.black)),
       ],
     );
   }

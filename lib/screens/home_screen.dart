@@ -76,7 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(right: 9),
             child: Image.asset(
-              'assets/images/Newlogo.pg',
+              'assets/images/Newlogo.png',
               width: 50,
               height: 50,
             ),
