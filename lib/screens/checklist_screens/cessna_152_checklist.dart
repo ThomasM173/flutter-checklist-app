@@ -84,52 +84,91 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
 void initState() {
   super.initState();
   checklistSections = {
-    "1️⃣ Cabin Checks": {
-      "Control Lock – REMOVE.": false,
-      "Ignition Switch – OFF.": false,
-      "Master Switch                    – ON.": false,
-      "Flaps                            – FULL (30°).": false,
-      "Fuel Quantity Indicators         – CHECK.": false,
-      "Internal / Exterior Lights       – ON/CHECK/OFF.": false,
-      "Pitot Tube Heat                  – ON/CHECK/OFF.": false,
-      "Master Switch                    – OFF.": false,
-      "Fuel Shutoff Valve               – ON.": false,
-      "Fire Extinguisher/First Aid Kit  – GREEN/IN PLACE.": false,
+    "1️⃣ CHECK A (ONLY FIRST FLIGHT OF DAY)": {
+      "Control Lock                      – REMOVE.": false,
+      "Pitot Cover                       – REMOVE.": false,
+      "First Aid Kit                    – CHECK.": false,
+      "Fire Extinguisher                – CHECK.": false,
+      "Ignition Switch                  – OFF.": false,
+      "Fuel Shutoff Valve                – ON.": false,
+      "Master Switch                     – ON.": false,
+      "Flaps                               – FULL (30°).": false,
+      "Navigation Light                 – ON.": false,
+      "Anti-Collision Light                – ON.": false,
+      "Pitot Heater                      – ON.": false,
+      "Landing Light                     – ON.": false,
+      "External Check (Lights, Pitot Heat, Stall Warner) – ON.": false,
+      "All Electrics                      – OFF.": false,
+      "Master Switch                     – OFF.": false,
+      "Fuel Drains                        – CHECK.": false,
+      "Trim, Check Full Range            – ON.": false,
+
     },
-    "2️⃣ Empennage": {
-      "Rudder Gust Lock                 – REMOVE.": false,
-      "Tail Tie-Down                    – DISCONNECT.": false,
-      "Control Surfaces                 – CHECK.": false,
+    "2️⃣ TRANSIT CHECK (Check A Complete)": {
+      "Control Lock                      – REMOVE.": false,
+      "Pitot Cover                       – REMOVE.": false,
+      "Ignition Switch                  – OFF.": false,
+      "Master Switch                     – ON.": false,
+      "Fuel Drains                        – CHECK.": false,
+      "Fuel Shutoff Valve                – ON.": false,
+      "Master Switch                     – OFF.": false,
+
     },
-    "3️⃣ Right Wing": {
-      "Wing Tie-Down                    – DISCONNECT.": false,
-      "Main Wheel Tire                  – CHECK.": false,
-      "Fuel Drain & Quantity            – CHECK.": false,
-      "Aileron & Flap                   – CHECK.": false,
+    "3️⃣ PORT/LEFT WING": {
+      "Flap                               – CONDITION, HINGES.": false,
+      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
+      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
+      "Wing Tip and Navigation Light    – SECURE.": false,
+      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
+      "Stall Warner                     – CHECK CLEAR.": false,
+      "Pitot Head                       – CHECK CLEAR.": false,
+      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
+      "Fuel Drain                        – CHECK FOR LEAKS.": false,
+      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
     },
-    "4️⃣ Nose": {
+    "4️⃣ FRONT FUSELAGE & ENGINE": {
+      "Windscreen                        – CLEAR.": false,
+      "Static Source Opening            – CHECK.": false,
+      "Engine Intakes                    – CLEAR, ALTERNATOR BELT SECURE": false,
+      "Propeller                         – CONDITION, SECURE": false,
+      "Nose Wheel Strut and Tire        – CHECK.": false,
+      "Engine                            – NO OIL LEAKES": false,
       "Engine Oil Level                 – CHECK (MIN. 4).": false,
       "Fuel Drain                       – CHECK.": false,
-      "Propeller, Spinner, Air Filter   – CHECK.": false,
-      "Nose Wheel Strut and Tire        – CHECK.": false,
-      "Static Source                    – CHECK.": false,
+
     },
-    "5️⃣ Left Wing": {
-      "Pitot Tube Cover                 – CONFIRM REMOVED.": false,
-      "Stall Warning & Fuel Tank        – CHECK.": false,
-      "Wing Tie-Down                    – DISCONNECT.": false,
-      "Main Wheel Tire                  – CHECK.": false,
-      "Fuel Drain & Quantity            – CHECK.": false,
-      "Aileron & Flap                   – CHECK.": false,
+    "5️⃣ STARBOARD/RIGHT WING": {
+      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
+      "Fuel Drain                        – CHECK FOR LEAKS.": false,
+      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
+      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
+      "Wing Tip and Navigation Light    – SECURE.": false,
+      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
+      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
+      "Flap                               – CONDITION, HINGES.": false,
+
     },
-    "6️⃣ Cockpit Preparation": {
-      "Preflight Inspection             – COMPLETE.": false,
-      "Seats, Belts, Shoulder Harness   – ADJUST & LOCK.": false,
+    "6️⃣ REAR FUSELAGE & TAIL": {
+      "Rear Fuselage Skin              – CONDITION.": false,
+      "Radio Aerials                   – SECURE.": false,
+      "Elevator & Trim Tab             – CONDITION, FULL/FREE MOVEMENT, TAB LOCK NUT SECURE": false,
+      "Tail Skid                        – CONDITION": false,
+      "Fin & Rudder                    – CONDITION, FULL/FREE MOVEMENT, SECURE": false,
+      "Beacon & Navigation Light      – SECURE": false,
+
+    },
+    "6️⃣ INTERNAL": {
+      "Passenger Brief                  – COMPLETE.": false,
+      "Cabin Doors                      – CLOSED": false,
+      "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
+      "Headset                          – CONNECTED.": false,
+      "Trimmer                          – NORMAL RANGE, SET TAKEOFF": false,
+      "Circuit Breakers                 – ALL IN.": false,
       "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
       "Radios & Electrical Equipment    – OFF.": false,
-      "Brakes                           – CHECKED (PRESS).": false,
-      "Circuit Breakers                 – ALL IN.": false,
       "Flight Controls                  – FREE & CORRECT.": false,
+      "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
+
     },
     "7️⃣ Before Engine Start": {
       "Battery Switch                   – ON.": false,
@@ -370,10 +409,10 @@ void toggleWeatherCondition(String key) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Cessna 152 - Pre-Flight Checklist"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.purple,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
@@ -383,7 +422,7 @@ void toggleWeatherCondition(String key) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -396,10 +435,10 @@ void toggleWeatherCondition(String key) {
               Expanded(
                 child: TextField(
                   controller: _airportController,
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Enter ICAO (e.g. EGLL)',
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.grey),
                     filled: true,
                     fillColor: Colors.grey,
                     border: OutlineInputBorder(
@@ -557,11 +596,11 @@ class ChecklistExpansionTile extends StatelessWidget {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[850],
+        color: Colors.grey[600],
         margin: EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
-        shadowColor: Colors.black54,
+        shadowColor: Colors.grey[600],
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
@@ -610,7 +649,7 @@ class ChecklistExpansionTile extends StatelessWidget {
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
-                  activeColor: Colors.red,
+                  activeColor: Colors.green,
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               );
