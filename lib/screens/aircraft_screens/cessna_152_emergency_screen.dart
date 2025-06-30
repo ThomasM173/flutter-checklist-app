@@ -28,7 +28,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Fuel Shutoff Valve         – OFF",
   ],
   "🛫 Engine Failure in Flight": [
-    "Airspeed                   – 60 KTS",
+    "Airspeed                   – 70 KTS",
     "Best Field                 – CHOOSE",
     "Fuel Shutoff Valve         – ON",
     "Mixture                    – RICH",
@@ -37,20 +37,20 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Ignition Switch            – BOTH / START",
   ],
   "⛔ If Restart Unsuccessful": [
+    "MAYDAY CALL & TRANSPONDER  – TRANSMIT & 7700",
     "Throttle                   – IDLE",
     "Mixture                    – CUT OFF",
-    "Ignition Switch            – OFF",
     "Fuel Shutoff Valve         – OFF",
-    "Radio (MAYDAY)             – TRANSMIT",
-    "Flaps                      – AS REQUIRED",
+    "Ignition Switch            – OFF",
+    "Flaps                      – AS REQUIRED - 65KTS",
     "Doors                      – UNLATCH",
   ],
   "🔥 Engine Fire During Start": [
-    "Cranking                   – CONTINUE",
+    "Starter                    – CONTINUE TO CRANK",
     "If Engine Starts: Power    – 1700 RPM → Engine – SHUTDOWN",
     "If Engine doesn't Start: Throttle – FULL OPEN",
     "Mixture                    – CUT OFF",
-    "Cranking                   – CONTINUE",
+    "Fuel Selector              – OFF",
     "Fire Extinguisher          – OBTAIN",
     "Engine                     – SECURE (Ignition, Master, Fuel OFF)",
     "Fire                       – EXTINGUISH",
@@ -60,7 +60,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Fuel Shutoff Valve         – OFF",
     "Master Switch              – OFF",
     "Cabin Heat & Air           – OFF",
-    "Airspeed                   – 85 KTS",
+    "Airspeed                   – 70 KTS",
     "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
   ],
   "⚡ Electrical Fire In Flight": [
@@ -83,15 +83,6 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Navigation Light           – OFF",
     "Strobe Light               – OFF",
     "Pitot Heat                 – OFF",
-  ],
-  "✈️ Emergency Landing Without Engine Power": [
-    "Airspeed                   – 65 KTS (Flaps UP), 60 KTS (Flaps 30°)",
-    "Mixture                    – CUT OFF",
-    "Fuel Shutoff Valve         – OFF",
-    "Ignition Switch            – OFF",
-    "Flaps                      – AS REQUIRED",
-    "Master Switch              – OFF",
-    "Doors (Prior Touchdown)    – UNLATCH",
   ],
   "🟡 Precautionary Landing With Engine Power": [
     "Airspeed                   – 60 KTS",
@@ -178,7 +169,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text("Cessna 152 – Emergency Procedures"),
         backgroundColor: Colors.red,
@@ -213,7 +204,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
             final checked = _checkedItems[title] ?? <int>{};
 
             return Card(
-              color: Colors.grey[850],
+              color: Colors.grey[600],
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               margin: const EdgeInsets.symmetric(vertical: 8),
               child: ExpansionTile(

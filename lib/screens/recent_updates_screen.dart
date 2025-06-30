@@ -21,7 +21,7 @@ class RecentUpdatesScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Recent Updates'),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.purple,
       ),
       drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),

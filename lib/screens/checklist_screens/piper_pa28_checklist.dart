@@ -421,10 +421,10 @@ void toggleWeatherCondition(String key) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Piper PA28 - Pre-Flight Checklist"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.purple,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
@@ -434,7 +434,7 @@ void toggleWeatherCondition(String key) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -452,7 +452,7 @@ void toggleWeatherCondition(String key) {
                     hintText: 'Enter ICAO (e.g. EGLL)',
                     hintStyle: TextStyle(color: Colors.grey),
                     filled: true,
-                    fillColor: Colors.grey[800],
+                    fillColor: Colors.grey,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none),
@@ -462,7 +462,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.cloud, color: Colors.white),
+  icon: Icon(Icons.cloud, color: Colors.grey[700]),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -473,7 +473,7 @@ void toggleWeatherCondition(String key) {
 
                   SizedBox(height: 2),
                   Text("Search",
-                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                      style: TextStyle(color: Colors.black, fontSize: 12)),
                 ],
               )
             ]),
@@ -497,7 +497,7 @@ void toggleWeatherCondition(String key) {
             ),
             SizedBox(height: 14),
             Text(getCompletionProgress(),
-                style: TextStyle(color: Colors.white70, fontSize: 14)),
+                style: TextStyle(color: Colors.black, fontSize: 14)),
             SizedBox(height: 14),
             ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
                   key: ValueKey(entry.key),
@@ -544,7 +544,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black45,
+                color: Colors.grey,
                 blurRadius: 4,
                 offset: Offset(1, 2),
               ),
@@ -554,7 +554,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           child: Icon(icon, color: Colors.white, size: 26),
         ),
         SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
+        Text(label, style: TextStyle(color: Colors.black, fontSize: 12)),
       ],
     ),
   );
@@ -583,7 +583,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           ),
         ),
         SizedBox(height: 8),
-        Text(label, style: TextStyle(color: Colors.white)),
+        Text(label, style: TextStyle(color: Colors.black)),
       ],
     );
   }
@@ -606,11 +606,11 @@ class ChecklistExpansionTile extends StatelessWidget {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[850],
+        color: Colors.grey[600],
         margin: EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
-        shadowColor: Colors.black54,
+        shadowColor: Colors.grey[600],
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
@@ -659,7 +659,7 @@ class ChecklistExpansionTile extends StatelessWidget {
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
-                  activeColor: Colors.red,
+                  activeColor: Colors.green,
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               );

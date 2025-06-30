@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
       drawer: const AppDrawer(currentIndex: 0),
 
       appBar: AppBar(
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.purple,
         elevation: 6,
         leading: Builder(
           builder: (ctx) => IconButton(

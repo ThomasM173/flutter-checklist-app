@@ -81,153 +81,214 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
   };
 
   @override
-  void initState() {
-    super.initState();
-    checklistSections = {
-      "1️⃣ Cabin Checks": {
-      "Control Lock                     – REMOVE.": false,
+void initState() {
+  super.initState();
+  checklistSections = {
+    "1️⃣ CHECK A (ONLY FIRST FLIGHT OF DAY)": {
+      "Control Lock                      – REMOVE.": false,
+      "Pitot Cover                       – REMOVE.": false,
+      "First Aid Kit                    – CHECK.": false,
+      "Fire Extinguisher                – CHECK.": false,
+      "Magneto Switch                  – OFF.": false,
+      "Fuel Shutoff Valve                – BOTH.": false,
+      "Master Switch                     – ON.": false,
+      "Flaps                               – FULL (40°).": false,
+      "Navigation Light                 – ON.": false,
+      "Anti-Collision Light                – ON.": false,
+      "Pitot Heater                      – ON.": false,
+      "Landing Light                     – ON.": false,
+      "External Check (Lights, Pitot Heat, Stall Warner) – ON.": false,
+      "All Electrics                      – OFF.": false,
+      "Master Switch                     – OFF.": false,
+      "Fuel Drains                        – CHECK.": false,
+      "Trim, Check Full Range            – ON.": false,
+
+    },
+    "2️⃣ TRANSIT CHECK (Check A Complete)": {
+      "Control Lock                      – REMOVE.": false,
+      "Pitot Cover                       – REMOVE.": false,
       "Ignition Switch                  – OFF.": false,
-      "Master Switch                    – ON.": false,
-      "Flaps                            – FULL (30°).": false,
-      "Fuel Quantity Indicators         – CHECK.": false,
-      "Internal / Exterior Lights       – ON/CHECK/OFF.": false,
-      "Pitot Tube Heat                  – ON/CHECK/OFF.": false,
-      "Master Switch                    – OFF.": false,
-      "Fuel Shutoff Valve               – ON.": false,
-      "Fire Extinguisher/First Aid Kit  – GREEN/IN PLACE.": false,
+      "Master Switch                     – ON.": false,
+      "Fuel Drains                        – CHECK.": false,
+      "Fuel Shutoff Valve                – ON.": false,
+      "Master Switch                     – OFF.": false,
+
     },
-    "2️⃣ Empennage": {
-      "Rudder Gust Lock                 – REMOVE.": false,
-      "Tail Tie-Down                    – DISCONNECT.": false,
-      "Control Surfaces                 – CHECK.": false,
+    "3️⃣ PORT/LEFT WING": {
+      "Flap                               – CONDITION, HINGES.": false,
+      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
+      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
+      "Wing Tip and Navigation Light    – SECURE.": false,
+      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
+      "Stall Warner                     – CHECK CLEAR.": false,
+      "Pitot Head                       – CHECK CLEAR.": false,
+      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
+      "Fuel Drain                        – CHECK FOR LEAKS.": false,
+      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
     },
-    "3️⃣ Right Wing": {
-      "Wing Tie-Down                    – DISCONNECT.": false,
-      "Main Wheel Tire                  – CHECK.": false,
-      "Fuel Drain & Quantity            – CHECK.": false,
-      "Aileron & Flap                   – CHECK.": false,
-    },
-    "4️⃣ Nose": {
+    "4️⃣ FRONT FUSELAGE & ENGINE": {
+      "Windscreen                        – CLEAR.": false,
+      "Static Source Opening            – CHECK.": false,
+      "Engine Intakes                    – CLEAR, ALTERNATOR BELT SECURE": false,
+      "Propeller                         – CONDITION, SECURE": false,
+      "Nose Wheel Strut and Tire        – CHECK.": false,
+      "Engine                            – NO OIL LEAKES": false,
       "Engine Oil Level                 – CHECK (MIN. 4).": false,
       "Fuel Drain                       – CHECK.": false,
-      "Propeller, Spinner, Air Filter   – CHECK.": false,
-      "Nose Wheel Strut and Tire        – CHECK.": false,
-      "Static Source                    – CHECK.": false,
+
     },
-    "5️⃣ Left Wing": {
-      "Pitot Tube Cover                 – CONFIRM REMOVED.": false,
-      "Stall Warning & Fuel Tank        – CHECK.": false,
-      "Wing Tie-Down                    – DISCONNECT.": false,
-      "Main Wheel Tire                  – CHECK.": false,
-      "Fuel Drain & Quantity            – CHECK.": false,
-      "Aileron & Flap                   – CHECK.": false,
+    "5️⃣ STARBOARD/RIGHT WING": {
+      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
+      "Fuel Drain                        – CHECK FOR LEAKS.": false,
+      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
+      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
+      "Wing Tip and Navigation Light    – SECURE.": false,
+      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
+      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
+      "Flap                               – CONDITION, HINGES.": false,
+
     },
-    "6️⃣ Cockpit Preparation": {
-      "Preflight Inspection             – COMPLETE.": false,
-      "Seats, Belts, Shoulder Harness   – ADJUST & LOCK.": false,
+    "6️⃣ REAR FUSELAGE & TAIL": {
+      "Rear Fuselage Skin              – CONDITION.": false,
+      "Radio Aerials                   – SECURE.": false,
+      "Elevator & Trim Tab             – CONDITION, FULL/FREE MOVEMENT, TAB LOCK NUT SECURE": false,
+      "Tail Skid                        – CONDITION": false,
+      "Fin & Rudder                    – CONDITION, FULL/FREE MOVEMENT, SECURE": false,
+      "Beacon & Navigation Light      – SECURE": false,
+
+    },
+    "6️⃣ INTERNAL": {
+      "Passenger Brief                  – COMPLETE.": false,
+      "Cabin Doors                      – CLOSED": false,
+      "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
+      "Headset                          – CONNECTED.": false,
+      "Trimmer                          – NORMAL RANGE, SET TAKEOFF": false,
+      "Circuit Breakers                 – ALL IN.": false,
       "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
       "Radios & Electrical Equipment    – OFF.": false,
-      "Brakes                           – CHECKED (PRESS).": false,
-      "Circuit Breakers                 – ALL IN.": false,
       "Flight Controls                  – FREE & CORRECT.": false,
+      "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
+
     },
-    "7️⃣ Before Engine Start": {
-      "Battery Switch                   – ON.": false,
-      "ATC (Start-Up)                   – REQUEST/NOTIFY.": false,
+    "7️⃣ ENGINE START": {
+      "Battery Master                   – ON.": false,
+      "ATC (Start-Up) - IF APPLICIBLE  – REQUEST/NOTIFY.": false,
+      "Fuel                             – BOTH.": false,
       "Radios                           – OFF.": false,
-      "Beacon                           – ON.": false,
-      "Mixture                          – RICH.": false,
-      "Throttle                         – OPEN ¼ INCH.": false,
-      "Carb Heat                        – OFF.": false,
-      "Prime (Up to 3 strokes)          – AS REQUIRED.": false,
+      "Alternator                       – ON.": false,
+      "Mixture                          – CHECK OPERATION, SET RICH.": false,
+      "Throttle                         – FRICTION LOOSE, CHECK OPERATION, OPEN ¼ INCH.": false,
+      "Prime (Up to 3 strokes)          – AS REQUIRED, CHECK LOCKED.": false,
+      "Anti-Collision Light/Beacon     – ON.": false,
       "Propeller Area                   – CLEAR.": false,
-      "Ignition Switch                  – START.": false,
-      "Throttle                         – 1000 RPM.": false,
-    },
-    "8️⃣ After Engine Start": {
+      "Toe Brakes                       – HOLD ON.": false,
+      "Starter                          – OPERATE.": false,
+      "RPM                             – SET 1200 RPM.": false,
+      "Starter Warning Light            – OUT, IF NOT CLOSE DOWN.": false,
       "Oil Pressure                     – GREEN (<30s).": false,
-      "Alternator Switch                – ON.": false,
-      "Ammeter / Low Voltage Light      – CHECKED.": false,
-      "Navigation Lights                – ON (NIGHT FLIGHT).": false,
-      "Radios / Transponder             – ON / STBY.": false,
-      "Flaps                            – UP.": false,
-      "Flight Instruments (FLAGS)       – CHECK FLAGS.": false,
-      "Heading Indicator                – ALIGNED.": false,
-      "Altimeter                        – SET & CHECKED.": false,
-      "Navaids                          – CHECK (IF REQD).": false,
+
     },
-    "🛫 Taxi": {
+    "8️⃣ AFTER STARTING": {
+      "Headset                         – FITTED & MICROPHONE ADJUSTED, SET SQUELCH.": false,
+      "Magnetos                        – DEAD CUT CHECK (L, R, BOTH).": false,
+      "Suction                         – WITHIN LIMITS (3 TO 5).": false,
+      "Gyro Instruments                – SYNCRONISED DI WITH COMPASS, CHECK AI LEVEL.": false,
+      "Ammeter                         – CHARGING": false,
+      "Flaps                            – SELECT 30° IN STAGES, RETRACT IN STAGES.": false,
+      "Naviagtion Aids                 – TUNED, TESTED, IDENTIFIED.": false,
+      "Transponder                     – SET 7000, TEST, SET STBY.": false,
+      "Radios                          – TUNED, AUDIO PANEL SET, VOL SET, CALL.": false,
+      "Altimeter                       – SET QFE OR QNH, CHECK WITHIN LIMITS.": false,
+      "Time & Hobbs                    – RECORD": false,
+
+    },
+    "🛫 TAXI": {
       "ATC (Taxi)                       – REQUEST/NOTIFY.": false,
       "Brake Check                      – PERFORM.": false,
       "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
+
     },
-    "🛫 Before Takeoff": {
-      "Cabin Doors                      – CLOSED.": false,
-      "Flight Instruments               – CHECKED.": false,
-      "Pitot Cover                      – REMOVED.": false,
-      "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
+    "🛫 POWER CHECKS": {
+      "Aircraft                       – INTO WIND, CLEAR BEHIND.": false,
+      "Toe Brakes                      – HOLD ON.": false,
+      "Oil Temperature               – SUFFICIENT FOR RUN UP.": false,
+      "Throttle                      – SET 1700 RPM, CHECK BRAKES HOLDING.": false,
+      "Alternator                      – FUNCTIONING, CHECK AMMETER CHARGING.": false,
+      "Suction                      – SUFFICIENT (APPROX 5 REQUIRED).": false,
+      "Carburettor Heat              – HOT, CHECK DROP, SET COLD.": false,
+      "Magnetos                      – CHECK, L, R, BOTH (MAX DROP 125RPM, MAX DIFFERENCE 50RPM).": false,
+      "Throttle                      – CLOSE IDLE (500-700RPM), MIN OIL PRESSURE 25PSI, SET 1200RPM.": false,
+
+    },
+    "🛫 PRE TAKE-OFF": {
       "Elevator Trim                    – TAKEOFF.": false,
-      "Oil Temperature                  – GREEN ARC.": false,
-      "Mixture                          – RICH.": false,
-      "Power Check @1700 RPM            – PERFORM.": false,
-      "Magnetos                         – CHECK.": false,
-      "Elec & Eng Instruments           – CHECK.": false,
-      "Suction Gauge                    – GREEN.": false,
-      "Carburetor Heat                  – CHECK OPERATION.": false,
-      "Navaids                          – SET FOR DEP.": false,
       "Throttle Friction Lock           – ADJUSTED.": false,
-      "Flaps                            – SET (UP / 10°).": false,
-      "T/O Briefing                     – CONFIRMED.": false,
-      "Landing & Strobe Lights          – ON.": false,
-      "Transponder                      – ALT.": false,
-      "QFU/Gyro                         – CONFIRM/ALIGN.": false,
-    },
-    "🛫 After Takeoff / Climb": {
-      "Flaps                            – UP.": false,
-      "Landing Light                    – OFF.": false,
-      "Altimeter                        – SET (Crossing Transition Altitude).": false,
-    },
-    "✈️ Cruise": {
-      "Throttle                         – AS REQUIRED.": false,
-      "Mixture                          – AS REQUIRED.": false,
-    },
-    "🛬 Descent / Approach": {
-      "Seats, Seat Belts & Harnesses    – ADJUST & LOCK.": false,
       "Mixture                          – RICH.": false,
-      "Carburetor Heat                  – ON.": false,
-      "Approach Briefing                – CONFIRMED.": false,
-      "Altimeter                        – SET (Crossing Transition Level).": false,
+      "Carburetor Heat                  – CHECK OPERATION.": false,
+      "Magnetos                         – CHECK.": false,
+      "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
+      "Primer                           – LOCKED.": false,
+      "Flaps                            – SET (UP / 10°).": false,
+      "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
+      "Gauges                           – WITHIN LIMITS, CHECK OAT.": false,
+      "Pitot Heat                      – AS REQUIRED (ON IF OAT <5°C).": false,
+      "Cabin Doors                      – CLOSED.": false,
+      "Seats, Seat Belts & Harnesses    – ADJUST & LOCK.": false,
+      "Flying Controls                 – FULL AND FREE MOVEMENT.": false,
+      "Transponder                      – ALT.": false,
+      "Landing & Strobe Lights          – ON.": false,
+
     },
-    "🛬 Before Landing": {
-      "Landing Light                    – ON.": false,
-      "Carburetor Heat                  – ON.": false,
-      "Flaps                            – 10° (ABEAM or CIRCUIT ENTRY).": false,
-      "Flaps                            – LDG CONFIG (ON FINAL <300' AGL).": false,
-    },
-    "🛬 After Landing": {
+    "🛫 AFTER TAKE-OFF": {
       "Flaps                            – UP.": false,
-      "Carburetor Heat                  – OFF (IN).": false,
+      "Engine                           – T'S & P'S.": false,
+      "Trim                             – SET .": false,
+
+    },
+    "✈️ TOP OF CLIMB, CRUISE, APPROACH": {
+      "Fuel                             – CONTENTS SUFFICIENT.": false,
+      "Radio                            – FREQ, TEST VOL AND TRANSPONDER.": false,
+      "Engine                           – CARB HEAT, GAUGES.": false,
+      "DI & Compass                      – DI & COMPASS.": false,
+      "Altimeter                        – QNH OR 1013 OR QFE.": false,
+      "Landing & Strobe Lights          – ON.": false,
+
+    },
+    "🛬 LANDING - CHEF": {
+      "Carburettor Heat                  – ON.": false,
+      "Harnesses                        – SECURE.": false,
+      "Engine                           – GAUGES.": false,
+      "Fuel                             – CONTENTS CHECK, MIXTURE RICH.": false,
+      "Carburettor Heat                  – OFF (300FT).": false,
+
+    },
+    "🛬 AFTER LANDING": {
+      "Clear of Runway                  – STOP.": false,
+      "Carburetor Heat                  – COLD.": false,
+      "Flaps                            – UP.": false,
+      "Trimmer                          – NEUTRAL.": false,
+      "Throttle Friction Nut            – SLACKEN.": false,
+      "Pitot Heat                       – OFF.": false,
       "Landing & Strobe Lights          – OFF.": false,
-      "Transponder                      – STBY.": false,
+      "Transponder & Nav Aids           – OFF.": false,
+      "Fuel Contents                    – CHECK & REFUEL IF NECESSARY.": false,
+
     },
-    "⛔ Shutdown": {
-      "Throttle                         – 1000 RPM.": false,
+    "⛔ SHUTDOWN": {
+      "Toe Brakes                       – OFF (IN).": false,
+      "Throttle                         – 1200 RPM.": false,
+      "Time & Hobbs                     – RECORD.": false,
+      "Magnetos                         – DEAD CUT CHECK (L, R, BOTH).": false,
       "Radios                           – OFF.": false,
-      "Transponder                      – 7000/OFF.": false,
-      "Navigation Lights                – OFF.": false,
-      "Mixture                          – CUT OFF.": false,
-      "Ignition Switch                  – OFF.": false,
-      "Beacon                           – OFF.": false,
+      "Throttle                         – OFF.": false,
+      "Mixture                          – IDLE CUT OFF.": false,
+      "Magneto Switch                  – WHEN ENGINE STOPPED, REMOVE KEY.": false,
       "Master Switch                    – OFF.": false,
-      "Time                             – NOTE.": false,
-    },
-    "🅿️ Parking": {
-      "Trim                             – RESET (T/O).": false,
-      "Control Lock                     – INSTALL.": false,
-      "Hobbs (Timer Counter)            – RECORD.": false,
-      "Pitot Cover                      – INSTALL.": false,
-      "Chocks                           – INSTALL.": false,
-      "Fuel Remaining                   – CHECK.": false,
+      "Harnesses                        – STOWED NEATLY.": false,
+      "Control Locks                    – IN.": false,
+      "Pitot Cover                      – ON.": false,
+      "Chocks                           – AS REQUIRED.": false,
+
     },
   };
   loadChecklist();
@@ -370,10 +431,10 @@ void toggleWeatherCondition(String key) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Cessna 172 - Pre-Flight Checklist"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.purple,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
@@ -383,7 +444,7 @@ void toggleWeatherCondition(String key) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -401,7 +462,7 @@ void toggleWeatherCondition(String key) {
                     hintText: 'Enter ICAO (e.g. EGLL)',
                     hintStyle: TextStyle(color: Colors.grey),
                     filled: true,
-                    fillColor: Colors.grey[800],
+                    fillColor: Colors.grey,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none),
@@ -411,7 +472,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.cloud, color: Colors.white),
+  icon: Icon(Icons.cloud, color: Colors.grey[700]),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -422,7 +483,7 @@ void toggleWeatherCondition(String key) {
 
                   SizedBox(height: 2),
                   Text("Search",
-                      style: TextStyle(color: Colors.white, fontSize: 12)),
+                      style: TextStyle(color: Colors.black, fontSize: 12)),
                 ],
               )
             ]),
@@ -446,7 +507,7 @@ void toggleWeatherCondition(String key) {
             ),
             SizedBox(height: 14),
             Text(getCompletionProgress(),
-                style: TextStyle(color: Colors.white70, fontSize: 14)),
+                style: TextStyle(color: Colors.black, fontSize: 14)),
             SizedBox(height: 14),
             ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
                   key: ValueKey(entry.key),
@@ -493,7 +554,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: Colors.black45,
+                color: Colors.grey,
                 blurRadius: 4,
                 offset: Offset(1, 2),
               ),
@@ -503,7 +564,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           child: Icon(icon, color: Colors.white, size: 26),
         ),
         SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.white, fontSize: 12)),
+        Text(label, style: TextStyle(color: Colors.black, fontSize: 12)),
       ],
     ),
   );
@@ -532,7 +593,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
           ),
         ),
         SizedBox(height: 8),
-        Text(label, style: TextStyle(color: Colors.white)),
+        Text(label, style: TextStyle(color: Colors.black)),
       ],
     );
   }
@@ -555,11 +616,11 @@ class ChecklistExpansionTile extends StatelessWidget {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[850],
+        color: Colors.grey[600],
         margin: EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
-        shadowColor: Colors.black54,
+        shadowColor: Colors.grey[600],
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
@@ -608,7 +669,7 @@ class ChecklistExpansionTile extends StatelessWidget {
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
-                  activeColor: Colors.red,
+                  activeColor: Colors.green,
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               );

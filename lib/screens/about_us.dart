@@ -27,7 +27,7 @@ Thanks for using the app — and fly safe!
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text('About Us', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.purple,
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 1,
       ),

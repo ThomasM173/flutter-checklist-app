@@ -48,7 +48,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flight Conditions'),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.purple,
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 1),
       backgroundColor: Colors.black,
@@ -79,7 +79,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 ElevatedButton(
                   onPressed: () => _fetch(_icaoController.text.trim()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: Colors.purple,
                     padding: const EdgeInsets.all(14),
                   ),
                   child: const Icon(Icons.search, color: Colors.white),
@@ -94,7 +94,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 child: Center(
                   child: Text(
                     _error!,
-                    style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+                    style: const TextStyle(color: Colors.purple, fontSize: 16),
                   ),
                 ),
               )

@@ -26,10 +26,10 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text("Cessna 152"),
-        backgroundColor: Colors.redAccent,
+        backgroundColor: Colors.purple,
         elevation: 4,
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
@@ -42,7 +42,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
               height: 220,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [Colors.redAccent, Colors.deepOrange],
+                  colors: [Color.fromARGB(255, 58, 62, 183), Colors.deepPurple],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
@@ -146,7 +146,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                           icon: const Icon(Icons.check_circle_outline),
                           label: const Text("Pre-Flight"),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.redAccent,
+                            backgroundColor: Colors.purple,
                             padding: const EdgeInsets.symmetric(vertical: 16),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -197,7 +197,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
     required String content,
   }) {
     return Card(
-      color: Colors.grey[850],
+      color: Colors.grey[600],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       elevation: 2,
       child: Padding(
@@ -210,14 +210,14 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
             Text(
               title,
               style: const TextStyle(
-                  color: Colors.white70,
+                  color: Colors.white60,
                   fontSize: 16,
                   fontWeight: FontWeight.bold),
             ),
             const Spacer(),
             Text(
               content,
-              style: const TextStyle(color: Colors.white, fontSize: 14),
+              style: const TextStyle(color: Colors.black, fontSize: 14),
             ),
           ],
         ),

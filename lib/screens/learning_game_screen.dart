@@ -16,7 +16,7 @@ class LearningGameScreen extends StatelessWidget {
       backgroundColor: Colors.grey[900],
       appBar: AppBar(
         title: const Text("Pilot Learning Games"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.purple,
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -46,7 +46,7 @@ class LearningGameScreen extends StatelessWidget {
               icon: const Icon(Icons.home),
               label: const Text("Return to Home"),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: Colors.purple,
               ),
             ),
           ],
@@ -67,7 +67,7 @@ class LearningGameScreen extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.redAccent,
+          backgroundColor: Colors.purple,
           minimumSize: const Size(double.infinity, 50),
         ),
         child: Text("🛩 $title"),
