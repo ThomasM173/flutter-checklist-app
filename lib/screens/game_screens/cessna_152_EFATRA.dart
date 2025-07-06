@@ -174,7 +174,7 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 Play Again", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -182,7 +182,21 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to Home", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text("🏠 Back to C152 CHECKLIST", style: TextStyle(color: Colors.black)),
               )
             ],
           ),
