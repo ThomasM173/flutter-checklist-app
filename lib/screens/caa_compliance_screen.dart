@@ -11,7 +11,7 @@ class CAAComplianceScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('CAA Compliance'),
-        backgroundColor: Colors.purple,
+        backgroundColor: Color(0xFF87CEEB),
       ),
       drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),

@@ -26,8 +26,8 @@ Thanks for using the app — and fly safe!
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('About Us', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.purple,
+        title: const Text('About Us', style: TextStyle(color: Colors.black)),
+        backgroundColor: Color(0xFF87CEEB),
         iconTheme: const IconThemeData(color: Colors.white),
         elevation: 1,
       ),

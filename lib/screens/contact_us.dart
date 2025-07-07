@@ -30,7 +30,7 @@ class ContactUs extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Contact Us"),
-        backgroundColor: Colors.purple,
+        backgroundColor: Color(0xFF87CEEB),
       ),
       backgroundColor: Colors.white,
       body: Center(
@@ -49,7 +49,7 @@ class ContactUs extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Color(0xFF87CEEB),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -64,7 +64,7 @@ class ContactUs extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Color(0xFF87CEEB),
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),

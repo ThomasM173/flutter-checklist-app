@@ -171,11 +171,15 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text("Cessna 152 – Emergency Procedures"),
-        backgroundColor: Colors.red,
+        backgroundColor: Color(0xFF87CEEB), // Sky blue top bar
+        title: const Text(
+          "Cessna 152 – Emergency Procedures",
+          style: TextStyle(color: Colors.black), // Black title text
+        ),
+        iconTheme: const IconThemeData(color: Colors.black),
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.restart_alt), // More formal reset icon
             tooltip: "Reset All",
             onPressed: _resetChecklist,
           ),
@@ -184,18 +188,22 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
       body: ListView(
         padding: const EdgeInsets.all(10),
         children: [
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
+          ElevatedButton.icon(
+            icon: const Icon(Icons.menu_book_rounded),
+            label: const Text(
+              "Play Emergency Learning Game",
+              style: TextStyle(color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.orange,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+            ),
             onPressed: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const Cessna152EmergencyGame()),
               );
             },
-            child: const Text(
-              "🎮 Play Emergency Learning Game",
-              style: TextStyle(color: Colors.white),
-            ),
           ),
           const SizedBox(height: 10),
           ...emergencyProcedures.entries.map((entry) {
@@ -204,14 +212,21 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
             final checked = _checkedItems[title] ?? <int>{};
 
             return Card(
-              color: Colors.grey[600],
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              color: Colors.white, // Drop-down background white
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: Colors.black), // Black border
+              ),
               margin: const EdgeInsets.symmetric(vertical: 8),
+              elevation: 4,
+              shadowColor: Colors.grey[600],
               child: ExpansionTile(
+                iconColor: Colors.black,
+                collapsedIconColor: Colors.black,
                 title: Text(
                   title,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: Colors.black, // Title text in black
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -219,11 +234,14 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
                 children: List.generate(steps.length, (index) {
                   final isChecked = checked.contains(index);
                   return CheckboxListTile(
-                    title: Text(steps[index], style: const TextStyle(color: Colors.white)),
+                    title: Text(
+                      steps[index],
+                      style: const TextStyle(color: Colors.black), // Checklist text black
+                    ),
                     value: isChecked,
                     onChanged: (value) => _toggleItem(title, index, value),
-                    activeColor: Colors.green,
-                    checkColor: Colors.black,
+                    activeColor: Colors.black, // Black checkbox
+                    checkColor: Colors.white, // White tick
                     controlAffinity: ListTileControlAffinity.leading,
                   );
                 }),

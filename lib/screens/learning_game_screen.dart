@@ -13,10 +13,14 @@ class LearningGameScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[900],
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text("Pilot Learning Games"),
-        backgroundColor: Colors.purple,
+        title: const Text(
+          "Pilot Learning Games",
+          style: TextStyle(color: Colors.black),
+        ),
+        backgroundColor: const Color(0xFF87CEEB),
+        iconTheme: const IconThemeData(color: Colors.black),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -25,7 +29,7 @@ class LearningGameScreen extends StatelessWidget {
             const Text(
               "Select an aircraft to start its emergency procedure game.",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.white),
+              style: TextStyle(fontSize: 18, color: Colors.black),
             ),
             const SizedBox(height: 25),
 
@@ -40,13 +44,16 @@ class LearningGameScreen extends StatelessWidget {
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
-                  (route) => false, // removes all previous routes
+                  (route) => false,
                 );
               },
-              icon: const Icon(Icons.home),
-              label: const Text("Return to Home"),
+              icon: const Icon(Icons.home, color: Colors.black),
+              label: const Text(
+                "Return to Home",
+                style: TextStyle(color: Colors.black),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: const Color(0xFF87CEEB),
               ),
             ),
           ],
@@ -67,10 +74,13 @@ class LearningGameScreen extends StatelessWidget {
           );
         },
         style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.purple,
+          backgroundColor: const Color(0xFF87CEEB),
           minimumSize: const Size(double.infinity, 50),
         ),
-        child: Text("🛩 $title"),
+        child: Text(
+          "🛩 $title",
+          style: const TextStyle(color: Colors.black),
+        ),
       ),
     );
   }
