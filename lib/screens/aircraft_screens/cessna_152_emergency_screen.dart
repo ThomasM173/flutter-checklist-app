@@ -171,12 +171,12 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Color(0xFF87CEEB), // Sky blue top bar
+        backgroundColor: Colors.redAccent, // Sky blue top bar
         title: const Text(
           "Cessna 152 – Emergency Procedures",
-          style: TextStyle(color: Colors.black), // Black title text
+          style: TextStyle(color: Colors.white), // Black title text
         ),
-        iconTheme: const IconThemeData(color: Colors.black),
+        iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
             icon: const Icon(Icons.restart_alt), // More formal reset icon

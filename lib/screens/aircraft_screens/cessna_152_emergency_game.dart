@@ -49,23 +49,25 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
     ];
 
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text('Select Emergency Game Scenario'),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.orange[400],
         elevation: 6,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 3,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-          children: emergencyOptions.map((option) {
+        child: ListView.separated(
+          itemCount: emergencyOptions.length,
+          separatorBuilder: (context, index) => const SizedBox(height: 10),
+          itemBuilder: (context, index) {
+            final option = emergencyOptions[index];
             return ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orangeAccent,
-                foregroundColor: Colors.white,
+                backgroundColor: Colors.orange[400],
+                foregroundColor: Colors.black,
                 elevation: 4,
+                minimumSize: const Size.fromHeight(50), // makes button height at least 50
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
@@ -84,7 +86,7 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
                 ),
               ),
             );
-          }).toList(),
+          },
         ),
       ),
     );

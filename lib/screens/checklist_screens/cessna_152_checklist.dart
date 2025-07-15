@@ -102,6 +102,7 @@ void initState() {
       "Master Switch                     – OFF.": false,
       "Fuel Drains                        – CHECK.": false,
       "Trim, Check Full Range            – ON.": false,
+      "Windscreen                         – CLEAR.": false,
 
     },
     "2️⃣ TRANSIT CHECK (Check A Complete)": {
@@ -431,14 +432,20 @@ void toggleWeatherCondition(String key) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text(
-          "Cessna 152 - Pre-Flight Checklist",
-          style: TextStyle(color: Colors.black),
-         ),
-         backgroundColor: Color(0xFF87CEEB),
-         iconTheme: IconThemeData(color: Colors.black),
+        title: Text("Cessna 152 - Pre-Flight Checklist"),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 4,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
@@ -448,12 +455,12 @@ void toggleWeatherCondition(String key) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (_) => Cessna152EmergencyScreen())),
-                child: Text("🚨 Emergency Procedures", style: TextStyle(color: Colors.black)),
+                child: Text("🚨 Emergency Procedures"),
               ),
             ),
             SizedBox(height: 12),
@@ -461,24 +468,15 @@ void toggleWeatherCondition(String key) {
               Expanded(
                 child: TextField(
                   controller: _airportController,
-                  style: TextStyle(color: Colors.black),
+                  style: TextStyle(color: Colors.white),
                   decoration: InputDecoration(
                     hintText: 'Enter ICAO (e.g. EGLL)',
-                    hintStyle: TextStyle(color: Colors.black),
+                    hintStyle: TextStyle(color: Colors.grey),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Colors.grey,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.black, width: 1),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: Colors.black, width: 2),
-                    ),
+                        borderRadius: BorderRadius.circular(8),
+                        borderSide: BorderSide.none),
                   ),
                 ),
               ),
@@ -494,7 +492,9 @@ void toggleWeatherCondition(String key) {
   },
 ),
 
-
+                  SizedBox(height: 2),
+                  Text("Search",
+                      style: TextStyle(color: Colors.black, fontSize: 12)),
                 ],
               )
             ]),
@@ -629,12 +629,9 @@ class ChecklistExpansionTile extends StatelessWidget {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Color(0xFFFFFDF7),
+        color: Colors.grey[600],
         margin: EdgeInsets.symmetric(vertical: 6),
-          shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Colors.black, width: 1),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
         shadowColor: Colors.grey[600],
         child: Theme(
@@ -647,7 +644,7 @@ class ChecklistExpansionTile extends StatelessWidget {
                   child: Text(
                     title,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
@@ -681,12 +678,11 @@ class ChecklistExpansionTile extends StatelessWidget {
                 child: CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(entry.key,
-                      style: TextStyle(color: Colors.black, fontSize: 14)),
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
-                    activeColor: Colors.green,
-                    checkColor: Colors.black, 
+                  activeColor: Colors.green,
                   controlAffinity: ListTileControlAffinity.leading,
                 ),
               );

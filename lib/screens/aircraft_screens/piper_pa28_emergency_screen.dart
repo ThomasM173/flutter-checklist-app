@@ -127,7 +127,7 @@ class PiperPA28EmergencyScreen extends StatelessWidget {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text("Piper PA28 – Emergency Procedures"),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.redAccent,
       ),
       body: ListView(
         padding: const EdgeInsets.all(10),

@@ -97,10 +97,10 @@ class _Cessna172FDS extends State<Cessna172FDS> {
     final question = questions[currentIndex];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("🚨 Engine Fire During Start"),
-        backgroundColor: Colors.orange,
+        backgroundColor: Colors.orange[400],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -129,7 +129,9 @@ class _Cessna172FDS extends State<Cessna172FDS> {
               }
               return Card(
                 color: tileColor,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),

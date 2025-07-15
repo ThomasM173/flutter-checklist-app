@@ -442,8 +442,18 @@ void toggleWeatherCondition(String key) {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Piper PA28 - Pre-Flight Checklist"),
-        backgroundColor: Colors.purple,
-      ),
+        flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+               ),
+             ),
+           ),
+           backgroundColor: Colors.transparent,
+           elevation: 4,
+         ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
         child: Column(

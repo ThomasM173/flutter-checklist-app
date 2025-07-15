@@ -102,6 +102,7 @@ void initState() {
       "Master Switch                     – OFF.": false,
       "Fuel Drains                        – CHECK.": false,
       "Trim, Check Full Range            – ON.": false,
+      "Windscreen                         – CLEAR.": false,
 
     },
     "2️⃣ TRANSIT CHECK (Check A Complete)": {
@@ -434,8 +435,18 @@ void toggleWeatherCondition(String key) {
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text("Cessna 172 - Pre-Flight Checklist"),
-        backgroundColor: Colors.purple,
-      ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+               ),
+             ),
+           ),
+           backgroundColor: Colors.transparent,
+           elevation: 4,
+         ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -444,7 +455,7 @@ void toggleWeatherCondition(String key) {
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.purple),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
                 onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(

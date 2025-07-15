@@ -22,7 +22,7 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[100],
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -76,7 +76,7 @@ class AppDrawer extends StatelessWidget {
             title: const Text('Recent Updates', style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const RecentUpdatesScreen()),
           ),
-          const Divider(color: Colors.black54),
+          const Divider(color: Colors.black),
           ListTile(
             leading: const Icon(Icons.close, color: Colors.black),
             title: const Text('Close Menu', style: TextStyle(color: Colors.black)),

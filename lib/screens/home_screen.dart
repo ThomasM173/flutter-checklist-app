@@ -69,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Colors.grey[200],
       drawer: const AppDrawer(currentIndex: 0),
       appBar: AppBar(
         flexibleSpace: Container(
@@ -248,7 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: const Padding(
               padding: EdgeInsets.symmetric(horizontal: 12.0),
               child: Text(
-                "Fly safe, fly smart.\nClearedToGo is here to help you every step of the way.",
+                "Fly safe, Fly smart.\nClearedToGo is here to help you, every step of the way.",
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
