@@ -1,4 +1,3 @@
-// lib/screens/faq_screen.dart
 import 'package:flutter/material.dart';
 import '../widget/app_drawer.dart';
 import '../widget/bottom_nav_bar.dart';
@@ -40,9 +39,27 @@ class FAQScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('FAQ'),
-        backgroundColor: Color(0xFF87CEEB),
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'FAQ',
+            style: TextStyle(color: Colors.black),
+          ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue → sky blue
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black), // Burger icon black
+        ),
       ),
       drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
@@ -51,7 +68,7 @@ class FAQScreen extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
         itemCount: faqs.length,
         itemBuilder: (_, i) => Card(
-          color: Colors.grey[200], // Light grey background
+          color: Colors.grey[200],
           margin: const EdgeInsets.symmetric(vertical: 8),
           elevation: 2,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

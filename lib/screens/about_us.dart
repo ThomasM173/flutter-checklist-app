@@ -1,4 +1,3 @@
-// lib/screens/about_us_screen.dart
 import 'package:flutter/material.dart';
 import '../widget/bottom_nav_bar.dart';
 import '../widget/app_drawer.dart';
@@ -25,28 +24,58 @@ Thanks for using the app — and fly safe!
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        title: const Text('About Us', style: TextStyle(color: Colors.black)),
-        backgroundColor: Color(0xFF87CEEB),
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 1,
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: AppBar(
+          centerTitle: true,
+          title: const Text(
+            'About Us',
+            style: TextStyle(color: Colors.black),
+          ),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors:  [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          elevation: 1,
+          iconTheme: const IconThemeData(color: Colors.black), // Burger icon black
+        ),
       ),
       drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 600),
-            child: const Text(
-              aboutText,
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                height: 1.5,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Large logo at the top
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24),
+                child: Image.asset(
+                  'assets/images/NewLogo.png', // Make sure your logo is in assets/images/logo.png
+                  height: 150, // Adjust size as needed
+                  fit: BoxFit.contain,
+                ),
               ),
-              textAlign: TextAlign.justify,
-            ),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 600),
+                child: const Text(
+                  aboutText,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                  textAlign: TextAlign.justify,
+                ),
+              ),
+            ],
           ),
         ),
       ),
