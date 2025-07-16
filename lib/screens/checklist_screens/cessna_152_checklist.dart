@@ -434,7 +434,10 @@ void toggleWeatherCondition(String key) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text("Cessna 152 - Pre-Flight Checklist"),
+        title: Text(
+          "Cessna 152 - Pre-Flight Checklist",
+          style: TextStyle(color: Colors.black), // Black title text
+        ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -468,12 +471,12 @@ void toggleWeatherCondition(String key) {
               Expanded(
                 child: TextField(
                   controller: _airportController,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     hintText: 'Enter ICAO (e.g. EGLL)',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Colors.black),
                     filled: true,
-                    fillColor: Colors.grey,
+                    fillColor: Colors.white,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none),
@@ -483,7 +486,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.search, color: Colors.grey[700]),
+  icon: Icon(Icons.search, color: Colors.black),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -629,9 +632,12 @@ class ChecklistExpansionTile extends StatelessWidget {
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[600],
+        color: Colors.white,
         margin: EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(color: Colors.black), // Black border
+        ),
         elevation: 3,
         shadowColor: Colors.grey[600],
         child: Theme(
@@ -644,7 +650,7 @@ class ChecklistExpansionTile extends StatelessWidget {
                   child: Text(
                     title,
                     style: TextStyle(
-                        color: Colors.white,
+                        color: Colors.black,
                         fontSize: 18,
                         fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,

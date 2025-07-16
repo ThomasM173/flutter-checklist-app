@@ -195,7 +195,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
               style: TextStyle(color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.orange,
+              backgroundColor: Colors.orange[400],
               padding: const EdgeInsets.symmetric(vertical: 12),
             ),
             onPressed: () {
