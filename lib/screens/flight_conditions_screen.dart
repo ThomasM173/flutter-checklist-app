@@ -46,12 +46,42 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
+      drawer: Drawer(
+        child: ListView(
+          children: const [
+            DrawerHeader(
+              decoration: BoxDecoration(color: Colors.lightBlue),
+              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: Icon(Icons.home),
+              title: Text('Home'),
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+            ),
+          ],
+        ),
+      ),
       appBar: AppBar(
-        title: const Text('Flight Conditions'),
-        backgroundColor: Colors.purple,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        centerTitle: true,
+        iconTheme: const IconThemeData(color: Colors.black),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+        ),
+        title: const Text('Flight Conditions', style: TextStyle(color: Colors.black)),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 1),
-      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -61,12 +91,12 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 Expanded(
                   child: TextField(
                     controller: _icaoController,
-                    style: const TextStyle(color: Colors.white),
+                    style: const TextStyle(color: Colors.black),
                     decoration: InputDecoration(
                       filled: true,
-                      fillColor: Colors.grey[900],
+                      fillColor: Colors.grey[200],
                       hintText: 'ICAO (e.g. EGLL)',
-                      hintStyle: const TextStyle(color: Colors.white60),
+                      hintStyle: const TextStyle(color: Colors.black54),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
@@ -79,10 +109,10 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 ElevatedButton(
                   onPressed: () => _fetch(_icaoController.text.trim()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.purple,
+                    backgroundColor: Colors.lightBlue,
                     padding: const EdgeInsets.all(14),
                   ),
-                  child: const Icon(Icons.search, color: Colors.white),
+                  child: const Icon(Icons.search, color: Colors.black),
                 ),
               ],
             ),
@@ -94,7 +124,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 child: Center(
                   child: Text(
                     _error!,
-                    style: const TextStyle(color: Colors.purple, fontSize: 16),
+                    style: const TextStyle(color: Colors.red, fontSize: 16),
                   ),
                 ),
               )
@@ -139,7 +169,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 return SizedBox(
                   width: 160,
                   child: Card(
-                    color: Colors.grey[850],
+                    color: Colors.grey[200],
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -148,9 +178,9 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(f['time']!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+                          Text(f['time']!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
                           const SizedBox(height: 6),
-                          Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.white70)),
+                          Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.black87)),
                         ],
                       ),
                     ),
@@ -166,22 +196,22 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
 
   Widget _sectionTitle(String text) => Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 4),
-        child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text(text, style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       );
 
   Widget _infoRow(String label, String? value) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
-            Text('$label:', style: const TextStyle(color: Colors.white70, fontWeight: FontWeight.w600)),
+            Text('$label:', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
             const SizedBox(width: 8),
-            Expanded(child: Text(value ?? 'N/A', style: const TextStyle(color: Colors.white))),
+            Expanded(child: Text(value ?? 'N/A', style: const TextStyle(color: Colors.black))),
           ],
         ),
       );
 
   Widget _dataCard(List<Widget> children) => Card(
-        color: Colors.grey[900],
+        color: Colors.grey[100],
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(padding: const EdgeInsets.all(12), child: Column(children: children)),
       );

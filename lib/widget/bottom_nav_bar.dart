@@ -51,7 +51,7 @@ class BottomNavBar extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.cloud_queue),
-          label: 'Flight',
+          label: 'Weather',
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.videogame_asset),

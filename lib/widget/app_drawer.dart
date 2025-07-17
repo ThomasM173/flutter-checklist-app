@@ -28,11 +28,20 @@ class AppDrawer extends StatelessWidget {
         children: [
           DrawerHeader(
             decoration: const BoxDecoration(color: Color(0xFF87CEEB)),
-            child: Center(
-              child: Text(
-                'ClearedToGo',
-                style: TextStyle(color: Colors.black, fontSize: 24),
-              ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  'assets/images/newlogo.png',
+                  fit: BoxFit.contain,
+                  height: 75, // Adjust height as needed
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'ClearedToGo',
+                  style: TextStyle(color: Colors.black, fontSize: 20),
+                ),
+              ],
             ),
           ),
           ListTile(
