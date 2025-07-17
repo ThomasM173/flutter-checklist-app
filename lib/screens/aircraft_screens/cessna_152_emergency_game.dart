@@ -15,6 +15,22 @@ class Cessna152EmergencyGame extends StatefulWidget {
 }
 
 class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
+  // Placeholder for reset logic
+  void resetChecklist() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Checklist reset!')),
+    );
+    // TODO: Add your reset logic here
+  }
+
+  // Placeholder for PDF generation logic
+  void generatePDF() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('PDF generated!')),
+    );
+    // TODO: Add your PDF generation logic here
+  }
+
   @override
   Widget build(BuildContext context) {
     final emergencyOptions = [
@@ -48,45 +64,131 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
       },
     ];
 
+    Widget _iconButton(
+      IconData icon,
+      String label,
+      Color color,
+      VoidCallback onPressed,
+    ) {
+      return Expanded(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: ElevatedButton.icon(
+            icon: Icon(icon, color: Colors.white),
+            label: Text(
+              label,
+              style: const TextStyle(
+                fontSize: 16,
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: color,
+              minimumSize: const Size.fromHeight(60),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            onPressed: onPressed,
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Select Emergency Game Scenario'),
+        title: const Text(
+          'Select Emergency Game Scenario',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
         backgroundColor: Colors.orange[400],
         elevation: 6,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.separated(
-          itemCount: emergencyOptions.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 10),
-          itemBuilder: (context, index) {
-            final option = emergencyOptions[index];
-            return ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange[400],
-                foregroundColor: Colors.black,
-                elevation: 4,
-                minimumSize: const Size.fromHeight(50), // makes button height at least 50
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.separated(
+                itemCount: emergencyOptions.length,
+                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                itemBuilder: (context, index) {
+                  final option = emergencyOptions[index];
+                  return ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.orange[400],
+                      foregroundColor: Colors.white,
+                      elevation: 4,
+                      minimumSize: const Size.fromHeight(70),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                        side: const BorderSide(color: Colors.white, width: 1),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                option['screen'] as Widget),
+                      );
+                    },
+                    child: Center(
+                      child: Text(
+                        option['title'] as String,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  );
+                },
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => option['screen'] as Widget),
-                );
-              },
-              child: Center(
-                child: Text(
-                  option['title'] as String,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                _iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
+                _iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+                _iconButton(
+                  Icons.info_outline,
+                  'Details',
+                  Colors.orange,
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>
+                            const Cessna152EmergencyDetailsScreen()),
+                  ),
                 ),
-              ),
-            );
-          },
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Cessna152EmergencyDetailsScreen extends StatelessWidget {
+  const Cessna152EmergencyDetailsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Emergency Game Details'),
+        backgroundColor: Colors.orange[400],
+      ),
+      body: const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text(
+          'Here you can provide more information about the emergency game scenarios, instructions, or any other details.',
+          style: TextStyle(fontSize: 16),
         ),
       ),
     );

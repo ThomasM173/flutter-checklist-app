@@ -26,37 +26,37 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
 
   final Map<String, Map<String, List<String>>> _weatherChecklistItems = {
     'cold': {
-      '1️⃣ Cabin Checks': [
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
         '✅ Check for frost or ice on wings, control surfaces, and pitot-static system.',
         '✅ Drain fuel sumps carefully to check for ice crystals.',
         '✅ Ensure oil viscosity is suitable for cold weather.',
         '✅ Check cabin heater and defroster operation.',
       ],
-      '🔟 After Engine Start': [
-        '✅ Allow longer warm-up at 1000 RPM.',
+      'AFTER STARTING': [
+        '✅ Allow longer warm-up at 1000 RPM, Wait for oil temp in green.',
       ],
     },
     'hot': {
-      '5️⃣ Nose': [
+      'PORT/LEFT WING': [
         '✅ Check for vapor lock potential.',
         '✅ Inspect for soft or expanded tires due to heat.',
       ],
-      '✈️ Cruise': [
+      'TOP OF CLIMB, CRUISE, APPROACH': [
         '✅ Calculate density altitude.',
       ],
     },
     'rain': {
-      '6️⃣ Left Wing': [
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
         '✅ Confirm pitot heat ON and pitot cover removed.',
         '✅ Check seals for water intrusion.',
       ],
-      '🛫 Taxi': [
+      'TAXI': [
         '✅ Taxi cautiously to avoid hydroplaning.',
         '✅ Test brakes early.',
       ],
     },
     'ifrc': {
-      '🌧 IFR Conditions': [
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
         '✅ Check lights (beacon, nav, strobe).',
         '✅ Confirm vacuum/suction system operational.',
         '✅ Cross-check alternate airports.',
@@ -64,10 +64,10 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
       ]
     },
     'windy': {
-      '🛫 Taxi': [
+      'TAXI': [
         '✅ Use control inputs for wind correction during taxi.',
       ],
-      '🛫 Before Takeoff': [
+      'PRE TAKE-OFF': [
         '✅ Prepare for crosswind takeoff technique.',
       ]
     },
@@ -84,7 +84,7 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
 void initState() {
   super.initState();
   checklistSections = {
-    "1️⃣ CHECK A (ONLY FIRST FLIGHT OF DAY)": {
+    "CHECK A (ONLY FIRST FLIGHT OF DAY)": {
       "Control Lock                      – REMOVE.": false,
       "Pitot Cover                       – REMOVE.": false,
       "First Aid Kit                    – CHECK.": false,
@@ -105,7 +105,7 @@ void initState() {
       "Windscreen                         – CLEAR.": false,
 
     },
-    "2️⃣ TRANSIT CHECK (Check A Complete)": {
+    "TRANSIT CHECK (Check A Complete)": {
       "Control Lock                      – REMOVE.": false,
       "Pitot Cover                       – REMOVE.": false,
       "Ignition Switch                  – OFF.": false,
@@ -115,7 +115,7 @@ void initState() {
       "Master Switch                     – OFF.": false,
 
     },
-    "3️⃣ PORT/LEFT WING": {
+    "PORT/LEFT WING": {
       "Flap                               – CONDITION, HINGES.": false,
       "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
       "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
@@ -127,7 +127,7 @@ void initState() {
       "Fuel Drain                        – CHECK FOR LEAKS.": false,
       "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
     },
-    "4️⃣ FRONT FUSELAGE & ENGINE": {
+    "FRONT FUSELAGE & ENGINE": {
       "Windscreen                        – CLEAR.": false,
       "Static Source Opening            – CHECK.": false,
       "Engine Intakes                    – CLEAR, ALTERNATOR BELT SECURE": false,
@@ -138,7 +138,7 @@ void initState() {
       "Fuel Drain                       – CHECK.": false,
 
     },
-    "5️⃣ STARBOARD/RIGHT WING": {
+    "STARBOARD/RIGHT WING": {
       "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
       "Fuel Drain                        – CHECK FOR LEAKS.": false,
       "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
@@ -149,7 +149,7 @@ void initState() {
       "Flap                               – CONDITION, HINGES.": false,
 
     },
-    "6️⃣ REAR FUSELAGE & TAIL": {
+    "REAR FUSELAGE & TAIL": {
       "Rear Fuselage Skin              – CONDITION.": false,
       "Radio Aerials                   – SECURE.": false,
       "Elevator & Trim Tab             – CONDITION, FULL/FREE MOVEMENT, TAB LOCK NUT SECURE": false,
@@ -158,7 +158,7 @@ void initState() {
       "Beacon & Navigation Light      – SECURE": false,
 
     },
-    "6️⃣ INTERNAL": {
+    "INTERNAL": {
       "Passenger Brief                  – COMPLETE.": false,
       "Cabin Doors                      – CLOSED": false,
       "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
@@ -171,7 +171,7 @@ void initState() {
       "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
 
     },
-    "7️⃣ ENGINE START": {
+    "ENGINE START": {
       "Battery Master                   – ON.": false,
       "ATC (Start-Up) - IF APPLICIBLE  – REQUEST/NOTIFY.": false,
       "Fuel                             – ON.": false,
@@ -189,7 +189,7 @@ void initState() {
       "Oil Pressure                     – GREEN (<30s).": false,
 
     },
-    "8️⃣ AFTER STARTING": {
+    "AFTER STARTING": {
       "Headset                         – FITTED & MICROPHONE ADJUSTED, SET SQUELCH.": false,
       "Magnetos                        – DEAD CUT CHECK (L, R, BOTH).": false,
       "Suction                         – WITHIN LIMITS (3 TO 5).": false,
@@ -203,13 +203,13 @@ void initState() {
       "Time & Hobbs                    – RECORD": false,
 
     },
-    "🛫 TAXI": {
+    "TAXI": {
       "ATC (Taxi)                       – REQUEST/NOTIFY.": false,
       "Brake Check                      – PERFORM.": false,
       "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
 
     },
-    "🛫 POWER CHECKS": {
+    "POWER CHECKS": {
       "Aircraft                       – INTO WIND, CLEAR BEHIND.": false,
       "Toe Brakes                      – HOLD ON.": false,
       "Oil Temperature               – SUFFICIENT FOR RUN UP.": false,
@@ -221,7 +221,7 @@ void initState() {
       "Throttle                      – CLOSE IDLE (500-700RPM), MIN OIL PRESSURE 25PSI, SET 1200RPM.": false,
 
     },
-    "🛫 PRE TAKE-OFF": {
+    "PRE TAKE-OFF": {
       "Elevator Trim                    – TAKEOFF.": false,
       "Throttle Friction Lock           – ADJUSTED.": false,
       "Mixture                          – RICH.": false,
@@ -240,13 +240,13 @@ void initState() {
       "Landing & Strobe Lights          – ON.": false,
 
     },
-    "🛫 AFTER TAKE-OFF": {
+    "AFTER TAKE-OFF": {
       "Flaps                            – UP.": false,
       "Engine                           – T'S & P'S.": false,
       "Trim                             – SET .": false,
 
     },
-    "✈️ TOP OF CLIMB, CRUISE, APPROACH": {
+    "TOP OF CLIMB, CRUISE, APPROACH": {
       "Fuel                             – CONTENTS SUFFICIENT.": false,
       "Radio                            – FREQ, TEST VOL AND TRANSPONDER.": false,
       "Engine                           – CARB HEAT, GAUGES.": false,
@@ -255,7 +255,7 @@ void initState() {
       "Landing & Strobe Lights          – ON.": false,
 
     },
-    "🛬 LANDING - CHEF": {
+    "LANDING - CHEF": {
       "Carburettor Heat                  – ON.": false,
       "Harnesses                        – SECURE.": false,
       "Engine                           – GAUGES.": false,
@@ -263,7 +263,7 @@ void initState() {
       "Carburettor Heat                  – OFF (300FT).": false,
 
     },
-    "🛬 AFTER LANDING": {
+    "AFTER LANDING": {
       "Clear of Runway                  – STOP.": false,
       "Carburetor Heat                  – COLD.": false,
       "Flaps                            – UP.": false,
@@ -275,7 +275,7 @@ void initState() {
       "Fuel Contents                    – CHECK & REFUEL IF NECESSARY.": false,
 
     },
-    "⛔ SHUTDOWN": {
+    "SHUTDOWN": {
       "Toe Brakes                       – OFF (IN).": false,
       "Throttle                         – 1200 RPM.": false,
       "Time & Hobbs                     – RECORD.": false,
@@ -438,6 +438,7 @@ void toggleWeatherCondition(String key) {
           "Cessna 152 - Pre-Flight Checklist",
           style: TextStyle(color: Colors.black), // Black title text
         ),
+        iconTheme: IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -457,13 +458,24 @@ void toggleWeatherCondition(String key) {
           children: [
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              height: 60, // ⬅️ Make button taller
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
                 onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (_) => Cessna152EmergencyScreen())),
-                child: Text("🚨 Emergency Procedures"),
+                    MaterialPageRoute(builder: (_) => Cessna152EmergencyScreen())),
+                icon: Icon(Icons.warning, color: Colors.white),
+                label: Text(
+                  "Emergency Procedures",
+                  style: TextStyle(
+                    fontSize: 18, 
+                    fontWeight: FontWeight.bold, 
+                    color: Colors.white
+                    ),
+                ),
               ),
             ),
             SizedBox(height: 12),
@@ -564,7 +576,7 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: isActive ? Colors.amber.shade700 : Colors.blueGrey.shade700,
+            color: isActive ? Color(0xFF87CEEB) : Colors.blueGrey.shade700,
             shape: BoxShape.rectangle,
             border: Border.all(color: Colors.black, width: 1.5),
             borderRadius: BorderRadius.circular(16),
@@ -628,6 +640,10 @@ class ChecklistExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isSectionComplete = items.entries
+      .where((e) => e.key != '__weather__')
+      .every((e) => e.value);
+
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -636,39 +652,49 @@ class ChecklistExpansionTile extends StatelessWidget {
         margin: EdgeInsets.symmetric(vertical: 6),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
-          side: BorderSide(color: Colors.black), // Black border
+          side: BorderSide(
+            color: isSectionComplete ? Colors.green : Colors.black,
+            width: 2,
+          ),
         ),
         elevation: 3,
-        shadowColor: Colors.grey[600],
+        shadowColor: Colors.white,
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
+                Row(
+                  children: [
+                    if (isSectionComplete)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6.0),
+                        child: Icon(Icons.check_circle, color: Colors.green, size: 20),
+                      ),
+                    Text(
+                      title,
+                      style: TextStyle(
                         color: Colors.black,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 if (items.containsKey('__weather__'))
                   Container(
                     margin: EdgeInsets.only(left: 6),
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.yellowAccent.withOpacity(0.15),
+                      color: Color(0xFFADD8E6).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.yellowAccent.withOpacity(0.6)),
+                        color: Color(0xFFADD8E6).withOpacity(0.6),
+                      ),
                     ),
                     child: Text('WX',
-                        style: TextStyle(
-                            color: Colors.yellowAccent, fontSize: 12)),
+                        style: TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
                   ),
               ],
             ),
@@ -677,14 +703,14 @@ class ChecklistExpansionTile extends StatelessWidget {
                 items.entries.where((e) => e.key != '__weather__').map((entry) {
               final isWeatherAdded = items.containsKey('__weather__');
               final Color highlightColor = isWeatherAdded
-                  ? Colors.yellowAccent.withOpacity(0.1)
+                  ? Color(0xFFADD8E6).withOpacity(0.1)
                   : Colors.transparent;
               return Container(
                 color: highlightColor,
                 child: CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(entry.key,
-                      style: TextStyle(color: Colors.white, fontSize: 14)),
+                      style: TextStyle(color: Colors.black, fontSize: 14)),
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),

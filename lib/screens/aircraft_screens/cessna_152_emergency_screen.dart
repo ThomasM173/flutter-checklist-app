@@ -1,7 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_application_1/screens/aircraft_screens/cessna_152_emergency_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:pdf/widgets.dart' as pdfWidgets;
+import 'package:pdf/pdf.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class Cessna152EmergencyScreen extends StatefulWidget {
   const Cessna152EmergencyScreen({super.key});
@@ -11,8 +17,9 @@ class Cessna152EmergencyScreen extends StatefulWidget {
 }
 
 class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
+  late Map<String, Map<String, bool>> checklistSections;
   static const Map<String, List<String>> emergencyProcedures = {
-  "🛑 Engine Failure During Takeoff Roll": [
+  "ENGINE FAILURE DURING TAKE-OFF ROLL": [
     "Throttle                   – IDLE",
     "Flaps                      – UP",
     "Mixture                    – CUT OFF",
@@ -20,23 +27,33 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Master Switch              – OFF",
     "Fuel Shutoff Valve         – OFF",
   ],
-  "🛬 Engine Failure After Takeoff (RWY Available)": [
+  "ENGINE FAILURE AFTER TAKE-OFF (RWY Available)": [
     "Land on remaining runway",
     "Mixture                    – CUT OFF",
     "Ignition Switch            – OFF",
     "Master Switch              – OFF",
     "Fuel Shutoff Valve         – OFF",
   ],
-  "🛫 Engine Failure in Flight": [
+  "ENGINE FAILURE AFTER TAKE-OFF (RWY NOT Available)": [
     "Airspeed                   – 70 KTS",
+    "Best Field                 – 30° OFF NOSE",
+    "Throttle                   – IDLE",
+    "Mixture                    – CUT OFF",
+    "Fuel Shutoff Valve         – OFF",
+    "Ignition Switch            – OFF",
+    "Master Switch              – OFF",
+  ],
+  "ENGINE FAILURE (RESTART)": [
     "Best Field                 – CHOOSE",
+    "Airspeed                   – 70 KTS",
+    "Pattern                    – ESTABLISH",
     "Fuel Shutoff Valve         – ON",
     "Mixture                    – RICH",
     "Carburetor Heat            – ON",
     "Primer                     – IN & LOCKED",
     "Ignition Switch            – BOTH / START",
   ],
-  "⛔ If Restart Unsuccessful": [
+  "IF RESTART UNSUCCESSFUL": [
     "MAYDAY CALL & TRANSPONDER  – TRANSMIT & 7700",
     "Throttle                   – IDLE",
     "Mixture                    – CUT OFF",
@@ -45,25 +62,28 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Flaps                      – AS REQUIRED - 65KTS",
     "Doors                      – UNLATCH",
   ],
-  "🔥 Engine Fire During Start": [
+  "ENGINE FAILURE DURING START": [
     "Starter                    – CONTINUE TO CRANK",
-    "If Engine Starts: Power    – 1700 RPM → Engine – SHUTDOWN",
+    "If Engine Starts: Power    – 1700 RPM FOR FEW MINUTES",
+    "Mixture                    – IDLE CUT OFF",
     "If Engine doesn't Start: Throttle – FULL OPEN",
-    "Mixture                    – CUT OFF",
+    "Starter                    – CONTINUE TO CRANK",
+    "Mixture                    – IDLE CUT OFF",
+    "Master Switch              – OFF",
+    "Ignition Switch            – OFF",
     "Fuel Selector              – OFF",
     "Fire Extinguisher          – OBTAIN",
-    "Engine                     – SECURE (Ignition, Master, Fuel OFF)",
     "Fire                       – EXTINGUISH",
   ],
-  "🔥 Engine Fire In Flight": [
-    "Mixture                    – CUT OFF",
-    "Fuel Shutoff Valve         – OFF",
+  "ENGINE FIRE IN FLIGHT": [
+    "Mixture                    – IDLE CUT OFF",
+    "Fuel Selector              – OFF",
     "Master Switch              – OFF",
     "Cabin Heat & Air           – OFF",
     "Airspeed                   – 70 KTS",
     "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
   ],
-  "⚡ Electrical Fire In Flight": [
+  "ELECTRICAL FIRE IN FLIGHT": [
     "Master Switch              – OFF",
     "All Switches (except ign)  – OFF",
     "Vents & Cabin Air/Heat     – CLOSED",
@@ -74,26 +94,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Radios                     – ON (ONE AT A TIME)",
     "Vents & Cabin Air/Heat     – OPEN",
   ],
-  "🔥 Cabin Fire": [
-    "Master Switch              – OFF",
-    "Vents & Cabin Air/Heat     – CLOSED",
-    "Fire Extinguisher          – ACTIVATE",
-  ],
-  "🔥 Wing Fire": [
-    "Navigation Light           – OFF",
-    "Strobe Light               – OFF",
-    "Pitot Heat                 – OFF",
-  ],
-  "🟡 Precautionary Landing With Engine Power": [
-    "Airspeed                   – 60 KTS",
-    "Radios & Electrical Equip  – OFF",
-    "Flaps                      – 30° (On final)",
-    "Airspeed                   – 55 KTS",
-    "Master Switch              – OFF",
-    "Doors                      – UNLATCH",
-    "Ignition Switch (Post TD)  – OFF",
-  ],
-  "🌊 Ditching": [
+  "DITCHING": [
     "Radio                      – MAYDAY",
     "Heavy Objects              – SECURE",
     "Approach                   – INTO WIND / PARALLEL TO SWELLS",
@@ -103,14 +104,12 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Touchdown                  – LEVEL ATTITUDE",
     "Life Vests                 – INFLATE",
   ],
-  "🔋 Electrical Malfunction": [
+  "ELECTRICAL FAILURE": [
     "If Ammeter Shows Discharge:",
     "  Alternator              – OFF",
     "  Nonessential Electrical – OFF",
     "  ⚠️ LAND ASAP",
-    "If Low Voltage Light:",
-    "  Radios                  – OFF",
-    "  Alt Circuit Breaker     – CHECK IN",
+    "If Low Voltage Light illuminates:",
     "  Master                  – OFF THEN ON",
     "If Light Remains:",
     "  Alternator              – OFF",
@@ -154,6 +153,62 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     await prefs.remove('checkedItems');
   }
 
+  Future<void> generatePDF() async {
+    if (!mounted) return;
+    if (!(Platform.isAndroid || Platform.isIOS)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("PDF generation only works on Android/iOS")),
+      );
+      return;
+    }
+
+    final pdf = pdfWidgets.Document();
+    try {
+      final fontData =
+          await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final pdfFont = pdfWidgets.Font.ttf(fontData);
+
+      pdf.addPage(
+        pdfWidgets.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
+          build: (context) => [
+            pdfWidgets.Text("Cessna 152 Emergency Checklist",
+                style: pdfWidgets.TextStyle(
+                    fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
+            pdfWidgets.SizedBox(height: 10),
+            ...checklistSections.entries.map((entry) => pdfWidgets.Column(
+                  children: [
+                    pdfWidgets.Text(entry.key,
+                        style: pdfWidgets.TextStyle(
+                            fontSize: 18,
+                            fontWeight: pdfWidgets.FontWeight.bold)),
+                    pdfWidgets.SizedBox(height: 5),
+                    ...entry.value.entries.map((item) => pdfWidgets.Text(
+                          "${item.value ? '[x]' : '[ ]'} ${item.key}",
+                          style: pdfWidgets.TextStyle(fontSize: 14),
+                        )),
+                    pdfWidgets.SizedBox(height: 10),
+                  ],
+                )),
+          ],
+        ),
+      );
+
+    final output = await getTemporaryDirectory();
+    final file = File("${output.path}/Cessna_152_Emergency_Procedures.pdf");
+    await file.writeAsBytes(await pdf.save());
+    OpenFile.open(file.path);
+  } catch (_) {
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("PDF error occurred.")),
+      );
+    }
+  }
+}
+
+
   void _toggleItem(String section, int index, bool? value) {
     setState(() {
       final set = _checkedItems.putIfAbsent(section, () => <int>{});
@@ -166,20 +221,48 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     _saveChecklistState();
   }
 
+Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPressed) {
+  return Expanded(
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: ElevatedButton.icon(
+        icon: Icon(icon, color: Colors.white),
+        label: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 16,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color,
+          minimumSize: const Size.fromHeight(60),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        onPressed: onPressed,
+      ),
+    ),
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        backgroundColor: Colors.redAccent, // Sky blue top bar
+        backgroundColor: Colors.redAccent,
         title: const Text(
           "Cessna 152 – Emergency Procedures",
-          style: TextStyle(color: Colors.white), // Black title text
+          style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
         actions: [
           IconButton(
-            icon: const Icon(Icons.restart_alt), // More formal reset icon
+            icon: const Icon(Icons.restart_alt),
             tooltip: "Reset All",
             onPressed: _resetChecklist,
           ),
@@ -189,67 +272,125 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
         padding: const EdgeInsets.all(10),
         children: [
           ElevatedButton.icon(
-            icon: const Icon(Icons.menu_book_rounded),
+            icon: const Icon(Icons.menu_book_rounded, color: Colors.white),
             label: const Text(
               "Play Emergency Learning Game",
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange[400],
-              padding: const EdgeInsets.symmetric(vertical: 12),
+              minimumSize: const Size.fromHeight(60), // height 60
+              shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const Cessna152EmergencyGame()),
+                MaterialPageRoute(
+                    builder: (context) => const Cessna152EmergencyGame()),
               );
             },
           ),
           const SizedBox(height: 10),
+
+          // Your checklist expansion tiles
           ...emergencyProcedures.entries.map((entry) {
             final title = entry.key;
             final steps = entry.value;
-            final checked = _checkedItems[title] ?? <int>{};
+            final checkedIndices = _checkedItems[title] ?? <int>{};
+            final isSectionComplete = checkedIndices.length == steps.length;
 
-            return Card(
-              color: Colors.white, // Drop-down background white
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: const BorderSide(color: Colors.black), // Black border
-              ),
-              margin: const EdgeInsets.symmetric(vertical: 8),
-              elevation: 4,
-              shadowColor: Colors.grey[600],
-              child: ExpansionTile(
-                iconColor: Colors.black,
-                collapsedIconColor: Colors.black,
-                title: Text(
-                  title,
-                  style: const TextStyle(
-                    color: Colors.black, // Title text in black
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              curve: Curves.easeInOut,
+              child: Card(
+                color: Colors.white,
+                margin: const EdgeInsets.symmetric(vertical: 6),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSectionComplete ? Colors.green : Colors.black,
+                    width: 2,
                   ),
                 ),
-                children: List.generate(steps.length, (index) {
-                  final isChecked = checked.contains(index);
-                  return CheckboxListTile(
-                    title: Text(
-                      steps[index],
-                      style: const TextStyle(color: Colors.black), // Checklist text black
+                elevation: 3,
+                shadowColor: Colors.white,
+                child: Theme(
+                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  child: ExpansionTile(
+                    iconColor: Colors.black,
+                    collapsedIconColor: Colors.black,
+                    title: Row(
+                      children: [
+                        if (isSectionComplete)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 6.0),
+                            child: Icon(Icons.check_circle,
+                                color: Colors.green, size: 20),
+                          ),
+                        Expanded(
+                          child: Text(
+                            title,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                    value: isChecked,
-                    onChanged: (value) => _toggleItem(title, index, value),
-                    activeColor: Colors.black, // Black checkbox
-                    checkColor: Colors.white, // White tick
-                    controlAffinity: ListTileControlAffinity.leading,
-                  );
-                }),
+                    childrenPadding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    children: steps.asMap().entries.map((entryMap) {
+                      final index = entryMap.key;
+                      final stepText = entryMap.value;
+                      final isChecked = checkedIndices.contains(index);
+
+                      return CheckboxListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: Text(
+                          stepText,
+                          style:
+                              const TextStyle(color: Colors.black, fontSize: 14),
+                        ),
+                        value: isChecked,
+                        onChanged: (bool? value) =>
+                            _toggleItem(title, index, value),
+                        activeColor: Colors.green,
+                        controlAffinity: ListTileControlAffinity.leading,
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
             );
-          }),
+          }).toList(),
+
+          const SizedBox(height: 30),
+
+          Row(
+            children: [
+              _iconButton(Icons.refresh, 'Reset', Colors.red, _resetChecklist),
+              _iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+              _iconButton(
+                Icons.info_outline,
+                'Details',
+                Colors.orange,
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const Cessna152EmergencyScreen()),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
         ],
       ),
     );
   }
+
 }
