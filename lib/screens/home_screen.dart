@@ -107,6 +107,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onBottomNavTap,
+        backgroundColor: Colors.black,
+        selectedItemColor: Colors.greenAccent,
+        unselectedItemColor: Colors.white,
+        showUnselectedLabels: true,
+        iconSize: 28.0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_outlined),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.cloud_queue),
+            label: 'Weather',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.videogame_asset),
+            label: 'Game',
+          ),
+        ],
+      ),
       body: Stack(
         children: [
           Padding(
@@ -242,47 +265,39 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 12.0),
-              child: Text(
-                "Fly safe, Fly smart.\nClearedToGo is here to help you, every step of the way.",
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black54,
-                ),
+              bottom: 40,
+              left: 0,
+              right: 0,
+              child: const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 12.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Fly safe, Fly smart.\nClearedToGo is here to help you, every step of the way.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black54,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      "This checklist is for reference only and must not be considered authoritative.\nAlways use it in conjunction with the Pilot's Operating Handbook and comply with all applicable regulations.",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black45,
+                      ),
+                  ),
+                ],
               ),
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onBottomNavTap,
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.greenAccent,
-        unselectedItemColor: Colors.white,
-        showUnselectedLabels: true,
-        iconSize: 28.0,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_outlined),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud_queue),
-            label: 'Weather',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.videogame_asset),
-            label: 'Game',
-          ),
-        ],
-      ),
+      ), // 👈 CLOSE the Stack widget
     );
   }
 }

@@ -19,13 +19,13 @@ class Cessna152EmergencyScreen extends StatefulWidget {
 class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
   late Map<String, Map<String, bool>> checklistSections;
   static const Map<String, List<String>> emergencyProcedures = {
-  "ENGINE FAILURE DURING TAKE-OFF ROLL": [
-    "Throttle                   – IDLE",
-    "Flaps                      – UP",
-    "Mixture                    – CUT OFF",
-    "Ignition Switch            – OFF",
-    "Master Switch              – OFF",
-    "Fuel Shutoff Valve         – OFF",
+  "ENGINE POWER LOSS IN FLIGHT": [
+  "Carburetor Heat            – ON",
+  "Primer                     – IN & LOCKED",
+  "Fuel Shutoff Valve         – BOTH",
+  "Mixture                    – RICH",
+  "Ignition Switch            – BOTH (ON START IF PROPELLER STOPPED)",
+  "IF NO RESPONSE PROCEED WITH POWER OFF LANDING",
   ],
   "ENGINE FAILURE AFTER TAKE-OFF (RWY Available)": [
     "Land on remaining runway",
@@ -35,7 +35,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Fuel Shutoff Valve         – OFF",
   ],
   "ENGINE FAILURE AFTER TAKE-OFF (RWY NOT Available)": [
-    "Airspeed                   – 70 KTS",
+    "Airspeed                   – SET",
     "Best Field                 – 30° OFF NOSE",
     "Throttle                   – IDLE",
     "Mixture                    – CUT OFF",
@@ -43,11 +43,11 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Ignition Switch            – OFF",
     "Master Switch              – OFF",
   ],
-  "ENGINE FAILURE (RESTART)": [
-    "Best Field                 – CHOOSE",
-    "Airspeed                   – 70 KTS",
+  "POWER OFF LANDING (RESTART)": [
+    "Airspeed                   – SET",
+    "Best Field                 – LOCATE",
     "Pattern                    – ESTABLISH",
-    "Fuel Shutoff Valve         – ON",
+    "Fuel Shutoff Valve         – ON - BOTH",
     "Mixture                    – RICH",
     "Carburetor Heat            – ON",
     "Primer                     – IN & LOCKED",
@@ -59,10 +59,23 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Mixture                    – CUT OFF",
     "Fuel Shutoff Valve         – OFF",
     "Ignition Switch            – OFF",
-    "Flaps                      – AS REQUIRED - 65KTS",
+    "Flaps                      – AS REQUIRED",
+    "Harness                    – TIGHT",
     "Doors                      – UNLATCH",
   ],
-  "ENGINE FAILURE DURING START": [
+  "ELECTRICAL FAILURE": [
+    "If Ammeter Shows Discharge:",
+    "  Alternator              – OFF",
+    "  Nonessential Electrical – OFF",
+    "  ⚠️ LAND ASAP",
+    "If Low Voltage Light illuminates:",
+    "  Master                  – OFF THEN ON",
+    "If Light Remains:",
+    "  Alternator              – OFF",
+    "  Nonessential Electrical – OFF",
+    "  ⚠️ LAND ASAP",
+  ],
+  "ENGINE FIRE DURING START": [
     "Starter                    – CONTINUE TO CRANK",
     "If Engine Starts: Power    – 1700 RPM FOR FEW MINUTES",
     "Mixture                    – IDLE CUT OFF",
@@ -80,41 +93,13 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     "Fuel Selector              – OFF",
     "Master Switch              – OFF",
     "Cabin Heat & Air           – OFF",
-    "Airspeed                   – 70 KTS",
     "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
   ],
-  "ELECTRICAL FIRE IN FLIGHT": [
+  "CABIN | ELECTRICAL FIRE OR SMOKE": [
     "Master Switch              – OFF",
-    "All Switches (except ign)  – OFF",
-    "Vents & Cabin Air/Heat     – CLOSED",
-    "Fire Extinguisher          – ACTIVATE",
-    "If Fire Out & Power Needed:",
-    "Master Switch              – ON",
-    "Circuit Breakers           – CHECK TRIPPED",
-    "Radios                     – ON (ONE AT A TIME)",
-    "Vents & Cabin Air/Heat     – OPEN",
-  ],
-  "DITCHING": [
-    "Radio                      – MAYDAY",
-    "Heavy Objects              – SECURE",
-    "Approach                   – INTO WIND / PARALLEL TO SWELLS",
-    "Flaps                      – FULL",
-    "Descent                    – 300 FT/MIN",
-    "Doors                      – UNLATCH",
-    "Touchdown                  – LEVEL ATTITUDE",
-    "Life Vests                 – INFLATE",
-  ],
-  "ELECTRICAL FAILURE": [
-    "If Ammeter Shows Discharge:",
-    "  Alternator              – OFF",
-    "  Nonessential Electrical – OFF",
-    "  ⚠️ LAND ASAP",
-    "If Low Voltage Light illuminates:",
-    "  Master                  – OFF THEN ON",
-    "If Light Remains:",
-    "  Alternator              – OFF",
-    "  Nonessential Electrical – OFF",
-    "  ⚠️ LAND ASAP",
+    "Cabin Air/Heat             – CLOSED",
+    "Vents & Cabin Windows       – OPEN",
+    "LAND AS SOON AS PRACTICAL",
   ],
 };
 

@@ -86,7 +86,7 @@ class _PiperPA28ChecklistScreenState extends State<PiperPA28ChecklistScreen> {
 void initState() {
   super.initState();
   checklistSections = {
-    "1️⃣ CHECK A (ONLY FIRST FLIGHT OF DAY)": {
+    "CHECK A (ONLY FIRST FLIGHT OF DAY)": {
       "Control Lock                      – REMOVE.": false,
       "First Aid Kit                    – CHECK.": false,
       "Fire Extinguisher                – CHECK.": false,
@@ -107,7 +107,7 @@ void initState() {
       "Windscreen                         – CLEAR.": false,
 
     },
-    "2️⃣ TRANSIT CHECK (Check A Complete)": {
+    "TRANSIT CHECK (Check A Complete)": {
       "Control Lock                      – REMOVE.": false,
       "Park Brake                         – ON.": false,
       "Magneto Switch                  – OFF / KEY OUT.": false,
@@ -117,7 +117,7 @@ void initState() {
       "Windscreen                         – CLEAR.": false,
 
     },
-    "3️⃣ STARBOARD/RIGHT WING": {
+    "STARBOARD/RIGHT WING": {
       "Flap                               – CONDITION, HINGES.": false,
       "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
       "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
@@ -128,7 +128,7 @@ void initState() {
       "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
 
     },
-    "4️⃣ FRONT FUSELAGE & ENGINE": {
+    "FRONT FUSELAGE & ENGINE": {
       "Windscreen                        – CLEAR.": false,
       "Engine                            – CHECK CLEAR.": false,
       "Oil Contents                       – CHECK CLEAR.": false,
@@ -141,7 +141,7 @@ void initState() {
       "Nose Gear                        – CHECK.": false,
 
     },
-    "5️⃣ PORT/LEFT WING": {
+    "PORT/LEFT WING": {
       "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
       "Fuel Drain                        – CHECK FOR LEAKS.": false,
       "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
@@ -154,7 +154,7 @@ void initState() {
       "Flap                               – CONDITION, HINGES.": false,
 
     },
-    "6️⃣ REAR FUSELAGE & TAIL": {
+    "REAR FUSELAGE & TAIL": {
       "Rear Fuselage Skin              – CONDITION.": false,
       "Radio Aerials                   – SECURE.": false,
       "Tail Skid                      – CONDITION": false,
@@ -163,7 +163,7 @@ void initState() {
       "Beacon & Navigation Light      – SECURE": false,
 
     },
-    "6️⃣ INTERNAL": {
+    "INTERNAL": {
       "Passenger Brief                  – COMPLETE.": false,
       "Cabin Doors                      – CLOSED & LATCHED TOP AND BOTTOM": false,
       "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
@@ -176,7 +176,7 @@ void initState() {
       "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
 
     },
-    "7️⃣ ENGINE START": {
+    "ENGINE START": {
       "Battery Master                   – ON.": false,
       "ATC (Start-Up) - IF APPLICIBLE  – REQUEST/NOTIFY.": false,
       "Annunciator Panel                – SELECT DAY/NIGHT, TEST, LOW VOLTAGE ON, LOCATE STARTER WARNING LIGHT": false,
@@ -195,7 +195,7 @@ void initState() {
       "Oil Pressure                     – GREEN (<30s), IF NOT CLOSE DOWN.": false,
 
     },
-    "8️⃣ AFTER STARTING": {
+    "AFTER STARTING": {
       "Headset                         – FITTED & MICROPHONE ADJUSTED, SET SQUELCH.": false,
       "Annunciators                    – OUT": false,
       "Magnetos                        – DEAD CUT CHECK (L, R, BOTH).": false,
@@ -210,13 +210,13 @@ void initState() {
       "Time & Hobbs                    – RECORD": false,
 
     },
-    "🛫 TAXI": {
+    "TAXI": {
       "ATC (Taxi)                       – REQUEST/NOTIFY.": false,
       "Brake Check                      – PERFORM.": false,
       "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
 
     },
-    "🛫 POWER CHECKS": {
+    "POWER CHECKS": {
       "Aircraft                       – INTO WIND, CLEAR BEHIND.": false,
       "Brakes                       – HOLD ON.": false,
       "Fuel                        – CHANGE TO FULLER TANK": false,
@@ -229,7 +229,7 @@ void initState() {
       "Throttle                      – CLOSE IDLE (500-700RPM), MIN OIL PRESSURE 25PSI, SET 1200RPM.": false,
 
     },
-    "🛫 PRE TAKE-OFF": {
+    "PRE TAKE-OFF": {
       "Elevator Trim                    – SET TAKEOFF.": false,
       "Throttle Friction Lock           – SET FINGER TIGHT.": false,
       "Mixture                          – RICH.": false,
@@ -249,13 +249,13 @@ void initState() {
       "Landing & Strobe Lights          – ON.": false,
 
     },
-    "🛫 AFTER TAKE-OFF": {
+    "AFTER TAKE-OFF": {
       "Flaps                            – UP.": false,
       "Engine                           – T'S & P'S.": false,
       "Trim                             – SET .": false,
 
     },
-    "✈️ TOP OF CLIMB, CRUISE, APPROACH": {
+    "TOP OF CLIMB, CRUISE, APPROACH": {
       "Fuel                             – CONTENTS SUFFICIENT.": false,
       "Radio                            – FREQ, TEST VOL AND TRANSPONDER.": false,
       "Engine                           – CARB HEAT, GAUGES.": false,
@@ -264,7 +264,7 @@ void initState() {
       "Landing & Strobe Lights          – ON.": false,
 
     },
-    "🛬 LANDING - CHEF": {
+    "LANDING - CHEF": {
       "Carburettor Heat                  – ON.": false,
       "Harnesses                        – SECURE.": false,
       "Engine                           – GAUGES.": false,
@@ -272,7 +272,7 @@ void initState() {
       "Carburettor Heat                  – OFF (300FT).": false,
 
     },
-    "🛬 AFTER LANDING": {
+    "AFTER LANDING": {
       "Clear of Runway                  – STOP.": false,
       "Carburetor Heat                  – COLD.": false,
       "Flaps                            – UP.": false,
@@ -285,7 +285,7 @@ void initState() {
       "Fuel Contents                    – CHECK & REFUEL IF NECESSARY.": false,
 
     },
-    "⛔ SHUTDOWN": {
+    "SHUTDOWN": {
       "Park Brake                       – ON": false,
       "Throttle                         – 1200 RPM.": false,
       "Time & Hobbs                     – RECORD.": false,
@@ -441,7 +441,10 @@ void toggleWeatherCondition(String key) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: Text("Piper PA28 - Pre-Flight Checklist"),
+        title: Text("Piper PA28 - Pre-Flight Checklist",
+        style: TextStyle(color: Colors.black), // Black title text
+        ),
+        iconTheme: IconThemeData(color: Colors.black),
         flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -461,13 +464,24 @@ void toggleWeatherCondition(String key) {
           children: [
             SizedBox(
               width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              height: 60, // ⬅️ Make button taller
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
                 onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (_) => PiperPA28EmergencyScreen())),
-                child: Text("🚨 Emergency Procedures"),
+                    MaterialPageRoute(builder: (_) => PiperPA28EmergencyScreen())),
+                icon: Icon(Icons.warning, color: Colors.white),
+                label: Text(
+                  "Emergency Procedures",
+                  style: TextStyle(
+                    fontSize: 18, 
+                    fontWeight: FontWeight.bold, 
+                    color: Colors.white
+                    ),
+                ),
               ),
             ),
             SizedBox(height: 12),
@@ -475,12 +489,12 @@ void toggleWeatherCondition(String key) {
               Expanded(
                 child: TextField(
                   controller: _airportController,
-                  style: TextStyle(color: Colors.white),
+                  style: TextStyle(color: Colors.black),
                   decoration: InputDecoration(
                     hintText: 'Enter ICAO (e.g. EGLL)',
-                    hintStyle: TextStyle(color: Colors.grey),
+                    hintStyle: TextStyle(color: Colors.black),
                     filled: true,
-                    fillColor: Colors.grey,
+                    fillColor: Colors.white,
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none),
@@ -490,7 +504,7 @@ void toggleWeatherCondition(String key) {
               Column(
                 children: [
                  IconButton(
-  icon: Icon(Icons.cloud, color: Colors.grey[700]),
+  icon: Icon(Icons.search, color: Colors.black),
   onPressed: () {
     // Optionally show a message
     ScaffoldMessenger.of(context).showSnackBar(
@@ -498,6 +512,7 @@ void toggleWeatherCondition(String key) {
     );
   },
 ),
+
 
                   SizedBox(height: 2),
                   Text("Search",
@@ -568,8 +583,10 @@ Widget _weatherButton(String label, IconData icon, String conditionKey) {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: isActive ? Colors.amber.shade700 : Colors.blueGrey.shade700,
-            shape: BoxShape.circle,
+            color: isActive ? Color(0xFF87CEEB) : Colors.blueGrey.shade700,
+            shape: BoxShape.rectangle,
+            border: Border.all(color: Colors.black, width: 1.5),
+            borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
                 color: Colors.grey,
@@ -630,44 +647,61 @@ class ChecklistExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isSectionComplete = items.entries
+      .where((e) => e.key != '__weather__')
+      .every((e) => e.value);
+
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[600],
+        color: Colors.white,
         margin: EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: isSectionComplete ? Colors.green : Colors.black,
+            width: 2,
+          ),
+        ),
         elevation: 3,
-        shadowColor: Colors.grey[600],
+        shadowColor: Colors.white,
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        color: Colors.white,
+                Row(
+                  children: [
+                    if (isSectionComplete)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6.0),
+                        child: Icon(Icons.check_circle, color: Colors.green, size: 20),
+                      ),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.black,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 if (items.containsKey('__weather__'))
                   Container(
                     margin: EdgeInsets.only(left: 6),
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.yellowAccent.withOpacity(0.15),
+                      color: Color(0xFFADD8E6).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.yellowAccent.withOpacity(0.6)),
+                        color: Color(0xFFADD8E6).withOpacity(0.6),
+                      ),
                     ),
                     child: Text('WX',
-                        style: TextStyle(
-                            color: Colors.yellowAccent, fontSize: 12)),
+                        style: TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
                   ),
               ],
             ),
@@ -676,14 +710,14 @@ class ChecklistExpansionTile extends StatelessWidget {
                 items.entries.where((e) => e.key != '__weather__').map((entry) {
               final isWeatherAdded = items.containsKey('__weather__');
               final Color highlightColor = isWeatherAdded
-                  ? Colors.yellowAccent.withOpacity(0.1)
+                  ? Color(0xFFADD8E6).withOpacity(0.1)
                   : Colors.transparent;
               return Container(
                 color: highlightColor,
                 child: CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(entry.key,
-                      style: TextStyle(color: Colors.white, fontSize: 14)),
+                      style: TextStyle(color: Colors.black, fontSize: 14)),
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
