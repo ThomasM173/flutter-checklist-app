@@ -632,17 +632,18 @@ class ChecklistExpansionTile extends StatelessWidget {
   final Map<String, bool> items;
   final Function(String, bool) updateChecklist;
 
-  const ChecklistExpansionTile(
-      {super.key,
-      required this.title,
-      required this.items,
-      required this.updateChecklist});
+  const ChecklistExpansionTile({
+    super.key,
+    required this.title,
+    required this.items,
+    required this.updateChecklist,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final bool isSectionComplete = items.entries
-      .where((e) => e.key != '__weather__')
-      .every((e) => e.value);
+    final entries = items.entries.where((e) => e.key != '__weather__').toList();
+    final bool isSectionComplete = entries.every((e) => e.value);
+    final bool hasUncheckedItems = entries.any((e) => !e.value);
 
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
@@ -699,26 +700,50 @@ class ChecklistExpansionTile extends StatelessWidget {
               ],
             ),
             childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            children:
-                items.entries.where((e) => e.key != '__weather__').map((entry) {
-              final isWeatherAdded = items.containsKey('__weather__');
-              final Color highlightColor = isWeatherAdded
-                  ? Color(0xFFADD8E6).withOpacity(0.1)
-                  : Colors.transparent;
-              return Container(
-                color: highlightColor,
-                child: CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(entry.key,
-                      style: TextStyle(color: Colors.black, fontSize: 14)),
-                  value: entry.value,
-                  onChanged: (bool? value) =>
-                      updateChecklist(entry.key, value ?? false),
-                  activeColor: Colors.green,
-                  controlAffinity: ListTileControlAffinity.leading,
+            children: [
+              ...entries.map((entry) {
+                final isWeatherAdded = items.containsKey('__weather__');
+                final Color highlightColor = isWeatherAdded
+                    ? Color(0xFFADD8E6).withOpacity(0.1)
+                    : Colors.transparent;
+                return Container(
+                  color: highlightColor,
+                  child: CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(entry.key,
+                        style: TextStyle(color: Colors.black, fontSize: 14)),
+                    value: entry.value,
+                    onChanged: (bool? value) =>
+                        updateChecklist(entry.key, value ?? false),
+                    activeColor: Colors.green,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                );
+              }).toList(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, right: 4),
+                  child: TextButton.icon(
+                    icon: Icon(
+                      hasUncheckedItems ? Icons.select_all : Icons.remove_done,
+                      color: hasUncheckedItems ? Colors.green : Colors.red,
+                    ),
+                    label: Text(
+                      hasUncheckedItems ? "Select All" : "Deselect All",
+                      style: TextStyle(
+                        color: hasUncheckedItems ? Colors.green : Colors.red,
+                      ),
+                    ),
+                    onPressed: () {
+                      for (var entry in entries) {
+                        updateChecklist(entry.key, hasUncheckedItems);
+                      }
+                    },
+                  ),
                 ),
-              );
-            }).toList(),
+              ),
+            ],
           ),
         ),
       ),

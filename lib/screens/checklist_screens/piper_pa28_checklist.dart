@@ -647,61 +647,44 @@ class ChecklistExpansionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool isSectionComplete = items.entries
-      .where((e) => e.key != '__weather__')
-      .every((e) => e.value);
-
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.white,
+        color: Colors.grey[600],
         margin: EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10),
-          side: BorderSide(
-            color: isSectionComplete ? Colors.green : Colors.black,
-            width: 2,
-          ),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         elevation: 3,
-        shadowColor: Colors.white,
+        shadowColor: Colors.grey[600],
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    if (isSectionComplete)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 6.0),
-                        child: Icon(Icons.check_circle, color: Colors.green, size: 20),
-                      ),
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: Colors.black,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: TextStyle(
+                        color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                        fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
                 if (items.containsKey('__weather__'))
                   Container(
                     margin: EdgeInsets.only(left: 6),
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Color(0xFFADD8E6).withOpacity(0.15),
+                      color: Colors.yellowAccent.withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Color(0xFFADD8E6).withOpacity(0.6),
-                      ),
+                          color: Colors.yellowAccent.withOpacity(0.6)),
                     ),
                     child: Text('WX',
-                        style: TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
+                        style: TextStyle(
+                            color: Colors.yellowAccent, fontSize: 12)),
                   ),
               ],
             ),
@@ -710,14 +693,14 @@ class ChecklistExpansionTile extends StatelessWidget {
                 items.entries.where((e) => e.key != '__weather__').map((entry) {
               final isWeatherAdded = items.containsKey('__weather__');
               final Color highlightColor = isWeatherAdded
-                  ? Color(0xFFADD8E6).withOpacity(0.1)
+                  ? Colors.yellowAccent.withOpacity(0.1)
                   : Colors.transparent;
               return Container(
                 color: highlightColor,
                 child: CheckboxListTile(
                   contentPadding: EdgeInsets.zero,
                   title: Text(entry.key,
-                      style: TextStyle(color: Colors.black, fontSize: 14)),
+                      style: TextStyle(color: Colors.white, fontSize: 14)),
                   value: entry.value,
                   onChanged: (bool? value) =>
                       updateChecklist(entry.key, value ?? false),
