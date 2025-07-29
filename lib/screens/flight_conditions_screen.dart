@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import '../utils/weather_service.dart';
 import '../widget/bottom_nav_bar.dart';
 
@@ -54,14 +55,8 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
               decoration: BoxDecoration(color: Colors.lightBlue),
               child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
             ),
-            ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
-            ),
-            ListTile(
-              leading: Icon(Icons.settings),
-              title: Text('Settings'),
-            ),
+            ListTile(leading: Icon(Icons.home), title: Text('Home')),
+            ListTile(leading: Icon(Icons.settings), title: Text('Settings')),
           ],
         ),
       ),
@@ -73,7 +68,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)],
+              colors: [Color(0xFFB0E0E6), Color(0xFF00BFFF)],
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
             ),
@@ -109,7 +104,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 ElevatedButton(
                   onPressed: () => _fetch(_icaoController.text.trim()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
+                    backgroundColor: Colors.lightBlueAccent,
                     padding: const EdgeInsets.all(14),
                   ),
                   child: const Icon(Icons.search, color: Colors.black),
@@ -122,10 +117,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
             else if (_error != null)
               Expanded(
                 child: Center(
-                  child: Text(
-                    _error!,
-                    style: const TextStyle(color: Colors.red, fontSize: 16),
-                  ),
+                  child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 16)),
                 ),
               )
             else if (_metar != null)
@@ -145,18 +137,30 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         children: [
           _sectionTitle('Station Info'),
           _dataCard([
-            _infoRow('ICAO', _metar!['icao']),
-            _infoRow('Name', _metar!['name']),
-            _infoRow('Latitude', _metar!['latitude']),
-            _infoRow('Longitude', _metar!['longitude']),
+            _infoRow('ICAO', _metar!['icao'], Icons.flight_takeoff),
+            _infoRow('Name', _metar!['name'], Icons.location_city),
+            _infoRow('Latitude', _metar!['latitude'], Icons.my_location),
+            _infoRow('Longitude', _metar!['longitude'], Icons.my_location),
+            _infoRow('Elevation', _metar!['elevation'], Icons.terrain),
           ]),
           _sectionTitle('Observed'),
-          _infoRow('Time', _metar!['observed']),
+          _infoRow('Time', _metar!['observed'], Icons.access_time),
           _sectionTitle('Conditions'),
-          _infoRow('Temperature', _metar!['temperature']),
-          _infoRow('Wind', _metar!['wind']),
-          _infoRow('Visibility', _metar!['visibility']),
-          _infoRow('Clouds', _metar!['clouds']),
+          _dataCard([
+            _infoRow('Temperature', _metar!['temperature'], Icons.thermostat),
+            _infoRow('Dew Point', _metar!['dewpoint'], Icons.grain),
+            _infoRow('Humidity', _metar!['humidity'], Icons.water_drop),
+            _infoRow('Wind', _metar!['wind'], Icons.air),
+            _infoRow('Visibility', _metar!['visibility'], Icons.remove_red_eye),
+            _infoRow('Clouds', _metar!['clouds'], Icons.cloud),
+            _infoRow('Flight Category', _metar!['category'], Icons.flight),
+            _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
+            _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
+          ]),
+          _sectionTitle('Raw METAR & Remarks'),
+          _infoRow('METAR', _metar!['raw'], Icons.code),
+          _infoRow('Remarks', _metar!['remarks'], Icons.comment),
+          _infoRow('Translated Remarks', _metar!['translatedRemarks'], Icons.translate),
           _sectionTitle('TAF (next 6 periods)'),
           SizedBox(
             height: 160,
@@ -170,15 +174,24 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                   width: 160,
                   child: Card(
                     color: Colors.grey[200],
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                     child: Padding(
                       padding: const EdgeInsets.all(8),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(f['time']!, style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black)),
+                          Row(
+                            children: [
+                              Icon(_getCategoryIcon(f['category'] ?? ''), color: Colors.black54),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  f['time']!,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
                           const SizedBox(height: 6),
                           Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.black87)),
                         ],
@@ -199,12 +212,14 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         child: Text(text, style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
       );
 
-  Widget _infoRow(String label, String? value) => Padding(
+  Widget _infoRow(String label, String? value, IconData icon) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
         child: Row(
           children: [
-            Text('$label:', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+            Icon(icon, size: 20, color: Colors.black54),
             const SizedBox(width: 8),
+            Text('$label:', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+            const SizedBox(width: 6),
             Expanded(child: Text(value ?? 'N/A', style: const TextStyle(color: Colors.black))),
           ],
         ),
@@ -215,4 +230,19 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(padding: const EdgeInsets.all(12), child: Column(children: children)),
       );
+
+  IconData _getCategoryIcon(String category) {
+    switch (category.toUpperCase()) {
+      case 'VFR':
+        return Icons.wb_sunny;
+      case 'MVFR':
+        return Icons.cloud_queue;
+      case 'IFR':
+        return Icons.foggy;
+      case 'LIFR':
+        return Icons.thunderstorm;
+      default:
+        return Icons.help_outline;
+    }
+  }
 }
