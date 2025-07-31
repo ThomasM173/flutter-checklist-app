@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class WeatherService {
-  static const String _token = 'ajKYt7tNw_mxCv7nyIsnoqIKKHGoV6BoYO0Bt4im4rg';
+  static const String _token = 'dev-tE6NuvekB1AceDI4vB3xpHxplJ48LwTfAEqZxxg';
   static const String _baseUrl = 'https://avwx.rest/api';
 
   static Future<Map<String, String>> getDecodedMETAR(String icao) async {
@@ -68,7 +68,7 @@ class WeatherService {
       'raw': raw,
       'remarks': remarks.isNotEmpty ? remarks : 'None',
       'translatedRemarks': translatedRemarks.isNotEmpty ? translatedRemarks : 'None available',
-      'runway': 'Not Reported', // Placeholder for future extension
+      'runway': 'Not Reported',
     };
   }
 
@@ -95,5 +95,89 @@ class WeatherService {
         'category': cat,
       };
     }).toList();
+  }
+
+  static String _firFromIcao(String icao) {
+    if (icao.startsWith('EG')) return 'EGTT'; // UK
+    if (icao.startsWith('LF')) return 'LFFF'; // France
+    if (icao.startsWith('EH')) return 'EHAA'; // Amsterdam
+    return ''; // Unknown / unsupported FIR
+  }
+
+  static Future<List<Map<String, String>>> getHazards(String icao) async {
+    final List<Map<String, String>> hazards = [];
+
+    final endpoints = ['pirep', 'gairmet'];
+    for (final endpoint in endpoints) {
+      final uri = Uri.parse('$_baseUrl/$endpoint/$icao');
+      try {
+        final resp = await http.get(uri, headers: {'Authorization': 'Bearer $_token'});
+        if (resp.statusCode != 200) continue;
+
+        final data = jsonDecode(resp.body);
+        if (data is List) {
+          for (final entry in data) {
+            hazards.add({
+              'type': endpoint.toUpperCase(),
+              'raw': entry['raw']?.toString() ?? 'Unknown',
+              'station': entry['station']?.toString() ?? 'N/A',
+              'time': entry['time']?['dt']?.toString() ?? '',
+            });
+          }
+        }
+      } catch (_) {
+        // skip on error
+      }
+    }
+
+    // Now fetch SIGMET using FIR
+    final fir = _firFromIcao(icao);
+    if (fir.isNotEmpty) {
+      final uri = Uri.parse('$_baseUrl/sigmet/$fir');
+      try {
+        final resp = await http.get(uri, headers: {'Authorization': 'Bearer $_token'});
+        if (resp.statusCode == 200) {
+          final data = jsonDecode(resp.body);
+          if (data is List) {
+            for (final entry in data) {
+              hazards.add({
+                'type': 'SIGMET',
+                'raw': entry['raw']?.toString() ?? 'Unknown',
+                'station': entry['station']?.toString() ?? 'N/A',
+                'time': entry['time']?['dt']?.toString() ?? '',
+              });
+            }
+          }
+        }
+      } catch (_) {
+        // skip on error
+      }
+    }
+
+    return hazards;
+  }
+
+  static Future<Map<String, dynamic>> getStationInfo(String icao) async {
+    final uri = Uri.parse('$_baseUrl/station/$icao');
+    final resp = await http.get(uri, headers: {'Authorization': 'Bearer $_token'});
+
+    if (resp.statusCode != 200) {
+      throw Exception('Station info error: ${resp.statusCode}');
+    }
+
+    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+
+    final runways = (body['runways'] as List?)
+        ?.map((r) => r['ident1']?.toString() ?? '')
+        .where((r) => r.isNotEmpty)
+        .toList();
+
+    return {
+      'city': body['city']?.toString() ?? '',
+      'state': body['state']?.toString() ?? '',
+      'country': body['country']?.toString() ?? '',
+      'reporting': body['reporting']?.toString() ?? '',
+      'runways': runways ?? [],
+    };
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
 import '../utils/weather_service.dart';
 import '../widget/bottom_nav_bar.dart';
 
@@ -16,6 +15,8 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   String? _error;
   Map<String, String>? _metar;
   List<Map<String, String>> _taf = [];
+  Map<String, dynamic>? _stationInfo;
+  List<Map<String, String>> _hazards = [];
 
   @override
   void initState() {
@@ -29,13 +30,20 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
       _error = null;
       _metar = null;
       _taf = [];
+      _stationInfo = null;
+      _hazards = [];
     });
     try {
       final metar = await WeatherService.getDecodedMETAR(code);
       final taf = await WeatherService.getForecast(code);
+      final stationInfo = await WeatherService.getStationInfo(code);
+      final hazards = await WeatherService.getHazards(code);
+
       setState(() {
         _metar = metar;
         _taf = taf;
+        _stationInfo = stationInfo;
+        _hazards = hazards;
       });
     } catch (e) {
       setState(() => _error = e.toString());
@@ -130,82 +138,163 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
     );
   }
 
-  Widget _buildData() {
-    return SingleChildScrollView(
+ Widget _buildData() {
+  return SingleChildScrollView(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _sectionTitle('Station Info'),
+        _dataCard([
+          _infoRow('ICAO', _metar!['icao'], Icons.flight_takeoff),
+          _infoRow('Name', _metar!['name'], Icons.location_city),
+          _infoRow('Latitude', _metar!['latitude'], Icons.my_location),
+          _infoRow('Longitude', _metar!['longitude'], Icons.my_location),
+          _infoRow('Elevation', _metar!['elevation'], Icons.terrain),
+          if (_stationInfo != null) ...[
+            _infoRow('City', _stationInfo!['city'], Icons.location_city),
+            _infoRow('State', _stationInfo!['state'], Icons.flag),
+            _infoRow('Country', _stationInfo!['country'], Icons.public),
+            _infoRow('Reporting', _stationInfo!['reporting'], Icons.info_outline),
+            _infoRow('Runways', (_stationInfo!['runways'] as List).join(', '), Icons.run_circle),
+          ],
+        ]),
+        _sectionTitle('Observed'),
+        _infoRow('Time', _metar!['observed'], Icons.access_time),
+        _sectionTitle('Conditions'),
+        _dataCard([
+          _infoRow('Temperature', _metar!['temperature'], Icons.thermostat),
+          _infoRow('Dew Point', _metar!['dewpoint'], Icons.grain),
+          _infoRow('Humidity', _metar!['humidity'], Icons.water_drop),
+          _infoRow('Wind', _metar!['wind'], Icons.air),
+          _infoRow('Visibility', _metar!['visibility'], Icons.remove_red_eye),
+          _infoRow('Clouds', _metar!['clouds'], Icons.cloud),
+          _infoRow('Flight Category', _metar!['category'], Icons.flight),
+          _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
+          _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
+        ]),
+        _sectionTitle('Raw METAR & Remarks'),
+        _infoRow('METAR', _metar!['raw'], Icons.code),
+        _infoRow('Remarks', _metar!['remarks'], Icons.comment),
+        _infoRow('Translated Remarks', _metar!['translatedRemarks'], Icons.translate),
+        _sectionTitle('TAF (next 6 periods)'),
+        SizedBox(
+          height: 160,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _taf.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (_, i) {
+              final f = _taf[i];
+              return SizedBox(
+                width: 160,
+                child: Card(
+                  color: Colors.grey[200],
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(_getCategoryIcon(f['category'] ?? ''), color: Colors.black54),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                f['time']!,
+                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 6),
+                        Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.black87)),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+
+        if (_hazards.isNotEmpty) ...[
+          _sectionTitle('Hazards (PIREPs / SIGMETs / G-AIRMETs)'),
+          Column(
+            children: _hazards.map((h) => _buildHazardCard(h)).toList(),
+          ),
+        ],
+      ],
+    ),
+  );
+}
+
+Widget _buildHazardCard(Map<String, String> hazard) {
+  // Typical keys based on your WeatherService hazard data:
+  // type, station, raw, time, altitude, severity, conditions, flightLevels, phenomenon, movement, intensity, etc.
+  IconData icon;
+  switch (hazard['type']?.toUpperCase()) {
+    case 'PIREPS':
+      icon = Icons.flight;
+      break;
+    case 'SIGMET':
+      icon = Icons.warning;
+      break;
+    case 'G-AIRMET':
+      icon = Icons.shield;
+      break;
+    default:
+      icon = Icons.report_problem;
+  }
+
+  return Card(
+    color: Colors.grey[100],
+    margin: const EdgeInsets.symmetric(vertical: 6),
+    child: Padding(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _sectionTitle('Station Info'),
-          _dataCard([
-            _infoRow('ICAO', _metar!['icao'], Icons.flight_takeoff),
-            _infoRow('Name', _metar!['name'], Icons.location_city),
-            _infoRow('Latitude', _metar!['latitude'], Icons.my_location),
-            _infoRow('Longitude', _metar!['longitude'], Icons.my_location),
-            _infoRow('Elevation', _metar!['elevation'], Icons.terrain),
-          ]),
-          _sectionTitle('Observed'),
-          _infoRow('Time', _metar!['observed'], Icons.access_time),
-          _sectionTitle('Conditions'),
-          _dataCard([
-            _infoRow('Temperature', _metar!['temperature'], Icons.thermostat),
-            _infoRow('Dew Point', _metar!['dewpoint'], Icons.grain),
-            _infoRow('Humidity', _metar!['humidity'], Icons.water_drop),
-            _infoRow('Wind', _metar!['wind'], Icons.air),
-            _infoRow('Visibility', _metar!['visibility'], Icons.remove_red_eye),
-            _infoRow('Clouds', _metar!['clouds'], Icons.cloud),
-            _infoRow('Flight Category', _metar!['category'], Icons.flight),
-            _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
-            _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
-          ]),
-          _sectionTitle('Raw METAR & Remarks'),
-          _infoRow('METAR', _metar!['raw'], Icons.code),
-          _infoRow('Remarks', _metar!['remarks'], Icons.comment),
-          _infoRow('Translated Remarks', _metar!['translatedRemarks'], Icons.translate),
-          _sectionTitle('TAF (next 6 periods)'),
-          SizedBox(
-            height: 160,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: _taf.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (_, i) {
-                final f = _taf[i];
-                return SizedBox(
-                  width: 160,
-                  child: Card(
-                    color: Colors.grey[200],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(_getCategoryIcon(f['category'] ?? ''), color: Colors.black54),
-                              const SizedBox(width: 6),
-                              Expanded(
-                                child: Text(
-                                  f['time']!,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 6),
-                          Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.black87)),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
+          Row(
+            children: [
+              Icon(icon, color: Colors.black54),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  '${hazard['type']} @ ${hazard['station']}',
+                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                ),
+              ),
+              if (hazard['time'] != null)
+                Text(hazard['time']!, style: const TextStyle(color: Colors.black54)),
+            ],
           ),
+          const SizedBox(height: 8),
+          if (hazard['severity'] != null)
+            _infoRow('Severity', hazard['severity'], Icons.priority_high),
+          if (hazard['altitude'] != null)
+            _infoRow('Altitude', hazard['altitude'], Icons.height),
+          if (hazard['flightLevels'] != null)
+            _infoRow('Flight Levels', hazard['flightLevels'], Icons.flight),
+          if (hazard['conditions'] != null)
+            _infoRow('Conditions', hazard['conditions'], Icons.cloud_queue),
+          if (hazard['phenomenon'] != null)
+            _infoRow('Phenomenon', hazard['phenomenon'], Icons.flash_on),
+          if (hazard['movement'] != null)
+            _infoRow('Movement', hazard['movement'], Icons.directions_run),
+          if (hazard['intensity'] != null)
+            _infoRow('Intensity', hazard['intensity'], Icons.speed),
+          if (hazard['raw'] != null)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text('Raw: ${hazard['raw']}', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+            ),
         ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
   Widget _sectionTitle(String text) => Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 4),
