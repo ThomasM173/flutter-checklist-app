@@ -21,7 +21,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   @override
   void initState() {
     super.initState();
-    _fetch('EGLL');
+    _fetch('EGLL'); // Fetch data for London Heathrow by default
   }
 
   Future<void> _fetch(String code) async {
@@ -176,7 +176,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         _infoRow('METAR', _metar!['raw'], Icons.code),
         _infoRow('Remarks', _metar!['remarks'], Icons.comment),
         _infoRow('Translated Remarks', _metar!['translatedRemarks'], Icons.translate),
-        _sectionTitle('TAF (next 6 periods)'),
+        _sectionTitle('TAF'),
         SizedBox(
           height: 160,
           child: ListView.separated(
@@ -294,7 +294,6 @@ Widget _buildHazardCard(Map<String, String> hazard) {
     ),
   );
 }
-
 
   Widget _sectionTitle(String text) => Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 4),
