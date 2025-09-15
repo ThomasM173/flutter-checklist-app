@@ -719,81 +719,123 @@ class ChecklistExpansionTile extends StatelessWidget {
   final Map<String, bool> items;
   final Function(String, bool) updateChecklist;
 
-  const ChecklistExpansionTile(
-      {super.key,
-      required this.title,
-      required this.items,
-      required this.updateChecklist});
+  const ChecklistExpansionTile({
+    super.key,
+    required this.title,
+    required this.items,
+    required this.updateChecklist,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final entries = items.entries.where((e) => e.key != '__weather__').toList();
+    final bool isSectionComplete = entries.every((e) => e.value);
+    final bool hasUncheckedItems = entries.any((e) => !e.value);
+
     return AnimatedContainer(
       duration: Duration(milliseconds: 300),
       curve: Curves.easeInOut,
       child: Card(
-        color: Colors.grey[600],
+        color: Colors.white,
         margin: EdgeInsets.symmetric(vertical: 6),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+          side: BorderSide(
+            color: isSectionComplete ? Colors.green : Colors.black,
+            width: 2,
+          ),
+        ),
         elevation: 3,
-        shadowColor: Colors.grey[600],
+        shadowColor: Colors.white,
         child: Theme(
           data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
           child: ExpansionTile(
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                        color: Colors.white,
+                Row(
+                  children: [
+                    if (isSectionComplete)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 6.0),
+                        child: Icon(Icons.check_circle, color: Colors.green, size: 20),
+                      ),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: Colors.black,
                         fontSize: 18,
-                        fontWeight: FontWeight.bold),
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
                 ),
                 if (items.containsKey('__weather__'))
                   Container(
                     margin: EdgeInsets.only(left: 6),
                     padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: Colors.yellowAccent.withOpacity(0.15),
+                      color: Color(0xFFADD8E6).withOpacity(0.15),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                          color: Colors.yellowAccent.withOpacity(0.6)),
+                        color: Color(0xFFADD8E6).withOpacity(0.6),
+                      ),
                     ),
                     child: Text('WX',
-                        style: TextStyle(
-                            color: Colors.yellowAccent, fontSize: 12)),
+                        style: TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
                   ),
               ],
             ),
             childrenPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            children:
-                items.entries.where((e) => e.key != '__weather__').map((entry) {
-              final isWeatherAdded = items.containsKey('__weather__');
-              final Color highlightColor = isWeatherAdded
-                  ? Colors.yellowAccent.withOpacity(0.1)
-                  : Colors.transparent;
-              final bool isRiskItem = entry.key.contains('RISK');
-              return Container(
-                color: highlightColor,
-                child: CheckboxListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text(entry.key,
+            children: [
+              ...entries.map((entry) {
+                final isWeatherAdded = items.containsKey('__weather__');
+                final Color highlightColor = isWeatherAdded
+                    ? Color(0xFFADD8E6).withOpacity(0.1)
+                    : Colors.transparent;
+                final bool isRiskItem = entry.key.contains('RISK');
+                return Container(
+                  color: highlightColor,
+                  child: CheckboxListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(entry.key,
+                        style: TextStyle(
+                          color: isRiskItem ? Colors.red : Colors.black,
+                          fontSize: 14,
+                          fontWeight: isRiskItem ? FontWeight.bold : FontWeight.normal,
+                        )),
+                    value: entry.value,
+                    onChanged: (bool? value) =>
+                        updateChecklist(entry.key, value ?? false),
+                    activeColor: Colors.green,
+                    controlAffinity: ListTileControlAffinity.leading,
+                  ),
+                );
+              }).toList(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 10, right: 4),
+                  child: TextButton.icon(
+                    icon: Icon(
+                      hasUncheckedItems ? Icons.select_all : Icons.remove_done,
+                      color: hasUncheckedItems ? Colors.green : Colors.red,
+                    ),
+                    label: Text(
+                      hasUncheckedItems ? "Select All" : "Deselect All",
                       style: TextStyle(
-                        color: isRiskItem ? Colors.red : Colors.white,
-                        fontSize: 14,
-                        fontWeight: isRiskItem ? FontWeight.bold : FontWeight.normal,
-                      )),
-                  value: entry.value,
-                  onChanged: (bool? value) =>
-                      updateChecklist(entry.key, value ?? false),
-                  activeColor: Colors.green,
-                  controlAffinity: ListTileControlAffinity.leading,
+                        color: hasUncheckedItems ? Colors.green : Colors.red,
+                      ),
+                    ),
+                    onPressed: () {
+                      for (var entry in entries) {
+                        updateChecklist(entry.key, hasUncheckedItems);
+                      }
+                    },
+                  ),
                 ),
-              );
-            }).toList(),
+              ),
+            ],
           ),
         ),
       ),
