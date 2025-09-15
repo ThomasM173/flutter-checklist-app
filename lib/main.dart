@@ -13,7 +13,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Plane stuff',
       debugShowCheckedModeBanner: false,  // ✅ Hides debug banner
-      theme: ThemeData.dark().copyWith(
+      theme: ThemeData(
+        fontFamily: 'NotoSans', // Added NotoSans font family for consistent numbering font
+        brightness: Brightness.dark,
         primaryColor: Colors.red,
         scaffoldBackgroundColor: Colors.black,
       ),

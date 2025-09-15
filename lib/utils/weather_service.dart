@@ -1,11 +1,12 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/weather_boundaries.dart';
 
 class WeatherService {
   static const String _token = 'dev-tE6NuvekB1AceDI4vB3xpHxplJ48LwTfAEqZxxg';
   static const String _baseUrl = 'https://avwx.rest/api';
 
-  static Future<Map<String, String>> getDecodedMETAR(String icao) async {
+  static Future<Map<String, dynamic>> getDecodedMETAR(String icao) async {
     final uri = Uri.parse('$_baseUrl/metar/$icao?options=info,translate');
     final resp = await http.get(uri, headers: {
       'Authorization': 'Bearer $_token',
@@ -42,6 +43,17 @@ class WeatherService {
     final altimeter = body['altimeter']?['value']?.toString() ?? '';
     final altUnit = body['altimeter']?['unit']?.toString() ?? 'hPa';
 
+      // 🔑 Parse them into doubles
+    final oat = double.tryParse(temp);
+    final dew = double.tryParse(dewpoint);
+
+    // 🔑 Apply boundary rule here
+    bool carbIcing = false;
+    if (oat != null && dew != null) {
+      carbIcing = WeatherBoundaries.carbIcingRisk(oat, dew);
+    }
+
+
     String clouds = 'Clear skies';
     if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
       clouds = (body['clouds'] as List)
@@ -56,8 +68,9 @@ class WeatherService {
       'latitude': latitude,
       'longitude': longitude,
       'observed': observed,
-      'temperature': '$temp°C',
-      'dewpoint': '$dewpoint°C',
+      'Air Temperature': oat,
+      'Dewpoint': dew,
+      'carbIcingRisk': carbIcing,
       'humidity': '$humidity%',
       'wind': '$windDir° @ $windSpeed $windUnit',
       'visibility': '$visibilityVal $visibilityUnit',
@@ -103,13 +116,13 @@ class WeatherService {
     if (icao.startsWith('EH')) return 'EHAA'; // Amsterdam
     return ''; // Unknown / unsupported FIR
   }
-
+//i dont think this is used
   static Future<List<Map<String, String>>> getHazards(String icao) async {
     final List<Map<String, String>> hazards = [];
 
     // First, get the station coordinates to use for AIR/SIGMET lookup
     double latitude = 51.5074; // Default to London
-    double longitude = -0.1278; // Default to London
+    double longitude = -0.1278; // Defult to London
     
     try {
       // Get station info to get accurate coordinates

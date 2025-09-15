@@ -10,6 +10,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import '../aircraft_screens/cessna_152_emergency_screen.dart';
 import '../aircraft_screens/cessna_152_screen.dart';
+import 'package:flutter_application_1/utils/weather_service.dart';
+import 'package:flutter_application_1/utils/weather_boundaries.dart';
 
 class Cessna152ChecklistScreen extends StatefulWidget {
   const Cessna152ChecklistScreen({super.key});
@@ -23,6 +25,9 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
   final Set<String> _activeWeatherConditions = {};
   late Map<String, Map<String, bool>> checklistSections;
   final TextEditingController _airportController = TextEditingController();
+  bool _weatherLoading = false;
+  String? _weatherError;
+  Map<String, dynamic>? _metarData;
 
   final Map<String, Map<String, List<String>>> _weatherChecklistItems = {
     'cold': {
@@ -292,6 +297,7 @@ void initState() {
 
     },
   };
+  
   loadChecklist();
 }
 
@@ -361,6 +367,83 @@ void toggleWeatherCondition(String key) {
   });
 }
 
+void updateCarbIcingItem(bool risk) {
+  const internalSection = "INTERNAL";
+  const powerChecksSection = "POWER CHECKS";
+
+  const internalKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
+  const powerKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
+
+  setState(() {
+    if (risk) {
+      // Add to INTERNAL at the end
+      checklistSections.putIfAbsent(internalSection, () => {});
+      checklistSections[internalSection]![internalKey] = false;
+
+      // Add to POWER CHECKS before Carburettor Heat
+      checklistSections.putIfAbsent(powerChecksSection, () => {});
+      final Map<String, bool> powerItems = checklistSections[powerChecksSection]!;
+
+      final Map<String, bool> newPowerItems = {};
+      bool inserted = false;
+
+      for (var entry in powerItems.entries) {
+        // Insert warning before any key that contains "Carburettor Heat"
+        if (!inserted && entry.key.contains("Carburettor Heat")) {
+          newPowerItems[powerKey] = false;
+          inserted = true;
+        }
+        newPowerItems[entry.key] = entry.value;
+      }
+
+      // If no carb heat found, append at end
+      if (!inserted) {
+        newPowerItems[powerKey] = false;
+      }
+
+      checklistSections[powerChecksSection] = newPowerItems;
+    } else {
+      // Remove from INTERNAL
+      checklistSections[internalSection]?.remove(internalKey);
+
+      // Remove from POWER CHECKS
+      checklistSections[powerChecksSection]?.remove(powerKey);
+    }
+  });
+}
+
+  Future<void> _fetchWeatherAndUpdateChecklist() async {
+    final icao = _airportController.text.trim().toUpperCase();
+    if (icao.isEmpty) {
+      setState(() {
+        _weatherError = 'Please enter an ICAO code';
+      });
+      return;
+    }
+
+    setState(() {
+      _weatherLoading = true;
+      _weatherError = null;
+    });
+
+    try {
+      final metarData = await WeatherService.getDecodedMETAR(icao);
+      setState(() {
+        _metarData = metarData;
+        _weatherLoading = false;
+      });
+
+      // Update carb icing boundary
+      final carbIcingRisk = metarData['carbIcingRisk'] as bool? ?? false;
+      updateCarbIcingItem(carbIcingRisk);
+
+    } catch (e) {
+      setState(() {
+        _weatherError = 'Failed to fetch weather data: $e';
+        _weatherLoading = false;
+      });
+    }
+  }
 
   Future<void> generatePDF() async {
     if (!mounted) return;
@@ -422,6 +505,8 @@ void toggleWeatherCondition(String key) {
     int completed = 0;
     checklistSections.forEach((section, items) {
       items.forEach((key, value) {
+        // Exclude the special __weather__ key from counting
+        if (key == '__weather__') return;
         total++;
         if (value) completed++;
       });
@@ -500,10 +585,7 @@ void toggleWeatherCondition(String key) {
                  IconButton(
   icon: Icon(Icons.search, color: Colors.black),
   onPressed: () {
-    // Optionally show a message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Auto weather fetch not implemented')),
-    );
+    _fetchWeatherAndUpdateChecklist();
   },
 ),
 
@@ -514,6 +596,55 @@ void toggleWeatherCondition(String key) {
               )
             ]),
             SizedBox(height: 10),
+            if (_metarData != null) ...[
+              Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Weather Data for ${_metarData!['icao']} (${_metarData!['name']})',
+                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                    ),
+                    SizedBox(height: 5),
+                    Text(
+                      'Temperature: ${_metarData!['Air Temperature']}°C, Dewpoint: ${_metarData!['Dewpoint']}°C',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    Text(
+                      'Carb Icing Risk: ${_metarData!['carbIcingRisk'] ? 'YES - Warning Added' : 'No'}',
+                      style: TextStyle(
+                        color: _metarData!['carbIcingRisk'] ? Colors.red : Colors.green,
+                        fontWeight: _metarData!['carbIcingRisk'] ? FontWeight.bold : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
+            if (_weatherError != null) ...[
+              Container(
+                padding: EdgeInsets.all(10),
+                margin: EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Text(
+                  'Weather Error: $_weatherError',
+                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                ),
+              ),
+              SizedBox(height: 10),
+            ],
             Center(
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
@@ -706,12 +837,17 @@ class ChecklistExpansionTile extends StatelessWidget {
                 final Color highlightColor = isWeatherAdded
                     ? Color(0xFFADD8E6).withOpacity(0.1)
                     : Colors.transparent;
+                final bool isWeatherWarning = entry.key.contains("RISK") || entry.key.contains("⚠️");
                 return Container(
                   color: highlightColor,
                   child: CheckboxListTile(
                     contentPadding: EdgeInsets.zero,
                     title: Text(entry.key,
-                        style: TextStyle(color: Colors.black, fontSize: 14)),
+                        style: TextStyle(
+                          color: isWeatherWarning ? Colors.red : Colors.black,
+                          fontSize: 14,
+                          fontWeight: isWeatherWarning ? FontWeight.bold : FontWeight.normal,
+                        )),
                     value: entry.value,
                     onChanged: (bool? value) =>
                         updateChecklist(entry.key, value ?? false),

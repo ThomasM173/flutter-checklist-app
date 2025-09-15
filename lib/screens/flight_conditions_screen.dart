@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/weather_service.dart';
+import '../utils/weather_boundaries.dart';
 import '../widget/bottom_nav_bar.dart';
 
 class FlightConditionsScreen extends StatefulWidget {
@@ -13,16 +14,11 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   final TextEditingController _icaoController = TextEditingController(text: 'EGLL');
   bool _loading = false;
   String? _error;
-  Map<String, String>? _metar;
+  Map<String, dynamic>? _metar;
   List<Map<String, String>> _taf = [];
   Map<String, dynamic>? _stationInfo;
   List<Map<String, String>> _hazards = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _fetch('EGLL'); // Fetch data for London Heathrow by default
-  }
 
   Future<void> _fetch(String code) async {
     setState(() {
@@ -172,6 +168,30 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
           _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
           _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
         ]),
+
+        if (_metar!['carbIcingRisk'] == true)
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Card(
+            color: Colors.red[100],
+            child: Padding(
+              padding: const EdgeInsets.all(8),
+              child: Row(
+                children: const [
+                  Icon(Icons.warning, color: Colors.red),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      '⚠ Serious Carburettor Icing Risk at any power!',
+                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+
         _sectionTitle('Raw METAR & Remarks'),
         _infoRow('METAR', _metar!['raw'], Icons.code),
         _infoRow('Remarks', _metar!['remarks'], Icons.comment),
@@ -219,7 +239,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         ),
 
         if (_hazards.isNotEmpty) ...[
-          _sectionTitle('Hazards (PIREPs / SIGMETs / G-AIRMETs)'),
+          _sectionTitle('Hazards (PIREPs / SIGMETs / AIRMETs)'),
           Column(
             children: _hazards.map((h) => _buildHazardCard(h)).toList(),
           ),
