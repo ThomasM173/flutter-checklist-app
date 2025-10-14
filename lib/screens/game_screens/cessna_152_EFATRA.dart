@@ -56,10 +56,17 @@ class _Cessna152EFATRA extends State<Cessna152EFATRA> {
   String? selectedAnswer;
 
   @override
-  void initState() {
-    super.initState();
-    questions = List.from(allQuestions)..shuffle(Random());
+void initState() {
+  super.initState();
+
+  // Shuffle the order of questions
+  questions = List.from(allQuestions)..shuffle(Random());
+
+  // Shuffle the options inside each question
+  for (var q in questions) {
+    q["options"].shuffle(Random());
   }
+}
 
   void checkAnswer(String answer) {
     setState(() {
@@ -171,7 +178,7 @@ class GameOverScreen extends StatelessWidget {
             children: [
               Text("✅ You scored $score out of $total!",
                   style: TextStyle(color: Colors.black, fontSize: 24)),
-              SizedBox(height: 30),
+              SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
@@ -187,6 +194,7 @@ class GameOverScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
               ),
+              SizedBox(height: 10),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).popUntil((route) => route.isFirst);
@@ -194,13 +202,6 @@ class GameOverScreen extends StatelessWidget {
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                 child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).popUntil((route) => route.isFirst);
-                },
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to C152 CHECKLIST", style: TextStyle(color: Colors.black)),
-              )
             ],
           ),
         ),

@@ -174,13 +174,13 @@ class GameOverScreen extends StatelessWidget {
             children: [
               Text("✅ You scored $score out of $total!",
                   style: TextStyle(color: Colors.black, fontSize: 24)),
-              SizedBox(height: 30),
+              SizedBox(height: 40),
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 Play Again", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -188,8 +188,16 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to Home", style: TextStyle(color: Colors.black)),
-              )
+                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+              ),
+              SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+              ),
             ],
           ),
         ),

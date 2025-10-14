@@ -1,4 +1,4 @@
-// flutter_application_1/screens/aircraft_screens/cessna_172_checklist_screen.dart
+// Cessna 172 Checklist Screen
 
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -83,6 +83,80 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
         '✅ Review escape strategy for weather deviations.',
       ]
     }
+  };
+
+  final Map<String, Map<String, List<String>>> _temperatureChecklistItems = {
+    'tempLow': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ Remove frost, ice, and snow from all surfaces; use de-icing fluid.',
+      ],
+      'ENGINE START': [
+        '✅ Wait until oil temperature reaches the green range.',
+        '✅ Verify oil pressure rises within 30 seconds after start.',
+      ],
+    },
+    'tempHigh': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ Carry sufficient water and ensure pilot hydration.',
+      ],
+      'AFTER STARTING': [
+        '✅ Verify cabin ventilation and ensure adequate cooling airflow.',
+      ],
+      'POWER CHECKS': [
+        '✅ Avoid prolonged idle; monitor oil temperature closely.',
+      ],
+    },
+  };
+
+  final Map<String, Map<String, List<String>>> _humidityChecklistItems = {
+    'humidityHigh': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ Check for water contamination in fuel tanks.',
+      ],
+      'POWER CHECKS': [
+        '✅ Emphasize carburettor heat checks during run-up.',
+      ],
+    },
+    'humidityLow': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ Inspect air intake and filter for dust or blockage (“fod check”).',
+        '✅ Ensure windscreen and canopy are clean and clear.',
+      ],
+    },
+  };
+
+  final Map<String, Map<String, List<String>>> _windChecklistItems = {
+    'windRisk': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ If gusts > 20 knots, review aircraft crosswind limitations before flight.',
+      ],
+    },
+  };
+
+  final Map<String, Map<String, List<String>>> _phenomenaChecklistItems = {
+    'phenomenaRisk': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '✅ Check for adverse codes (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB).',
+        '✅ Apply corresponding actions (wet runway, performance checks, no-go conditions, etc.).',
+      ],
+    },
+  };
+
+  final Map<String, Map<String, List<String>>> _vfrChecklistItems = {
+    'vfrLimitsRisk': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '⚠️ VFR minima not reached — flight not permitted under VFR.',
+      ],
+    },
+  };
+
+  final Map<String, Map<String, List<String>>> _terrainChecklistItems = {
+    'terrainRisk': {
+      'CHECK A (ONLY FIRST FLIGHT OF DAY)': [
+        '⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity.',
+        '⚠️ Use chart references and ensure at least two forms of navigation/planning.',
+      ],
+    },
   };
 
   @override
@@ -411,6 +485,134 @@ void updateCarbIcingItem(bool risk) {
   });
 }
 
+void updateTemperatureItem(bool lowRisk, bool highRisk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+  const engineStartSection = "ENGINE START";
+  const afterStartingSection = "AFTER STARTING";
+  const powerChecksSection = "POWER CHECKS";
+
+  setState(() {
+    if (lowRisk) {
+      // Add to CHECK A
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ Remove frost, ice, and snow from all surfaces; use de-icing fluid."] = false;
+
+      // Add to ENGINE START
+      checklistSections.putIfAbsent(engineStartSection, () => {});
+      checklistSections[engineStartSection]!["✅ Wait until oil temperature reaches the green range."] = false;
+      checklistSections[engineStartSection]!["✅ Verify oil pressure rises within 30 seconds after start."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ Remove frost, ice, and snow from all surfaces; use de-icing fluid.");
+      checklistSections[engineStartSection]?.remove("✅ Wait until oil temperature reaches the green range.");
+      checklistSections[engineStartSection]?.remove("✅ Verify oil pressure rises within 30 seconds after start.");
+    }
+
+    if (highRisk) {
+      // Add to CHECK A
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ Carry sufficient water and ensure pilot hydration."] = false;
+
+      // Add to AFTER STARTING
+      checklistSections.putIfAbsent(afterStartingSection, () => {});
+      checklistSections[afterStartingSection]!["✅ Verify cabin ventilation and ensure adequate cooling airflow."] = false;
+
+      // Add to POWER CHECKS
+      checklistSections.putIfAbsent(powerChecksSection, () => {});
+      checklistSections[powerChecksSection]!["✅ Avoid prolonged idle; monitor oil temperature closely."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ Carry sufficient water and ensure pilot hydration.");
+      checklistSections[afterStartingSection]?.remove("✅ Verify cabin ventilation and ensure adequate cooling airflow.");
+      checklistSections[powerChecksSection]?.remove("✅ Avoid prolonged idle; monitor oil temperature closely.");
+    }
+  });
+}
+
+void updateHumidityItem(bool highRisk, bool lowRisk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+  const powerChecksSection = "POWER CHECKS";
+
+  setState(() {
+    if (highRisk) {
+      // Add to CHECK A
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ Check for water contamination in fuel tanks."] = false;
+
+      // Add to POWER CHECKS
+      checklistSections.putIfAbsent(powerChecksSection, () => {});
+      checklistSections[powerChecksSection]!["✅ Emphasize carburettor heat checks during run-up."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ Check for water contamination in fuel tanks.");
+      checklistSections[powerChecksSection]?.remove("✅ Emphasize carburettor heat checks during run-up.");
+    }
+
+    if (lowRisk) {
+      // Add to CHECK A
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ Inspect air intake and filter for dust or blockage (“fod check”)."] = false;
+      checklistSections[checkASection]!["✅ Ensure windscreen and canopy are clean and clear."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ Inspect air intake and filter for dust or blockage (“fod check”).");
+      checklistSections[checkASection]?.remove("✅ Ensure windscreen and canopy are clean and clear.");
+    }
+  });
+}
+
+void updateWindItem(bool risk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+
+  setState(() {
+    if (risk) {
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ If gusts > 20 knots, review aircraft crosswind limitations before flight."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ If gusts > 20 knots, review aircraft crosswind limitations before flight.");
+    }
+  });
+}
+
+void updatePhenomenaItem(bool risk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+
+  setState(() {
+    if (risk) {
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["✅ Check for adverse codes (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB)."] = false;
+      checklistSections[checkASection]!["✅ Apply corresponding actions (wet runway, performance checks, no-go conditions, etc.)."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("✅ Check for adverse codes (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB).");
+      checklistSections[checkASection]?.remove("✅ Apply corresponding actions (wet runway, performance checks, no-go conditions, etc.).");
+    }
+  });
+}
+
+void updateVfrLimitsItem(bool risk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+
+  setState(() {
+    if (risk) {
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["⚠️ VFR minima not reached — flight not permitted under VFR."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("⚠️ VFR minima not reached — flight not permitted under VFR.");
+    }
+  });
+}
+
+void updateTerrainItem(bool risk) {
+  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
+
+  setState(() {
+    if (risk) {
+      checklistSections.putIfAbsent(checkASection, () => {});
+      checklistSections[checkASection]!["⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity."] = false;
+      checklistSections[checkASection]!["⚠️ Use chart references and ensure at least two forms of navigation/planning."] = false;
+    } else {
+      checklistSections[checkASection]?.remove("⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity.");
+      checklistSections[checkASection]?.remove("⚠️ Use chart references and ensure at least two forms of navigation/planning.");
+    }
+  });
+}
+
   Future<void> _fetchWeatherAndUpdateChecklist() async {
     final icao = _airportController.text.trim().toUpperCase();
     if (icao.isEmpty) {
@@ -435,6 +637,33 @@ void updateCarbIcingItem(bool risk) {
       // Update carb icing boundary
       final carbIcingRisk = metarData['carbIcingRisk'] as bool? ?? false;
       updateCarbIcingItem(carbIcingRisk);
+
+      // Update temperature items
+      final tempLowRisk = metarData['tempLowRisk'] as bool? ?? false;
+      final tempHighRisk = metarData['tempHighRisk'] as bool? ?? false;
+      updateTemperatureItem(tempLowRisk, tempHighRisk);
+
+      // Update humidity items
+      final humidityHighRisk = metarData['humidityHighRisk'] as bool? ?? false;
+      final humidityLowRisk = metarData['humidityLowRisk'] as bool? ?? false;
+      updateHumidityItem(humidityHighRisk, humidityLowRisk);
+
+      // Update wind item
+      final windRisk = metarData['windRisk'] as bool? ?? false;
+      updateWindItem(windRisk);
+
+      // Update phenomena item
+      final phenomenaRisks = metarData['phenomenaRisks'] as Map<String, bool>? ?? {};
+      final phenomenaRisk = phenomenaRisks.values.any((v) => v);
+      updatePhenomenaItem(phenomenaRisk);
+
+      // Update VFR limits item
+      final vfrLimitsRisk = metarData['vfrLimitsRisk'] as bool? ?? false;
+      updateVfrLimitsItem(vfrLimitsRisk);
+
+      // Update terrain item
+      final terrainRisk = metarData['terrainRisk'] as bool? ?? false;
+      updateTerrainItem(terrainRisk);
 
     } catch (e) {
       setState(() {
