@@ -334,19 +334,71 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                       final index = entryMap.key;
                       final stepText = entryMap.value;
                       final isChecked = checkedIndices.contains(index);
+                      
+                      // Parse item name and action
+                      final parts = stepText.split('–');
+                      final itemName = parts[0].trim();
+                      final action = parts.length > 1 ? parts[1].trim() : '';
+                      
+                      // Check if it's a warning or special text
+                      final bool isWarning = stepText.contains("⚠️");
 
-                      return CheckboxListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: Text(
-                          stepText,
-                          style:
-                              const TextStyle(color: Colors.black, fontSize: 14),
+                      return Container(
+                        child: InkWell(
+                          onTap: () => _toggleItem(title, index, !isChecked),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Custom checkbox
+                                GestureDetector(
+                                  onTap: () => _toggleItem(title, index, !isChecked),
+                                  child: Container(
+                                    width: 24,
+                                    height: 24,
+                                    decoration: BoxDecoration(
+                                      color: isChecked ? Colors.green : Colors.white,
+                                      border: Border.all(
+                                        color: Colors.black,
+                                        width: 2,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                // Item name on the left (flexible to wrap)
+                                Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                    itemName,
+                                    style: TextStyle(
+                                      color: isWarning ? Colors.red : Colors.black,
+                                      fontSize: 14,
+                                      fontWeight: isWarning ? FontWeight.bold : FontWeight.normal,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                // Action on the right (flexible to wrap)
+                                if (action.isNotEmpty)
+                                  Expanded(
+                                    flex: 2,
+                                    child: Text(
+                                      action,
+                                      textAlign: TextAlign.right,
+                                      style: TextStyle(
+                                        color: isWarning ? Colors.red : Colors.black,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ),
                         ),
-                        value: isChecked,
-                        onChanged: (bool? value) =>
-                            _toggleItem(title, index, value),
-                        activeColor: Colors.green,
-                        controlAffinity: ListTileControlAffinity.leading,
                       );
                     }).toList(),
                   ),

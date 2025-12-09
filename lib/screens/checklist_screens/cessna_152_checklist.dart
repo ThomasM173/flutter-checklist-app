@@ -418,9 +418,9 @@ void toggleWeatherCondition(String key) {
     if (_activeWeatherConditions.contains(key)) {
       // REMOVE weather checklist items
       items.forEach((section, checklistItems) {
-        checklistItems.forEach((item) {
+        for (var item in checklistItems) {
           checklistSections[section]?.remove(item);
-        });
+        }
         checklistSections[section]?.remove('__weather__');
         if (checklistSections[section]?.isEmpty ?? false) {
           checklistSections.remove(section);
@@ -692,26 +692,106 @@ void updateTerrainItem(bool risk) {
       pdf.addPage(
         pdfWidgets.MultiPage(
           pageFormat: PdfPageFormat.a4,
+          margin: pdfWidgets.EdgeInsets.all(40),
           theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
-          build: (context) => [
-            pdfWidgets.Text("Cessna 152 Checklist",
+          header: (context) => pdfWidgets.Column(
+            crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
+            children: [
+              pdfWidgets.Text(
+                "Cessna 152 Checklist",
                 style: pdfWidgets.TextStyle(
-                    fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
-            pdfWidgets.SizedBox(height: 10),
-            ...checklistSections.entries.map((entry) => pdfWidgets.Column(
-                  children: [
-                    pdfWidgets.Text(entry.key,
-                        style: pdfWidgets.TextStyle(
-                            fontSize: 18,
-                            fontWeight: pdfWidgets.FontWeight.bold)),
-                    pdfWidgets.SizedBox(height: 5),
-                    ...entry.value.entries.map((item) => pdfWidgets.Text(
-                          "${item.value ? '[x]' : '[ ]'} ${item.key}",
-                          style: pdfWidgets.TextStyle(fontSize: 14),
-                        )),
-                    pdfWidgets.SizedBox(height: 10),
-                  ],
-                )),
+                  fontSize: 28,
+                  fontWeight: pdfWidgets.FontWeight.bold,
+                ),
+              ),
+              pdfWidgets.Divider(thickness: 2),
+              pdfWidgets.SizedBox(height: 10),
+            ],
+          ),
+          footer: (context) => pdfWidgets.Column(
+            children: [
+              pdfWidgets.Divider(),
+              pdfWidgets.SizedBox(height: 5),
+              pdfWidgets.Row(
+                mainAxisAlignment: pdfWidgets.MainAxisAlignment.spaceBetween,
+                children: [
+                  pdfWidgets.Text(
+                    "Generated: ${DateTime.now().toString().split('.')[0]}",
+                    style: pdfWidgets.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                  ),
+                  pdfWidgets.Text(
+                    "Page ${context.pageNumber} of ${context.pagesCount}",
+                    style: pdfWidgets.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          build: (context) => [
+            ...checklistSections.entries.map((entry) {
+              return pdfWidgets.Column(
+                crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
+                children: [
+                  pdfWidgets.Container(
+                    width: double.infinity,
+                    padding: pdfWidgets.EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    decoration: pdfWidgets.BoxDecoration(
+                      color: PdfColors.blue900,
+                      borderRadius: pdfWidgets.BorderRadius.circular(4),
+                    ),
+                    child: pdfWidgets.Text(
+                      entry.key,
+                      style: pdfWidgets.TextStyle(
+                        fontSize: 16,
+                        fontWeight: pdfWidgets.FontWeight.bold,
+                        color: PdfColors.white,
+                      ),
+                    ),
+                  ),
+                  pdfWidgets.SizedBox(height: 8),
+                  ...entry.value.entries.where((item) => item.key != '__weather__').map((item) {
+                    return pdfWidgets.Padding(
+                      padding: pdfWidgets.EdgeInsets.only(left: 12, bottom: 6),
+                      child: pdfWidgets.Row(
+                        crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
+                        children: [
+                          pdfWidgets.Container(
+                            width: 14,
+                            height: 14,
+                            margin: pdfWidgets.EdgeInsets.only(right: 8, top: 1),
+                            decoration: pdfWidgets.BoxDecoration(
+                              border: pdfWidgets.Border.all(width: 1.5),
+                              borderRadius: pdfWidgets.BorderRadius.circular(2),
+                            ),
+                            child: item.value
+                                ? pdfWidgets.Center(
+                                    child: pdfWidgets.Text(
+                                      '✓',
+                                      style: pdfWidgets.TextStyle(
+                                        fontSize: 10,
+                                        fontWeight: pdfWidgets.FontWeight.bold,
+                                      ),
+                                    ),
+                                  )
+                                : null,
+                          ),
+                          pdfWidgets.Expanded(
+                            child: pdfWidgets.Text(
+                              item.key,
+                              style: pdfWidgets.TextStyle(
+                                fontSize: 11,
+                                lineSpacing: 1.3,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  pdfWidgets.SizedBox(height: 16),
+                ],
+              );
+            }),
           ],
         ),
       );
@@ -729,7 +809,7 @@ void updateTerrainItem(bool risk) {
     }
   }
 
-  String getCompletionProgress() {
+  Map<String, dynamic> getCompletionProgress() {
     int total = 0;
     int completed = 0;
     checklistSections.forEach((section, items) {
@@ -740,7 +820,13 @@ void updateTerrainItem(bool risk) {
         if (value) completed++;
       });
     });
-    return "$completed of $total items completed";
+    double percentage = total > 0 ? (completed / total) : 0.0;
+    return {
+      'text': "$completed of $total items completed",
+      'completed': completed,
+      'total': total,
+      'percentage': percentage,
+    };
   }
 
   @override
@@ -892,8 +978,54 @@ void updateTerrainItem(bool risk) {
               ),
             ),
             SizedBox(height: 14),
-            Text(getCompletionProgress(),
-                style: TextStyle(color: Colors.black, fontSize: 14)),
+            Builder(
+              builder: (context) {
+                final progress = getCompletionProgress();
+                return Container(
+                  padding: EdgeInsets.symmetric(horizontal: 10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            progress['text'],
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          Text(
+                            '${(progress['percentage'] * 100).toStringAsFixed(0)}%',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 8),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: LinearProgressIndicator(
+                          value: progress['percentage'],
+                          minHeight: 20,
+                          backgroundColor: Colors.grey[300],
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            progress['percentage'] == 1.0
+                                ? Colors.green
+                                : Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
             SizedBox(height: 14),
             ...checklistSections.entries.map((entry) => ChecklistExpansionTile(
                   key: ValueKey(entry.key),
@@ -1067,24 +1199,71 @@ class ChecklistExpansionTile extends StatelessWidget {
                     ? Color(0xFFADD8E6).withOpacity(0.1)
                     : Colors.transparent;
                 final bool isWeatherWarning = entry.key.contains("RISK") || entry.key.contains("⚠️");
+                
+                // Parse item name and action
+                final parts = entry.key.split('–');
+                final itemName = parts[0].trim();
+                final action = parts.length > 1 ? parts[1].trim() : '';
+                
                 return Container(
                   color: highlightColor,
-                  child: CheckboxListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: Text(entry.key,
-                        style: TextStyle(
-                          color: isWeatherWarning ? Colors.red : Colors.black,
-                          fontSize: 14,
-                          fontWeight: isWeatherWarning ? FontWeight.bold : FontWeight.normal,
-                        )),
-                    value: entry.value,
-                    onChanged: (bool? value) =>
-                        updateChecklist(entry.key, value ?? false),
-                    activeColor: Colors.green,
-                    controlAffinity: ListTileControlAffinity.leading,
+                  child: InkWell(
+                    onTap: () => updateChecklist(entry.key, !entry.value),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Custom checkbox
+                          GestureDetector(
+                            onTap: () => updateChecklist(entry.key, !entry.value),
+                            child: Container(
+                              width: 24,
+                              height: 24,
+                              decoration: BoxDecoration(
+                                color: entry.value ? Colors.green : Colors.white,
+                                border: Border.all(
+                                  color: Colors.black,
+                                  width: 2,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          // Item name on the left (flexible to wrap)
+                          Expanded(
+                            flex: 3,
+                            child: Text(
+                              itemName,
+                              style: TextStyle(
+                                color: isWeatherWarning ? Colors.red : Colors.black,
+                                fontSize: 14,
+                                fontWeight: isWeatherWarning ? FontWeight.bold : FontWeight.normal,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Action on the right (flexible to wrap)
+                          if (action.isNotEmpty)
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                action,
+                                textAlign: TextAlign.right,
+                                style: TextStyle(
+                                  color: isWeatherWarning ? Colors.red : Colors.black,
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 );
-              }).toList(),
+              }),
               Align(
                 alignment: Alignment.centerRight,
                 child: Padding(

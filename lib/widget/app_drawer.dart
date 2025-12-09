@@ -5,6 +5,12 @@ import 'package:flutter_application_1/screens/privacy_policy.dart';
 import 'package:flutter_application_1/screens/caa_compliance_screen.dart';
 import 'package:flutter_application_1/screens/faq_screen.dart';
 import 'package:flutter_application_1/screens/recent_updates_screen.dart';
+import 'package:flutter_application_1/screens/auth/account_details_screen.dart';
+import 'package:flutter_application_1/screens/auth/login_screen.dart';
+import 'package:flutter_application_1/screens/paywall_screen.dart';
+import 'package:flutter_application_1/screens/pdf/pdf_list_screen.dart';
+import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:flutter_application_1/services/entitlement_service.dart';
 import '../screens/home_screen.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -87,6 +93,85 @@ class AppDrawer extends StatelessWidget {
           ),
           const Divider(color: Colors.black),
           ListTile(
+            leading: const Icon(Icons.picture_as_pdf, color: Colors.black),
+            title: const Text('My PDFs', style: TextStyle(color: Colors.black)),
+            onTap: () => _navigate(context, const PdfListScreen()),
+          ),
+          FutureBuilder<bool>(
+            future: _checkPremiumStatus(),
+            builder: (context, snapshot) {
+              final isPremium = snapshot.data ?? false;
+              return ListTile(
+                leading: Icon(
+                  isPremium ? Icons.workspace_premium : Icons.star,
+                  color: isPremium ? const Color(0xFFFFD700) : Colors.black,
+                ),
+                title: Text(
+                  isPremium ? 'Premium Member' : 'Upgrade to Premium',
+                  style: TextStyle(
+                    color: isPremium ? const Color(0xFFFFD700) : Colors.black,
+                    fontWeight: isPremium ? FontWeight.bold : FontWeight.normal,
+                  ),
+                ),
+                onTap: () {
+                  if (!isPremium) {
+                    _navigate(context, const PaywallScreen());
+                  } else {
+                    // Show premium status or manage subscription
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('You have Premium access!'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.pop(context);
+                  }
+                },
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.person, color: Colors.black),
+            title: const Text('Account Details', style: TextStyle(color: Colors.black)),
+            onTap: () => _navigate(context, const AccountDetailsScreen()),
+          ),
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+            onTap: () async {
+              // Show confirmation dialog
+              final confirmed = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Logout'),
+                  content: const Text('Are you sure you want to logout?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      style: TextButton.styleFrom(foregroundColor: Colors.red),
+                      child: const Text('Logout'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirmed == true && context.mounted) {
+                await AuthService().logout();
+                if (context.mounted) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(builder: (_) => const LoginScreen()),
+                    (route) => false,
+                  );
+                }
+              }
+            },
+          ),
+          const Divider(color: Colors.black),
+          ListTile(
             leading: const Icon(Icons.close, color: Colors.black),
             title: const Text('Close Menu', style: TextStyle(color: Colors.black)),
             onTap: () => Navigator.pop(context),
@@ -94,5 +179,12 @@ class AppDrawer extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  Future<bool> _checkPremiumStatus() async {
+    final authService = AuthService();
+    await authService.init();
+    final entitlementService = EntitlementService(authService);
+    return entitlementService.userHasPremium;
   }
 }

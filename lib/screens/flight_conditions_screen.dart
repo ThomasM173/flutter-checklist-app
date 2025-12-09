@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../utils/weather_service.dart';
 import '../utils/weather_boundaries.dart';
 import '../widget/bottom_nav_bar.dart';
+import '../widget/app_drawer.dart';
 
 class FlightConditionsScreen extends StatefulWidget {
   const FlightConditionsScreen({Key? key}) : super(key: key);
@@ -52,29 +53,18 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      drawer: Drawer(
-        child: ListView(
-          children: const [
-            DrawerHeader(
-              decoration: BoxDecoration(color: Colors.lightBlue),
-              child: Text('Menu', style: TextStyle(color: Colors.white, fontSize: 24)),
-            ),
-            ListTile(leading: Icon(Icons.home), title: Text('Home')),
-            ListTile(leading: Icon(Icons.settings), title: Text('Settings')),
-          ],
-        ),
-      ),
+      drawer: const AppDrawer(currentIndex: 1),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        elevation: 0,
+        elevation: 4,
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFB0E0E6), Color(0xFF00BFFF)],
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
+              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
         ),
