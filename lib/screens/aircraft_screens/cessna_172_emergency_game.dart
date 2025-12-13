@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_EFATRA.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_EFATRNA.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_EFDTR.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_ElecFire.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_FDS.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_FIF.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_172_PFL.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_EFATRA.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_EFATRNA.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_EFDTR.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_ElecFire.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_FDS.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_FIF.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_172_PFL.dart';
 
 class Cessna172EmergencyGame extends StatefulWidget {
   const Cessna172EmergencyGame({super.key});

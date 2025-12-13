@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/screens/home_screen.dart';
+import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/screens/home_screen.dart';
+import 'package:clearedtogo/screens/auth/email_verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -43,15 +44,32 @@ class _SignupScreenState extends State<SignupScreen> {
         _acceptedTerms,
       );
 
+      // If we get here, signup succeeded and auto-login worked
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Signup failed: $e';
-      });
+      final errorMessage = e.toString();
+      
+      // Check if this is a verification required error
+      if (errorMessage.contains('verification code') || errorMessage.contains('verify your email')) {
+        // Navigate to verification screen
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (_) => EmailVerificationScreen(
+                email: _emailController.text.trim(),
+              ),
+            ),
+          );
+        }
+      } else {
+        setState(() {
+          _errorMessage = errorMessage.replaceAll('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {

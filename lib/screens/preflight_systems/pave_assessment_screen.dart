@@ -6,6 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:clearedtogo/services/pdf_upload_service.dart';
 import 'dart:convert';
 
 class PaveAssessmentScreen extends StatefulWidget {
@@ -338,7 +339,23 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
       final output = await getTemporaryDirectory();
       final fileName = "PAVE_Assessment_${_dateController.text}_${_pilotNameController.text.replaceAll(' ', '_')}.pdf";
       final file = File("${output.path}/$fileName");
-      await file.writeAsBytes(await pdf.save());
+      final pdfBytes = await pdf.save();
+      await file.writeAsBytes(pdfBytes);
+      
+      // Upload to backend (non-blocking)
+      try {
+        await PdfUploadService().uploadPdf(
+          pdfBytes,
+          title: 'PAVE Assessment - ${_pilotNameController.text} - ${_dateController.text}',
+          aircraftId: _aircraftRegistrationController.text.isNotEmpty 
+              ? _aircraftRegistrationController.text 
+              : 'UNKNOWN',
+          type: 'pave_assessment',
+        );
+      } catch (e) {
+        debugPrint('Failed to upload PDF to backend: $e');
+      }
+      
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -411,6 +428,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
           "PAVE & IMSAFE Risk Assessment",
           style: TextStyle(color: Colors.black, fontSize: 18),
         ),
+        centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -421,10 +439,13 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
             ),
           ),
         ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.history),
             onPressed: () => _showHistory(),
+            tooltip: 'View History',
           ),
         ],
       ),
@@ -614,30 +635,48 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
             ),
             
             Card(
+              elevation: 3,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
               color: _overallRiskLevel == 'Low'
                   ? Colors.green[50]
                   : _overallRiskLevel == 'Medium'
                       ? Colors.orange[50]
                       : Colors.red[50],
               child: Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Overall Risk Level",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.assessment,
+                          color: _overallRiskLevel == 'Low'
+                              ? Colors.green[700]
+                              : _overallRiskLevel == 'Medium'
+                                  ? Colors.orange[700]
+                                  : Colors.red[700],
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          "Overall Risk Level",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
                       value: _overallRiskLevel,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,
                         fillColor: Colors.white,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
                       items: ['Low', 'Medium', 'High']
                           .map((e) => DropdownMenuItem(value: e, child: Text(e)))
@@ -653,13 +692,19 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
             
             ElevatedButton.icon(
               onPressed: _generatePDF,
-              icon: const Icon(Icons.picture_as_pdf),
-              label: const Text("Generate PDF & Save"),
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              label: const Text(
+                "Generate PDF & Save",
+                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-                foregroundColor: Colors.white,
+                backgroundColor: const Color(0xFF87CEEB),
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                textStyle: const TextStyle(fontSize: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                elevation: 3,
               ),
             ),
             
@@ -673,9 +718,13 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
   Widget _buildSection(String title, IconData icon, Color color, List<Widget> children) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: ExpansionTile(
-        initiallyExpanded: true,
-        leading: Icon(icon, color: color),
+        initiallyExpanded: false,
+        leading: Icon(icon, color: color, size: 28),
         title: Text(
           title,
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
@@ -725,7 +774,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: DropdownButtonFormField<String>(
-        value: value,
+        initialValue: value,
         decoration: InputDecoration(
           labelText: label,
           border: const OutlineInputBorder(),

@@ -120,7 +120,7 @@ class _PiperPA28FDS extends State<PiperPA28FDS> {
             ...question["options"].map<Widget>((option) {
               final isCorrect = option == question["correct"];
               final isSelected = option == selectedAnswer;
-              Color tileColor = Colors.white!;
+              Color tileColor = Colors.white;
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;

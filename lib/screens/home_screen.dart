@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/flight_conditions_screen.dart';
-import 'package:flutter_application_1/screens/learning_game_screen.dart';
-import 'package:flutter_application_1/screens/checklist_screens/cessna_172_checklist.dart';
-import 'package:flutter_application_1/screens/checklist_screens/cessna_152_checklist.dart';
-import 'package:flutter_application_1/screens/checklist_screens/piper_pa28_checklist.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_152_emergency_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_152_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_emergency_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_172_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_emergency_screen.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/piper_pa28_screen.dart';
-import 'package:flutter_application_1/screens/preflight_ground_systems_hub.dart';
+import 'package:clearedtogo/screens/flight_conditions_screen.dart';
+import 'package:clearedtogo/screens/learning_game_screen.dart';
+import 'package:clearedtogo/screens/checklist_screens/cessna_172_checklist.dart';
+import 'package:clearedtogo/screens/checklist_screens/cessna_152_checklist.dart';
+import 'package:clearedtogo/screens/checklist_screens/piper_pa28_checklist.dart';
+import 'package:clearedtogo/screens/aircraft_screens/cessna_152_emergency_screen.dart';
+import 'package:clearedtogo/screens/aircraft_screens/cessna_152_screen.dart';
+import 'package:clearedtogo/screens/aircraft_screens/cessna_172_emergency_screen.dart';
+import 'package:clearedtogo/screens/aircraft_screens/cessna_172_screen.dart';
+import 'package:clearedtogo/screens/aircraft_screens/piper_pa28_emergency_screen.dart';
+import 'package:clearedtogo/screens/aircraft_screens/piper_pa28_screen.dart';
+import 'package:clearedtogo/screens/preflight_ground_systems_hub.dart';
 import '../widget/app_drawer.dart';
+import '../widgets/disclaimer_dialog.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,6 +23,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DisclaimerDialog.showIfNeeded(context);
+    });
+  }
 
   void _onBottomNavTap(int index) {
     setState(() => _selectedIndex = index);
@@ -99,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.only(right: 12),
             child: ClipOval(
               child: Image.asset(
-                'assets/images/Newlogo.png',
+                'assets/images/NewLogo.png',
                 width: 44,
                 height: 44,
                 fit: BoxFit.cover,
@@ -323,14 +332,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 30),
+                            const SizedBox(height: 4),
                             Center(
                               child: Image.asset(
-                                'assets/images/Newlogo.png',
+                                'assets/images/NewLogo.png',
                                 height: 160,
                               ),
                             ),
-                            const SizedBox(height: 16),
+                            const SizedBox(height: 4),
                             const Padding(
                               padding: EdgeInsets.symmetric(horizontal: 12.0),
                               child: Column(

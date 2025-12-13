@@ -2,6 +2,7 @@
 /// 
 /// These settings control various aspects of the app behavior,
 /// particularly useful for development and testing.
+library;
 
 /// Dev bypass for paywall
 /// Set to true to bypass all premium checks during development

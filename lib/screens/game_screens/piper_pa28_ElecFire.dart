@@ -120,7 +120,7 @@ class _PiperPA28ElecFire extends State<PiperPA28ElecFire> {
             ...question["options"].map<Widget>((option) {
               final isCorrect = option == question["correct"];
               final isSelected = option == selectedAnswer;
-              Color tileColor = Colors.white!;
+              Color tileColor = Colors.white;
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;

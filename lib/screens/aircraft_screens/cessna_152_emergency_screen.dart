@@ -1,13 +1,15 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_application_1/screens/aircraft_screens/cessna_152_emergency_game.dart';
+import 'package:clearedtogo/screens/aircraft_screens/cessna_152_emergency_game.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:clearedtogo/services/pdf_upload_service.dart';
+import 'package:clearedtogo/services/auth_service.dart';
 
 class Cessna152EmergencyScreen extends StatefulWidget {
   const Cessna152EmergencyScreen({super.key});
@@ -152,6 +154,8 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
+      final authService = AuthService();
+      final user = authService.currentUser;
 
       pdf.addPage(
         pdfWidgets.MultiPage(
@@ -161,6 +165,21 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
             pdfWidgets.Text("Cessna 152 Emergency Checklist",
                 style: pdfWidgets.TextStyle(
                     fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
+            if (user?.fullName != null)
+              pdfWidgets.Text(
+                "Pilot: ${user!.fullName}",
+                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+              ),
+            if (user?.licenseNumber != null)
+              pdfWidgets.Text(
+                "License: ${user!.licenseNumber}",
+                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+              ),
+            if (user?.homeBase != null)
+              pdfWidgets.Text(
+                "Home Base: ${user!.homeBase}",
+                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+              ),
             pdfWidgets.SizedBox(height: 10),
             ...checklistSections.entries.map((entry) => pdfWidgets.Column(
                   children: [
@@ -182,7 +201,21 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
 
     final output = await getTemporaryDirectory();
     final file = File("${output.path}/Cessna_152_Emergency_Procedures.pdf");
-    await file.writeAsBytes(await pdf.save());
+    final pdfBytes = await pdf.save();
+    await file.writeAsBytes(pdfBytes);
+    
+    // Upload to backend (non-blocking)
+    try {
+      await PdfUploadService().uploadPdf(
+        pdfBytes,
+        title: 'Cessna 152 Emergency Procedures - ${DateTime.now().toString().split(' ')[0]}',
+        aircraftId: 'G-152',
+        type: 'cessna_152_emergency',
+      );
+    } catch (e) {
+      debugPrint('Failed to upload PDF to backend: $e');
+    }
+    
     OpenFile.open(file.path);
   } catch (_) {
     if (mounted) {
@@ -405,7 +438,7 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                 ),
               ),
             );
-          }).toList(),
+          }),
 
           const SizedBox(height: 30),
 
@@ -419,7 +452,7 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                 Colors.orange,
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const Cessna152EmergencyScreen()),
+                  MaterialPageRoute(builder: (_) => const Cessna152EmergencyDetailsScreen()),
                 ),
               ),
             ],

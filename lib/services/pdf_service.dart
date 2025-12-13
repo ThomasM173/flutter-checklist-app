@@ -1,8 +1,8 @@
 import 'dart:typed_data';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_1/models/pdf_item.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:clearedtogo/models/pdf_item.dart';
+import 'package:clearedtogo/services/auth_service.dart';
 
 /// Service for managing PDF documents
 /// 

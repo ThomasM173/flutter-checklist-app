@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/screens/auth/signup_screen.dart';
-import 'package:flutter_application_1/screens/home_screen.dart';
+import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/auth_service_manager.dart';
+import 'package:clearedtogo/models/user_role.dart';
+import 'package:clearedtogo/screens/auth/signup_screen.dart';
+import 'package:clearedtogo/screens/auth/email_verification_screen.dart';
+import 'package:clearedtogo/screens/home_screen.dart';
+import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -15,6 +19,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _authService = AuthService();
+  final _authServiceManager = AuthServiceManager();
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -29,26 +34,59 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      final success = await _authService.loginWithCognito(
-        _usernameController.text.trim(),
-        _passwordController.text,
-      );
-
-      if (success) {
+      // Try new local auth first (for flight school admins and demo accounts)
+      try {
+        final user = await _authServiceManager.signIn(
+          _usernameController.text.trim(),
+          _passwordController.text,
+        );
+        
         if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (_) => const HomeScreen()),
-          );
+          // Navigate based on role
+          if (user.role == UserRole.flightSchoolAdmin) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const FlightSchoolDashboard()),
+            );
+          } else {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          }
         }
-      } else {
-        setState(() {
-          _errorMessage = 'Invalid username or password';
-        });
+        return;
+      } catch (e) {
+        // If local auth fails, try Cognito (for backward compatibility)
+        final success = await _authService.loginWithCognito(
+          _usernameController.text.trim(),
+          _passwordController.text,
+        );
+
+        if (success) {
+          if (mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomeScreen()),
+            );
+          }
+        } else {
+          setState(() {
+            _errorMessage = 'Invalid username or password';
+          });
+        }
       }
     } catch (e) {
-      setState(() {
-        _errorMessage = 'Login failed: $e';
-      });
+      final errorMessage = e.toString();
+      
+      // Check if this is a verification required error
+      if (errorMessage.contains('verify your email') || errorMessage.contains('verification')) {
+        setState(() {
+          _errorMessage = errorMessage.replaceAll('Exception: ', '');
+        });
+        // Show verification button
+      } else {
+        setState(() {
+          _errorMessage = errorMessage.replaceAll('Exception: ', '');
+        });
+      }
     } finally {
       if (mounted) {
         setState(() {
@@ -56,6 +94,22 @@ class _LoginScreenState extends State<LoginScreen> {
         });
       }
     }
+  }
+
+  void _navigateToVerification() {
+    final email = _usernameController.text.trim();
+    if (email.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter your email address';
+      });
+      return;
+    }
+    
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => EmailVerificationScreen(email: email),
+      ),
+    );
   }
 
   @override
@@ -74,7 +128,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Logo
                   ClipOval(
                     child: Image.asset(
-                      'assets/images/Newlogo.png',
+                      'assets/images/NewLogo.png',
                       width: 120,
                       height: 120,
                       fit: BoxFit.cover,
@@ -210,7 +264,20 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  
+                  // Verify email link
+                  TextButton(
+                    onPressed: _navigateToVerification,
+                    child: const Text(
+                      'Need to verify your email?',
+                      style: TextStyle(
+                        color: Color(0xFF87CEEB),
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
                   
                   // Sign up link
                   Row(

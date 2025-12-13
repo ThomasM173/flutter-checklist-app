@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/entitlement_service.dart';
-import 'package:flutter_application_1/screens/paywall_screen.dart';
+import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/entitlement_service.dart';
+import 'package:clearedtogo/screens/paywall_screen.dart';
 
 /// A widget wrapper that conditionally shows premium content or a paywall
 /// 

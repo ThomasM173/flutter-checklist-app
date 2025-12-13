@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/entitlement_service.dart';
-import 'package:flutter_application_1/screens/paywall_screen.dart';
-import 'package:flutter_application_1/config/config.dart';
+import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/screens/paywall_screen.dart';
+import 'package:clearedtogo/config/config.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({super.key});

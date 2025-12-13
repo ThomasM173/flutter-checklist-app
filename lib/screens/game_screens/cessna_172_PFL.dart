@@ -155,7 +155,7 @@ class _Cessna172PFL extends State<Cessna172PFL> {
             ...question["options"].map<Widget>((option) {
               final isCorrect = option == question["correct"];
               final isSelected = option == selectedAnswer;
-              Color tileColor = Colors.white!;
+              Color tileColor = Colors.white;
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;

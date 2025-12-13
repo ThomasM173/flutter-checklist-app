@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/contact_us.dart';
-import 'package:flutter_application_1/screens/about_us.dart';
-import 'package:flutter_application_1/screens/privacy_policy.dart';
-import 'package:flutter_application_1/screens/caa_compliance_screen.dart';
-import 'package:flutter_application_1/screens/faq_screen.dart';
-import 'package:flutter_application_1/screens/recent_updates_screen.dart';
-import 'package:flutter_application_1/screens/auth/account_details_screen.dart';
-import 'package:flutter_application_1/screens/auth/login_screen.dart';
-import 'package:flutter_application_1/screens/paywall_screen.dart';
-import 'package:flutter_application_1/screens/pdf/pdf_list_screen.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/entitlement_service.dart';
+import 'package:clearedtogo/screens/contact_us.dart';
+import 'package:clearedtogo/screens/about_us.dart';
+import 'package:clearedtogo/screens/privacy_policy.dart';
+import 'package:clearedtogo/screens/caa_compliance_screen.dart';
+import 'package:clearedtogo/screens/faq_screen.dart';
+import 'package:clearedtogo/screens/recent_updates_screen.dart';
+import 'package:clearedtogo/screens/auth/account_details_screen.dart';
+import 'package:clearedtogo/screens/auth/login_screen.dart';
+import 'package:clearedtogo/screens/paywall_screen.dart';
+import 'package:clearedtogo/screens/premium_pricing_screen.dart';
+import 'package:clearedtogo/screens/pdf/pdf_list_screen.dart';
+import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/entitlement_service.dart';
 import '../screens/home_screen.dart';
 
 class AppDrawer extends StatelessWidget {
@@ -38,7 +39,7 @@ class AppDrawer extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Image.asset(
-                  'assets/images/newlogo.png',
+                  'assets/images/NewLogo.png',
                   fit: BoxFit.contain,
                   height: 75, // Adjust height as needed
                 ),
@@ -102,30 +103,21 @@ class AppDrawer extends StatelessWidget {
             builder: (context, snapshot) {
               final isPremium = snapshot.data ?? false;
               return ListTile(
-                leading: Icon(
-                  isPremium ? Icons.workspace_premium : Icons.star,
-                  color: isPremium ? const Color(0xFFFFD700) : Colors.black,
+                leading: const Icon(
+                  Icons.workspace_premium,
+                  color: Colors.black,
                 ),
-                title: Text(
-                  isPremium ? 'Premium Member' : 'Upgrade to Premium',
+                title: const Text(
+                  'Premium',
                   style: TextStyle(
-                    color: isPremium ? const Color(0xFFFFD700) : Colors.black,
-                    fontWeight: isPremium ? FontWeight.bold : FontWeight.normal,
+                    color: Colors.black,
                   ),
                 ),
+                trailing: isPremium 
+                    ? const Icon(Icons.check_circle, color: Colors.green, size: 20)
+                    : null,
                 onTap: () {
-                  if (!isPremium) {
-                    _navigate(context, const PaywallScreen());
-                  } else {
-                    // Show premium status or manage subscription
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('You have Premium access!'),
-                        backgroundColor: Colors.green,
-                      ),
-                    );
-                    Navigator.pop(context);
-                  }
+                  _navigate(context, const PremiumPricingScreen());
                 },
               );
             },

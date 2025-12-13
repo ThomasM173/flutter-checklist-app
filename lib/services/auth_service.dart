@@ -1,21 +1,24 @@
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:amplify_flutter/amplify_flutter.dart';
 import 'dart:convert';
 
 class UserAccount {
   final String email;
-  final String password; // Plain text for dev only
+  final String password; // Only used for local admin account
   final String? fullName;
   final String? licenseNumber;
   final String? homeBase;
   final bool isPremium;
+  final String? cognitoUserId;
 
   UserAccount({
     required this.email,
-    required this.password,
+    this.password = '',
     this.fullName,
     this.licenseNumber,
     this.homeBase,
     this.isPremium = false,
+    this.cognitoUserId,
   });
 
   Map<String, dynamic> toJson() => {
@@ -25,15 +28,17 @@ class UserAccount {
     'licenseNumber': licenseNumber,
     'homeBase': homeBase,
     'isPremium': isPremium,
+    'cognitoUserId': cognitoUserId,
   };
 
   factory UserAccount.fromJson(Map<String, dynamic> json) => UserAccount(
     email: json['email'],
-    password: json['password'],
+    password: json['password'] ?? '',
     fullName: json['fullName'],
     licenseNumber: json['licenseNumber'],
     homeBase: json['homeBase'],
     isPremium: json['isPremium'] ?? false,
+    cognitoUserId: json['cognitoUserId'],
   );
 
   UserAccount copyWith({
@@ -43,6 +48,7 @@ class UserAccount {
     String? licenseNumber,
     String? homeBase,
     bool? isPremium,
+    String? cognitoUserId,
   }) {
     return UserAccount(
       email: email ?? this.email,
@@ -51,14 +57,14 @@ class UserAccount {
       licenseNumber: licenseNumber ?? this.licenseNumber,
       homeBase: homeBase ?? this.homeBase,
       isPremium: isPremium ?? this.isPremium,
+      cognitoUserId: cognitoUserId ?? this.cognitoUserId,
     );
   }
 }
 
 class AuthService {
-  static const String _isLoggedInKey = 'isLoggedIn';
-  static const String _currentUserEmailKey = 'currentUserEmail';
-  static const String _usersKey = 'users';
+  static const String _currentUserKey = 'currentUser';
+  static const String _isAdminKey = 'isAdmin';
   
   UserAccount? _currentUser;
 
@@ -66,168 +72,278 @@ class AuthService {
 
   // Initialize the auth service
   Future<void> init() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isLoggedIn = prefs.getBool(_isLoggedInKey) ?? false;
-    
-    if (isLoggedIn) {
-      final currentEmail = prefs.getString(_currentUserEmailKey);
-      if (currentEmail != null) {
-        final users = await _loadUsers();
-        _currentUser = users[currentEmail];
-      }
-    }
-  }
-
-  // Load all users from SharedPreferences
-  Future<Map<String, UserAccount>> _loadUsers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final usersJson = prefs.getString(_usersKey);
-    
-    if (usersJson == null) {
-      return {};
-    }
-    
     try {
-      final Map<String, dynamic> decoded = json.decode(usersJson);
-      return decoded.map(
-        (key, value) => MapEntry(key, UserAccount.fromJson(value)),
-      );
+      final prefs = await SharedPreferences.getInstance();
+      final isAdmin = prefs.getBool(_isAdminKey) ?? false;
+      
+      if (isAdmin) {
+        // Load admin account
+        _currentUser = UserAccount(
+          email: 'admin@clearedtogo.dev',
+          password: 'David',
+          fullName: 'Tom (Admin)',
+          isPremium: true,
+        );
+        return;
+      }
+      
+      // Check if there's a Cognito session with timeout
+      try {
+        final session = await Amplify.Auth.fetchAuthSession()
+            .timeout(const Duration(seconds: 3));
+        if (session.isSignedIn) {
+          // Load user from Cognito
+          await _loadCognitoUser();
+        }
+      } catch (e) {
+        safePrint('Error checking auth session (timeout or error): $e');
+        // Continue without Cognito - user can still login
+      }
     } catch (e) {
-      return {};
+      safePrint('Error initializing auth service: $e');
+      // Continue anyway - app should still be usable
     }
   }
 
-  // Save all users to SharedPreferences
-  Future<void> _saveUsers(Map<String, UserAccount> users) async {
-    final prefs = await SharedPreferences.getInstance();
-    final usersMap = users.map(
-      (key, value) => MapEntry(key, value.toJson()),
-    );
-    await prefs.setString(_usersKey, json.encode(usersMap));
+  // Load current Cognito user and attributes
+  Future<void> _loadCognitoUser() async {
+    try {
+      final user = await Amplify.Auth.getCurrentUser()
+          .timeout(const Duration(seconds: 3));
+      final attributes = await Amplify.Auth.fetchUserAttributes()
+          .timeout(const Duration(seconds: 3));
+      
+      String? email;
+      String? fullName;
+      
+      for (final attr in attributes) {
+        if (attr.userAttributeKey == CognitoUserAttributeKey.email) {
+          email = attr.value;
+        } else if (attr.userAttributeKey == CognitoUserAttributeKey.name) {
+          fullName = attr.value;
+        }
+      }
+      
+      // Load additional profile data from SharedPreferences
+      final prefs = await SharedPreferences.getInstance();
+      final userJson = prefs.getString(_currentUserKey);
+      
+      if (userJson != null) {
+        final userData = json.decode(userJson);
+        _currentUser = UserAccount.fromJson(userData);
+      } else {
+        _currentUser = UserAccount(
+          email: email ?? user.username,
+          fullName: fullName,
+          cognitoUserId: user.userId,
+        );
+        await _saveCurrentUser();
+      }
+    } catch (e) {
+      safePrint('Error loading Cognito user (timeout or error): $e');
+    }
   }
 
-  // Store current logged-in user
-  Future<void> _setCurrentUser(String email) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(_isLoggedInKey, true);
-    await prefs.setString(_currentUserEmailKey, email);
+  // Save current user to SharedPreferences
+  Future<void> _saveCurrentUser() async {
+    if (_currentUser == null) return;
     
-    final users = await _loadUsers();
-    _currentUser = users[email];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_currentUserKey, json.encode(_currentUser!.toJson()));
   }
 
-  // TODO: integrate AWS Cognito here
+  // Sign up with AWS Cognito
   Future<bool> signUpWithCognito(
     String email,
     String password,
     bool acceptedTerms,
   ) async {
-    // TODO: Replace with actual AWS Cognito signup call
-    // Example:
-    // final userPool = CognitoUserPool(userPoolId, clientId);
-    // final user = CognitoUser(email, userPool);
-    // await user.signUp(email, password, userAttributes: [...]);
-    
     if (!acceptedTerms) {
       throw Exception('Must accept terms and conditions');
     }
 
-    // Local registration
-    final users = await _loadUsers();
-    
-    // Check if email already exists
-    if (users.containsKey(email.toLowerCase())) {
-      throw Exception('An account with this email already exists');
-    }
-    
-    // Create new user account
-    final newUser = UserAccount(
-      email: email.toLowerCase(),
-      password: password, // Plain text for dev only
-      isPremium: false,
-    );
-    
-    // Save new user
-    users[email.toLowerCase()] = newUser;
-    await _saveUsers(users);
-    
-    // Set as current user
-    await _setCurrentUser(email.toLowerCase());
-    
-    // Simulate network delay
-    await Future.delayed(const Duration(seconds: 1));
-    
-    return true;
-  }
-
-  // TODO: integrate AWS Cognito here
-  Future<bool> loginWithCognito(String username, String password) async {
-    // TODO: Replace with actual AWS Cognito authentication
-    // Example:
-    // final userPool = CognitoUserPool(userPoolId, clientId);
-    // final cognitoUser = CognitoUser(username, userPool);
-    // final authDetails = AuthenticationDetails(username: username, password: password);
-    // final session = await cognitoUser.authenticateUser(authDetails);
-    
-    // Hardcoded admin login
-    if (username == 'Tom' && password == 'David') {
-      // Create/use special admin account
-      final users = await _loadUsers();
-      final adminEmail = 'admin@clearedtogo.dev';
+    try {
+      final normalizedEmail = email.toLowerCase().trim();
       
-      if (!users.containsKey(adminEmail)) {
-        users[adminEmail] = UserAccount(
-          email: adminEmail,
-          password: 'David',
-          fullName: 'Tom (Admin)',
-          isPremium: true,
-        );
-        await _saveUsers(users);
+      final userAttributes = <AuthUserAttributeKey, String>{
+        AuthUserAttributeKey.email: normalizedEmail,
+      };
+
+      final result = await Amplify.Auth.signUp(
+        username: normalizedEmail,
+        password: password,
+        options: SignUpOptions(
+          userAttributes: userAttributes,
+        ),
+      ).timeout(const Duration(seconds: 10));
+
+      safePrint('Sign up result: ${result.nextStep.signUpStep}');
+
+      // Check if email confirmation is required
+      if (result.nextStep.signUpStep == AuthSignUpStep.confirmSignUp) {
+        safePrint('Email confirmation required');
+        // TODO: Navigate to verification screen
+        // For now, inform user to check email
+        throw Exception('Account created! Please check your email for a verification code, then login.');
+      }
+
+      // If signup is complete, auto-login
+      if (result.isSignUpComplete) {
+        await loginWithCognito(normalizedEmail, password);
+        return true;
+      }
+
+      // Try to auto-login anyway
+      try {
+        await loginWithCognito(normalizedEmail, password);
+        return true;
+      } catch (e) {
+        safePrint('Auto-login after signup failed: $e');
+        throw Exception('Account created. Please check your email for verification code, then login.');
+      }
+    } on AuthException catch (e) {
+      safePrint('Sign up error: ${e.message}');
+      
+      // Check for specific error messages
+      final message = e.message.toLowerCase();
+      if (message.contains('username') && message.contains('exists')) {
+        throw Exception('An account with this email already exists');
       }
       
-      await _setCurrentUser(adminEmail);
-      
-      // Simulate network delay
-      await Future.delayed(const Duration(seconds: 1));
-      
-      return true;
+      throw Exception(e.message);
+    } catch (e) {
+      safePrint('Unexpected sign up error: $e');
+      rethrow;
     }
-    
-    // Normal user login - check local storage
-    final users = await _loadUsers();
-    final user = users[username.toLowerCase()];
-    
-    if (user != null && user.password == password) {
-      await _setCurrentUser(username.toLowerCase());
-      await Future.delayed(const Duration(seconds: 1));
-      return true;
-    }
-    
-    return false;
   }
 
-  // TODO: integrate AWS Cognito here
+  // Login with AWS Cognito (with Tom/David admin override)
+  Future<bool> loginWithCognito(String username, String password) async {
+    // HARDCODED ADMIN LOGIN - ALWAYS CHECK FIRST
+    if (username == 'Tom' && password == 'David') {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_isAdminKey, true);
+      
+      _currentUser = UserAccount(
+        email: 'admin@clearedtogo.dev',
+        password: 'David',
+        fullName: 'Tom (Admin)',
+        isPremium: true,
+      );
+      
+      await _saveCurrentUser();
+      
+      safePrint('Admin login successful');
+      return true;
+    }
+    
+    // Normal Cognito authentication
+    try {
+      final result = await Amplify.Auth.signIn(
+        username: username.toLowerCase(), // Ensure lowercase for consistency
+        password: password,
+      ).timeout(const Duration(seconds: 10));
+
+      safePrint('Sign in result: ${result.nextStep.signInStep}');
+
+      if (result.isSignedIn) {
+        // Load user data
+        await _loadCognitoUser();
+        safePrint('Login successful');
+        return true;
+      } else {
+        // Handle additional steps (MFA, password change, etc.)
+        safePrint('Login incomplete: ${result.nextStep.signInStep}');
+        if (result.nextStep.signInStep == AuthSignInStep.confirmSignUp) {
+          throw Exception('Please verify your email before logging in. Check your inbox for the verification code.');
+        }
+        return false;
+      }
+    } on AuthException catch (e) {
+      safePrint('Auth error: ${e.message}');
+      
+      // Check specific error messages for better user feedback
+      final message = e.message.toLowerCase();
+      if (message.contains('not confirmed') || message.contains('not verified')) {
+        throw Exception('Please verify your email before logging in. Check your inbox for the verification code.');
+      } else if (message.contains('not found') || message.contains('incorrect') || message.contains('not authorized')) {
+        throw Exception('Invalid username or password');
+      }
+      
+      throw Exception(e.message);
+    } catch (e) {
+      safePrint('Unexpected login error: $e');
+      throw Exception('Login failed: $e');
+    }
+  }
+
+  // Logout from AWS Cognito
   Future<void> logout() async {
-    // TODO: Replace with actual AWS Cognito logout
-    // Example:
-    // final cognitoUser = await userPool.getCurrentUser();
-    // await cognitoUser?.signOut();
-    
-    // Clear local login state
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_isLoggedInKey);
-    await prefs.remove(_currentUserEmailKey);
-    
-    _currentUser = null;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isAdmin = prefs.getBool(_isAdminKey) ?? false;
+      
+      if (isAdmin) {
+        // Admin logout - just clear local state
+        await prefs.remove(_isAdminKey);
+        await prefs.remove(_currentUserKey);
+      } else {
+        // Cognito logout
+        await Amplify.Auth.signOut()
+            .timeout(const Duration(seconds: 5));
+        await prefs.remove(_currentUserKey);
+      }
+      
+      _currentUser = null;
+      safePrint('Logout successful');
+    } catch (e) {
+      safePrint('Logout error: $e');
+      // Even if Cognito logout fails, clear local state
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_isAdminKey);
+      await prefs.remove(_currentUserKey);
+      _currentUser = null;
+    }
   }
 
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool(_isLoggedInKey) ?? false;
+    final isAdmin = prefs.getBool(_isAdminKey) ?? false;
+    
+    if (isAdmin) {
+      return true;
+    }
+    
+    try {
+      final session = await Amplify.Auth.fetchAuthSession()
+          .timeout(const Duration(seconds: 3));
+      return session.isSignedIn;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<String?> getCurrentUsername() async {
     return _currentUser?.email;
+  }
+
+  // Get Cognito User ID (for PDFs, subscriptions, etc.)
+  Future<String?> getCognitoUserId() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final isAdmin = prefs.getBool(_isAdminKey) ?? false;
+      
+      if (isAdmin) {
+        return 'admin-local';
+      }
+      
+      final user = await Amplify.Auth.getCurrentUser()
+          .timeout(const Duration(seconds: 3));
+      return user.userId;
+    } catch (e) {
+      safePrint('Error getting Cognito user ID: $e');
+      return null;
+    }
   }
 
   // Update user profile
@@ -247,19 +363,28 @@ class AuthService {
       homeBase: homeBase,
     );
 
-    // Save to storage
-    final users = await _loadUsers();
-    users[_currentUser!.email] = _currentUser!;
-    await _saveUsers(users);
+    // Save to local storage
+    await _saveCurrentUser();
 
-    // TODO: integrate AWS Cognito here - update user attributes
-    // Example:
-    // final attributes = [
-    //   CognitoUserAttribute(name: 'name', value: fullName),
-    //   CognitoUserAttribute(name: 'custom:license', value: licenseNumber),
-    //   CognitoUserAttribute(name: 'custom:homeBase', value: homeBase),
-    // ];
-    // await cognitoUser.updateAttributes(attributes);
+    // Update Cognito attributes (skip for admin)
+    final prefs = await SharedPreferences.getInstance();
+    final isAdmin = prefs.getBool(_isAdminKey) ?? false;
+    
+    if (!isAdmin && fullName != null) {
+      try {
+        await Amplify.Auth.updateUserAttribute(
+          userAttributeKey: CognitoUserAttributeKey.name,
+          value: fullName,
+        ).timeout(const Duration(seconds: 5));
+        safePrint('Cognito attributes updated');
+      } catch (e) {
+        safePrint('Error updating Cognito attributes: $e');
+        // Don't throw - local update already succeeded
+      }
+    }
+
+    // TODO: Update custom attributes (license, homeBase) in backend
+    // These should be stored in your backend database, not Cognito
   }
 
   // Update user's premium status
@@ -272,12 +397,10 @@ class AuthService {
     _currentUser = _currentUser!.copyWith(isPremium: isPremium);
 
     // Save to storage
-    final users = await _loadUsers();
-    users[_currentUser!.email] = _currentUser!;
-    await _saveUsers(users);
+    await _saveCurrentUser();
 
-    // TODO: integrate backend verification here
-    // This should verify the premium status with your backend
-    // which should verify the purchase with Google Play Billing
+    // TODO: Verify premium status with backend
+    // This should verify the purchase with Google Play Billing
+    // and store the subscription status in your backend database
   }
 }

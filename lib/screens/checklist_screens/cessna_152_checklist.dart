@@ -8,10 +8,11 @@ import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
+import 'package:clearedtogo/services/pdf_upload_service.dart';
+import 'package:clearedtogo/services/auth_service.dart';
 import '../aircraft_screens/cessna_152_emergency_screen.dart';
 import '../aircraft_screens/cessna_152_screen.dart';
-import 'package:flutter_application_1/utils/weather_service.dart';
-import 'package:flutter_application_1/utils/weather_boundaries.dart';
+import 'package:clearedtogo/utils/weather_service.dart';
 
 class Cessna152ChecklistScreen extends StatefulWidget {
   const Cessna152ChecklistScreen({super.key});
@@ -694,20 +695,42 @@ void updateTerrainItem(bool risk) {
           pageFormat: PdfPageFormat.a4,
           margin: pdfWidgets.EdgeInsets.all(40),
           theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
-          header: (context) => pdfWidgets.Column(
-            crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
-            children: [
-              pdfWidgets.Text(
-                "Cessna 152 Checklist",
-                style: pdfWidgets.TextStyle(
-                  fontSize: 28,
-                  fontWeight: pdfWidgets.FontWeight.bold,
+          header: (context) {
+            final authService = AuthService();
+            final user = authService.currentUser;
+            
+            return pdfWidgets.Column(
+              crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
+              children: [
+                pdfWidgets.Text(
+                  "Cessna 152 Checklist",
+                  style: pdfWidgets.TextStyle(
+                    fontSize: 28,
+                    fontWeight: pdfWidgets.FontWeight.bold,
+                  ),
                 ),
-              ),
-              pdfWidgets.Divider(thickness: 2),
-              pdfWidgets.SizedBox(height: 10),
-            ],
-          ),
+                if (user?.fullName != null || user?.licenseNumber != null || user?.homeBase != null)
+                  pdfWidgets.SizedBox(height: 8),
+                if (user?.fullName != null)
+                  pdfWidgets.Text(
+                    "Pilot: ${user!.fullName}",
+                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                  ),
+                if (user?.licenseNumber != null)
+                  pdfWidgets.Text(
+                    "License: ${user!.licenseNumber}",
+                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                  ),
+                if (user?.homeBase != null)
+                  pdfWidgets.Text(
+                    "Home Base: ${user!.homeBase}",
+                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                  ),
+                pdfWidgets.Divider(thickness: 2),
+                pdfWidgets.SizedBox(height: 10),
+              ],
+            );
+          },
           footer: (context) => pdfWidgets.Column(
             children: [
               pdfWidgets.Divider(),
@@ -798,7 +821,22 @@ void updateTerrainItem(bool risk) {
 
       final output = await getTemporaryDirectory();
       final file = File("${output.path}/Cessna_152_Checklist.pdf");
-      await file.writeAsBytes(await pdf.save());
+      final pdfBytes = await pdf.save();
+      await file.writeAsBytes(pdfBytes);
+      
+      // Upload to backend (non-blocking)
+      try {
+        await PdfUploadService().uploadPdf(
+          pdfBytes,
+          title: 'Cessna 152 Checklist - ${DateTime.now().toString().split(' ')[0]}',
+          aircraftId: 'G-152', // Replace with actual registration if available
+          type: 'cessna_152_checklist',
+        );
+      } catch (e) {
+        debugPrint('Failed to upload PDF to backend: $e');
+        // Continue with local file opening even if upload fails
+      }
+      
       OpenFile.open(file.path);
     } catch (_) {
       if (mounted) {
@@ -960,18 +998,23 @@ void updateTerrainItem(bool risk) {
               ),
               SizedBox(height: 10),
             ],
-            Center(
-              child: Padding(
+            Container(
+              height: 100,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.symmetric(horizontal: 8.0),
-                child: Wrap(
-                  spacing: 10,
-                  runSpacing: 10,
+                child: Row(
                   children: [
                     _weatherButton('Cold', Icons.ac_unit, 'cold'),
+                    SizedBox(width: 10),
                     _weatherButton('Hot', Icons.wb_sunny, 'hot'),
+                    SizedBox(width: 10),
                     _weatherButton('Rain', Icons.grain, 'rain'),
+                    SizedBox(width: 10),
                     _weatherButton('IFR', Icons.cloud, 'ifrc'),
+                    SizedBox(width: 10),
                     _weatherButton('Windy', Icons.air, 'windy'),
+                    SizedBox(width: 10),
                     _weatherButton('Storm', Icons.flash_on, 'storm'),
                   ],
                 ),

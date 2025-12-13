@@ -1,5 +1,3 @@
-import 'dart:convert';
-import '../utils/weather_service.dart';
 
 class WeatherBoundaries {
   /// Checks for serious carburettor icing at any power
@@ -34,7 +32,7 @@ class WeatherBoundaries {
 
   /// Weather phenomena risk: parse raw METAR for adverse codes
   static Map<String, bool> weatherPhenomenaRisk(String rawMetar, String remarks) {
-    final raw = rawMetar.toUpperCase() + ' ' + remarks.toUpperCase();
+    final raw = '${rawMetar.toUpperCase()} ${remarks.toUpperCase()}';
     return {
       'rain': raw.contains('RA'),
       'snow': raw.contains('SN') || raw.contains('SG') || raw.contains('IC'),

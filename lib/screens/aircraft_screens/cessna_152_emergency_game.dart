@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_EFATRA.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_EFATRNA.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_EFDTR.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_ElecFire.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_FDS.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_FIF.dart';
-import 'package:flutter_application_1/screens/game_screens/cessna_152_PFL.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_EFATRA.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_EFATRNA.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_EFDTR.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_ElecFire.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_FDS.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_FIF.dart';
+import 'package:clearedtogo/screens/game_screens/cessna_152_PFL.dart';
 
 class Cessna152EmergencyGame extends StatefulWidget {
   const Cessna152EmergencyGame({super.key});
@@ -64,7 +64,7 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
       },
     ];
 
-    Widget _iconButton(
+    Widget iconButton(
       IconData icon,
       String label,
       Color color,
@@ -152,9 +152,9 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
-                _iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
-                _iconButton(
+                iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
+                iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+                iconButton(
                   Icons.info_outline,
                   'Details',
                   Colors.orange,

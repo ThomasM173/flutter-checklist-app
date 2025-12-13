@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/preflight_systems/pave_assessment_screen.dart';
-import 'package:flutter_application_1/screens/preflight_systems/weight_balance_screen.dart';
-import 'package:flutter_application_1/screens/preflight_systems/tech_log_screen.dart';
-import 'package:flutter_application_1/screens/preflight_systems/fuel_uplift_screen.dart';
-import 'package:flutter_application_1/screens/preflight_systems/departure_briefing_screen.dart';
-import 'package:flutter_application_1/screens/preflight_systems/passenger_brief_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/pave_assessment_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/weight_balance_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/tech_log_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/fuel_uplift_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/departure_briefing_screen.dart';
+import 'package:clearedtogo/screens/preflight_systems/passenger_brief_screen.dart';
 
 class PreflightGroundSystemsHub extends StatelessWidget {
   const PreflightGroundSystemsHub({super.key});

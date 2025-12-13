@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_EFATRA.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_EFATRNA.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_EFDTR.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_ElecFire.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_FDS.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_FIF.dart';
-import 'package:flutter_application_1/screens/game_screens/piper_pa28_PFL.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_EFATRA.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_EFATRNA.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_EFDTR.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_ElecFire.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_FDS.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_FIF.dart';
+import 'package:clearedtogo/screens/game_screens/piper_pa28_PFL.dart';
 
 class PiperPA28EmergencyGame extends StatefulWidget {
   const PiperPA28EmergencyGame({super.key});

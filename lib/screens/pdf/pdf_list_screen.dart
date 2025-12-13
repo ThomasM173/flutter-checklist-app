@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/models/pdf_item.dart';
-import 'package:flutter_application_1/services/pdf_service.dart';
-import 'package:flutter_application_1/services/auth_service.dart';
+import 'package:clearedtogo/models/pdf_item.dart';
+import 'package:clearedtogo/services/pdf_service.dart';
+import 'package:clearedtogo/services/auth_service.dart';
 import 'dart:typed_data';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:open_file/open_file.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 
 class PdfListScreen extends StatefulWidget {
   const PdfListScreen({super.key});

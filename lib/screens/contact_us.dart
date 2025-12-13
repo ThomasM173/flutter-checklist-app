@@ -6,22 +6,41 @@ import '../widget/bottom_nav_bar.dart';
 class ContactUs extends StatelessWidget {
   const ContactUs({super.key});
 
-  void _launchEmail() async {
+  Future<void> _launchEmail() async {
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'support@clearedtogo.app',
-      query: Uri.encodeFull('subject=Support Request'),
+      query: 'subject=Support Request',
     );
-    if (await canLaunchUrl(emailUri)) {
-      await launchUrl(emailUri);
+    
+    try {
+      final bool canLaunch = await canLaunchUrl(emailUri);
+      if (canLaunch) {
+        await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback: try to launch anyway
+        await launchUrl(emailUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      // If email client not available, could show a dialog with the email address
+      debugPrint('Could not launch email: $e');
     }
   }
 
-  void _launchGoogleForm() async {
+  Future<void> _launchGoogleForm() async {
     final Uri formUri = Uri.parse(
         'https://docs.google.com/forms/d/e/1FAIpQLSc_RV1Tq0qgVE6sGPLQMij7ESsicX74ECK1-Vf-trFoCIZPFw/viewform?usp=dialog');
-    if (await canLaunchUrl(formUri)) {
-      await launchUrl(formUri);
+    
+    try {
+      final bool canLaunch = await canLaunchUrl(formUri);
+      if (canLaunch) {
+        await launchUrl(formUri, mode: LaunchMode.externalApplication);
+      } else {
+        // Fallback: try to launch anyway
+        await launchUrl(formUri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      debugPrint('Could not launch form: $e');
     }
   }
 

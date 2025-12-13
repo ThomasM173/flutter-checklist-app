@@ -5,7 +5,7 @@ import '../widget/bottom_nav_bar.dart';
 import '../widget/app_drawer.dart';
 
 class FlightConditionsScreen extends StatefulWidget {
-  const FlightConditionsScreen({Key? key}) : super(key: key);
+  const FlightConditionsScreen({super.key});
 
   @override
   State<FlightConditionsScreen> createState() => _FlightConditionsScreenState();
@@ -98,7 +98,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 ElevatedButton(
                   onPressed: () => _fetch(_icaoController.text.trim()),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlueAccent,
+                    backgroundColor: const Color(0xFF87CEEB),
                     padding: const EdgeInsets.all(14),
                   ),
                   child: const Icon(Icons.search, color: Colors.black),
@@ -117,7 +117,37 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
             else if (_metar != null)
               Expanded(child: _buildData())
             else
-              const Expanded(child: SizedBox()),
+              Expanded(
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Icon(
+                        Icons.cloud_queue,
+                        size: 80,
+                        color: Color(0xFF87CEEB),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        'Enter an ICAO code above',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black54,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Get real-time weather and flight conditions',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.black38,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
