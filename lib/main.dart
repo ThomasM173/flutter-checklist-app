@@ -57,16 +57,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Plane stuff',
-      debugShowCheckedModeBanner: false,  // ✅ Hides debug banner
+      title: 'ClearedToGo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'NotoSans', // Added NotoSans font family for consistent numbering font
+        fontFamily: 'NotoSans',
         brightness: Brightness.dark,
         primaryColor: Colors.red,
         scaffoldBackgroundColor: Colors.black,
       ),
       initialRoute: '/',
-      routes: appRoutes,  // ✅ Uses a centralized routes file
+      routes: appRoutes,
     );
   }
 }

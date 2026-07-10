@@ -4,8 +4,8 @@ import 'package:uuid/uuid.dart';
 import '../models/checklist_models.dart';
 import '../repositories/checklist_repository.dart';
 
-/// Local implementation of ChecklistRepository
-/// TODO: Replace with backend API when ready
+/// Local checklist repository implementation.
+/// Uses in-memory defaults and local storage for custom checklists.
 class LocalChecklistRepository implements ChecklistRepository {
   static const String _customChecklistsKey = 'custom_checklists';
 
@@ -47,8 +47,8 @@ class LocalChecklistRepository implements ChecklistRepository {
   }
 
   ChecklistTemplate? _getDefaultChecklistByType(String aircraftType) {
-    // These are simplified defaults - in practice, you'd load from your existing screens
-    // TODO: Extract actual checklist data from existing checklist screens
+    // These are simplified defaults for the local repository.
+    // The checklist data should eventually be sourced from the app's existing content.
     
     switch (aircraftType) {
       case 'C152':

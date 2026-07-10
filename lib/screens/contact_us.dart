@@ -69,7 +69,7 @@ class ContactUs extends StatelessWidget {
           iconTheme: const IconThemeData(color: Colors.black), // Black burger icon
         ),
       ),
-      drawer: const AppDrawer(currentIndex: 0), // ✅ Same as CAAComplianceScreen
+      drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
       backgroundColor: Colors.white,
       body: Center(

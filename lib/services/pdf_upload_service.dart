@@ -51,8 +51,8 @@ class PdfUploadService {
       // Send HTTP POST request
       final uri = Uri.parse('$_baseUrl/pdf');
       
-      debugPrint('📤 Uploading PDF to backend: $title (${pdfBytes.length} bytes)');
-      debugPrint('📍 Aircraft ID: $aircraftId | Type: $type');
+      debugPrint('Uploading PDF: $title (${pdfBytes.length} bytes)');
+      debugPrint('Aircraft ID: $aircraftId | Type: $type');
       
       final response = await http.post(
         uri,
@@ -63,22 +63,21 @@ class PdfUploadService {
         body: body,
       );
 
-      // Check response and log details
-      debugPrint('📥 Upload response: ${response.statusCode}');
-      debugPrint('📝 Response body: ${response.body}');
+      debugPrint('Upload response status: ${response.statusCode}');
+      debugPrint('Upload response body: ${response.body}');
       
       if (response.statusCode == 200 || response.statusCode == 201) {
-        debugPrint('✅ PDF uploaded successfully!');
+        debugPrint('PDF uploaded successfully');
       } else {
         final errorMsg = 'Upload failed (${response.statusCode}): ${response.body}';
-        debugPrint('❌ $errorMsg');
+        debugPrint(errorMsg);
         throw Exception(errorMsg);
       }
     } on AuthException catch (e) {
-      debugPrint('🔐 Authentication error during PDF upload: ${e.message}');
+      debugPrint('Authentication error during PDF upload: ${e.message}');
       throw Exception('Authentication error: ${e.message}');
     } catch (e) {
-      debugPrint('💥 Failed to upload PDF: $e');
+      debugPrint('Failed to upload PDF: $e');
       rethrow;
     }
   }

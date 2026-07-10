@@ -5,7 +5,7 @@ import 'package:clearedtogo/models/pdf_item.dart';
 import 'package:clearedtogo/services/auth_service.dart';
 
 /// Service for managing PDF documents
-/// 
+///
 /// Currently implements local storage using SharedPreferences.
 /// Ready for backend integration with AWS S3 and REST API.
 class PdfService {
@@ -15,17 +15,14 @@ class PdfService {
   PdfService(this._authService);
 
   /// Upload a PDF document
-  /// 
+  ///
   /// For now, stores PDF metadata locally in SharedPreferences.
   /// PDF bytes are not persisted (would exceed SharedPreferences size limits).
-  /// 
-  /// TODO: replace with backend API calls
-  /// - Upload PDF bytes to AWS S3 bucket
-  /// - Get signed URL from S3
-  /// - Send metadata to backend REST API
-  /// - Backend stores: userId, pdfId, s3Url, title, createdAt, sizeBytes
-  /// - Return PdfItem with real S3 URL
-  /// 
+  ///
+  /// Backend integration is pending.
+  /// In a production implementation, this would upload PDF bytes,
+  /// persist metadata, and return a record with a permanent storage URL.
+  ///
   /// Example backend integration:
   /// ```dart
   /// // 1. Get pre-signed upload URL from backend
@@ -35,14 +32,14 @@ class PdfService {
   ///   body: json.encode({'fileName': title, 'fileSize': pdfBytes.length}),
   /// );
   /// final uploadUrl = json.decode(response.body)['uploadUrl'];
-  /// 
+  ///
   /// // 2. Upload to S3
   /// await http.put(
   ///   Uri.parse(uploadUrl),
   ///   body: pdfBytes,
   ///   headers: {'Content-Type': 'application/pdf'},
   /// );
-  /// 
+  ///
   /// // 3. Confirm upload to backend
   /// final confirmResponse = await http.post(
   ///   Uri.parse('$baseUrl/api/pdfs'),
@@ -53,7 +50,7 @@ class PdfService {
   ///     's3Key': s3Key,
   ///   }),
   /// );
-  /// 
+  ///
   /// return PdfItem.fromJson(json.decode(confirmResponse.body));
   /// ```
   Future<PdfItem> uploadPdf(Uint8List pdfBytes, String title) async {
@@ -64,7 +61,7 @@ class PdfService {
 
     // Generate dummy ID (in production, this comes from backend)
     final id = 'pdf_${DateTime.now().millisecondsSinceEpoch}';
-    
+
     // Create PDF item with local metadata
     final pdfItem = PdfItem(
       id: id,
@@ -85,23 +82,20 @@ class PdfService {
   }
 
   /// List all PDFs for the current user
-  /// 
+  ///
   /// For now, retrieves from local SharedPreferences.
-  /// 
-  /// TODO: replace with backend API calls
-  /// - Call backend REST API: GET /api/pdfs
-  /// - Include user authentication token
-  /// - Backend queries database for user's PDFs
-  /// - Returns list with S3 signed URLs for viewing/downloading
-  /// - Support pagination for large lists
-  /// 
+  ///
+  /// Backend integration is pending.
+  /// In a production implementation, this would request the user's PDF list
+  /// from the backend and return a strongly typed collection.
+  ///
   /// Example backend integration:
   /// ```dart
   /// final response = await http.get(
   ///   Uri.parse('$baseUrl/api/pdfs?page=1&limit=20'),
   ///   headers: {'Authorization': 'Bearer $accessToken'},
   /// );
-  /// 
+  ///
   /// if (response.statusCode == 200) {
   ///   final data = json.decode(response.body);
   ///   return (data['pdfs'] as List)
@@ -128,12 +122,11 @@ class PdfService {
   }
 
   /// Delete a PDF document
-  /// 
-  /// TODO: replace with backend API calls
-  /// - Call backend REST API: DELETE /api/pdfs/:id
-  /// - Backend deletes from database
-  /// - Backend deletes from S3 bucket
-  /// 
+  ///
+  /// Backend integration is pending.
+  /// In production, this would call the backend to remove the PDF record
+  /// and delete the associated object from cloud storage.
+  ///
   /// Example backend integration:
   /// ```dart
   /// final response = await http.delete(
@@ -156,19 +149,17 @@ class PdfService {
   }
 
   /// Get a download/view URL for a PDF
-  /// 
-  /// TODO: replace with backend API calls
-  /// - Call backend: GET /api/pdfs/:id/download-url
-  /// - Backend generates signed S3 URL with expiration
-  /// - Return URL for viewing/downloading
-  /// 
+  ///
+  /// Backend integration is pending.
+  /// In production, this would request a signed download URL from the backend.
+  ///
   /// Example backend integration:
   /// ```dart
   /// final response = await http.get(
   ///   Uri.parse('$baseUrl/api/pdfs/$pdfId/download-url'),
   ///   headers: {'Authorization': 'Bearer $accessToken'},
   /// );
-  /// 
+  ///
   /// if (response.statusCode == 200) {
   ///   final data = json.decode(response.body);
   ///   return data['url']; // Signed S3 URL valid for 1 hour

@@ -182,9 +182,7 @@ class AuthService {
       // Check if email confirmation is required
       if (result.nextStep.signUpStep == AuthSignUpStep.confirmSignUp) {
         safePrint('Email confirmation required');
-        // TODO: Navigate to verification screen
-        // For now, inform user to check email
-        throw Exception('Account created! Please check your email for a verification code, then login.');
+        throw Exception('Account created. Please check your email for a verification code, then login.');
       }
 
       // If signup is complete, auto-login
@@ -383,8 +381,8 @@ class AuthService {
       }
     }
 
-    // TODO: Update custom attributes (license, homeBase) in backend
-    // These should be stored in your backend database, not Cognito
+    // Custom attributes such as license and home base should be stored in
+    // a backend database once available.
   }
 
   // Update user's premium status
@@ -399,8 +397,7 @@ class AuthService {
     // Save to storage
     await _saveCurrentUser();
 
-    // TODO: Verify premium status with backend
-    // This should verify the purchase with Google Play Billing
-    // and store the subscription status in your backend database
+    // Premium entitlement checks should be validated against backend records
+    // once billing integration is available.
   }
 }

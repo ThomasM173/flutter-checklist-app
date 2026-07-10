@@ -21,19 +21,13 @@ class _PaywallScreenState extends State<PaywallScreen> {
     });
 
     try {
-      // TODO: integrate Google Play Billing here
-      // Example flow:
-      // 1. Import in_app_purchase package
-      // 2. Initialize InAppPurchase.instance
-      // 3. Query available products
-      // 4. Launch purchase flow:
-      //    final PurchaseParam purchaseParam = PurchaseParam(
-      //      productDetails: productDetails,
-      //    );
-      //    await InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
-      // 5. Listen to purchase stream
-      // 6. Verify purchase with backend
-      // 7. Grant premium access
+      // Purchase flow is not implemented yet.
+      // When billing is integrated, this should:
+      // - initialize InAppPurchase
+      // - query product details
+      // - launch the purchase flow
+      // - verify purchase tokens with the backend
+      // - grant premium access on success
 
       // For now (dev mode): just grant premium directly
       if (kDisablePaywallForDev) {

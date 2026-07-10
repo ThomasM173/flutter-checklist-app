@@ -55,42 +55,22 @@ class DisclaimerDialog extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      'This software is not intended to replace certified navigation devices.',
+                      'ClearedToGo is an aid to pre-flight preparation and checklist management. It is designed to enhance pilot awareness but must not be relied upon as the sole source of operational information.',
                       style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'YOU USE THIS PROGRAM AT YOUR OWN RISK. LOCATION DATA MAY BE INACCURATE.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        height: 1.5,
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'The author does not guarantee the accuracy and completeness of the information provided.',
+                      'These checklists are not authoritative and must only be used in conjunction with the applicable Pilot\'s Operating Handbook (POH), Aircraft Flight Manual (AFM), approved aircraft checklists, and official aeronautical information.',
                       style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'The built-in navigation database is provided for information purposes only. It may contain incomplete or even erroneous data.',
+                      'Weather, operational, and other data presented by the software may be delayed, incomplete, or inaccurate. The pilot in command remains solely responsible for verifying all information, determining the suitability of the aircraft and flight, and ensuring the safe conduct of every flight.',
                       style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
                     ),
                     SizedBox(height: 16),
                     Text(
-                      'During preparation and during flight, the pilot must always use official aeronautical documentation and certified navigational equipment.',
-                      style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'This software is provided by \'AS IT IS\' without any explicit and implied guarantees.',
-                      style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
-                    ),
-                    SizedBox(height: 16),
-                    Text(
-                      'The author is not liable for any damages arising from the use of this software.',
+                      'This software is provided "as is" without warranty. ClearedToGo accepts no liability for any loss, damage, or claim arising from the use of, or reliance upon, this software.',
                       style: TextStyle(color: Colors.white, fontSize: 14, height: 1.5),
                     ),
                   ],

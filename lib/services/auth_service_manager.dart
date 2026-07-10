@@ -9,7 +9,6 @@ class AuthServiceManager {
   factory AuthServiceManager() => _instance;
   AuthServiceManager._internal();
 
-  // TODO: Replace with CognitoAuthRepository when ready
   late AuthRepository _authRepository;
   bool _initialized = false;
 

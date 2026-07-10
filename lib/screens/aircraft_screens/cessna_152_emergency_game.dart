@@ -15,20 +15,18 @@ class Cessna152EmergencyGame extends StatefulWidget {
 }
 
 class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
-  // Placeholder for reset logic
   void resetChecklist() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Checklist reset!')),
+      const SnackBar(content: Text('Checklist reset.')),
     );
-    // TODO: Add your reset logic here
+    // Placeholder: retain reset behavior until the full flow is implemented.
   }
 
-  // Placeholder for PDF generation logic
   void generatePDF() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('PDF generated!')),
+      const SnackBar(content: Text('PDF generation is not yet available.')),
     );
-    // TODO: Add your PDF generation logic here
+    // Placeholder: retain current behavior until PDF export is implemented.
   }
 
   @override

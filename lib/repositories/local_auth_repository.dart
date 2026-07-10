@@ -1,11 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user_role.dart';
 import '../repositories/auth_repository.dart';
 
-/// Local implementation of AuthRepository using SharedPreferences
-/// TODO: Replace with AWS Cognito implementation
+/// Local authentication repository implemented with SharedPreferences.
+/// This local implementation is intended for development and fallback scenarios.
 class LocalAuthRepository implements AuthRepository {
   static const String _currentUserKey = 'current_user_v2';
   static const String _usersKey = 'users_database';
@@ -35,7 +36,7 @@ class LocalAuthRepository implements AuthRepository {
         _currentUser = User.fromJson(json.decode(userJson));
         _authStateController.add(_currentUser);
       } catch (e) {
-        print('Error loading user: $e');
+        debugPrint('Error loading user: $e');
         await prefs.remove(_currentUserKey);
       }
     }

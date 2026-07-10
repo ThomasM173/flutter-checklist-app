@@ -1,7 +1,7 @@
 import '../models/user_role.dart';
 
-/// Abstract authentication repository
-/// TODO: Replace implementation with AWS Cognito when ready
+/// Abstract authentication repository.
+/// Implementations may use local storage or AWS Cognito as required.
 abstract class AuthRepository {
   /// Initialize the repository
   Future<void> init();

@@ -16,7 +16,8 @@ const String kAppVersion = '1.0.0';
 const String kMonthlyPrice = '£10';
 const String kYearlyPrice = '£100';
 
-/// Google Play Billing product IDs (for future integration)
-/// TODO: Replace with actual product IDs from Google Play Console
+/// Google Play Billing product IDs for future integration.
+/// Replace these values with the actual IDs from the Play Console
+/// before production release.
 const String kMonthlySubscriptionId = 'premium_monthly';
 const String kYearlySubscriptionId = 'premium_yearly';

@@ -10,7 +10,7 @@ class PdfRecord {
   final String? flightSchoolId;
   final DateTime createdAt;
   final String localPath; // Local file system path
-  final String? cloudUrl; // TODO: S3 URL when integrated
+  final String? cloudUrl; // Cloud storage URL, if uploaded
   final String status; // draft, uploaded, archived
   final String pdfType; // weight_balance, tech_log, fuel_uplift, etc.
   

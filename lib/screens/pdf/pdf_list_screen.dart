@@ -165,13 +165,9 @@ class _PdfListScreenState extends State<PdfListScreen> {
   }
 
   Future<void> _viewPdf(PdfItem pdf) async {
-    // TODO: Implement PDF viewing
-    // In production, this would:
-    // 1. Get signed download URL from backend
-    // 2. Download PDF from S3
-    // 3. Open in PDF viewer or share
-    
-    // For now, show placeholder dialog
+    // Placeholder implementation for PDF viewing.
+    // When backend integration is available, replace this with a proper
+    // download and render flow using the chosen PDF viewer package.
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
