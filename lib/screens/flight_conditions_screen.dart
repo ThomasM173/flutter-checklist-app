@@ -12,14 +12,14 @@ class FlightConditionsScreen extends StatefulWidget {
 }
 
 class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
-  final TextEditingController _icaoController = TextEditingController(text: 'EGLL');
+  final TextEditingController _icaoController =
+      TextEditingController(text: 'EGLL');
   bool _loading = false;
   String? _error;
   Map<String, dynamic>? _metar;
   List<Map<String, String>> _taf = [];
   Map<String, dynamic>? _stationInfo;
   List<Map<String, String>> _hazards = [];
-
 
   Future<void> _fetch(String code) async {
     setState(() {
@@ -62,13 +62,17 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+              colors: [
+                Color(0xFFADD8E6),
+                Color(0xFF87CEEB)
+              ], // Light blue to sky blue
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
-        title: const Text('Flight Conditions', style: TextStyle(color: Colors.black)),
+        title: const Text('Flight Conditions',
+            style: TextStyle(color: Colors.black)),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 1),
       body: Padding(
@@ -106,12 +110,17 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
               ],
             ),
             const SizedBox(height: 20),
+            if (_metar != null) ...[
+              _buildWeatherRiskSummary(),
+              const SizedBox(height: 16),
+            ],
             if (_loading)
               const Expanded(child: Center(child: CircularProgressIndicator()))
             else if (_error != null)
               Expanded(
                 child: Center(
-                  child: Text(_error!, style: const TextStyle(color: Colors.red, fontSize: 16)),
+                  child: Text(_error!,
+                      style: const TextStyle(color: Colors.red, fontSize: 16)),
                 ),
               )
             else if (_metar != null)
@@ -154,190 +163,313 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
     );
   }
 
- Widget _buildData() {
-  return SingleChildScrollView(
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _sectionTitle('Station Info'),
-        _dataCard([
-          _infoRow('ICAO', _metar!['icao'], Icons.flight_takeoff),
-          _infoRow('Name', _metar!['name'], Icons.location_city),
-          _infoRow('Latitude', _metar!['latitude'], Icons.my_location),
-          _infoRow('Longitude', _metar!['longitude'], Icons.my_location),
-          _infoRow('Elevation', _metar!['elevation'], Icons.terrain),
-          if (_stationInfo != null) ...[
-            _infoRow('City', _stationInfo!['city'], Icons.location_city),
-            _infoRow('State', _stationInfo!['state'], Icons.flag),
-            _infoRow('Country', _stationInfo!['country'], Icons.public),
-            _infoRow('Reporting', _stationInfo!['reporting'], Icons.info_outline),
-            _infoRow('Runways', (_stationInfo!['runways'] as List).join(', '), Icons.run_circle),
-          ],
-        ]),
-        _sectionTitle('Observed'),
-        _infoRow('Time', _metar!['observed'], Icons.access_time),
-        _sectionTitle('Conditions'),
-        _dataCard([
-          _infoRow('Temperature', _metar!['temperature'], Icons.thermostat),
-          _infoRow('Dew Point', _metar!['dewpoint'], Icons.grain),
-          _infoRow('Humidity', _metar!['humidity'], Icons.water_drop),
-          _infoRow('Wind', _metar!['wind'], Icons.air),
-          _infoRow('Visibility', _metar!['visibility'], Icons.remove_red_eye),
-          _infoRow('Clouds', _metar!['clouds'], Icons.cloud),
-          _infoRow('Flight Category', _metar!['category'], Icons.flight),
-          _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
-          _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
-        ]),
+  Widget _buildWeatherRiskSummary() {
+    final metar = _metar!;
+    final phenomenaRisks =
+        (metar['phenomenaRisks'] as Map<String, bool>? ?? {});
+    final activePhenomena = phenomenaRisks.entries
+        .where((entry) => entry.value)
+        .map((entry) => entry.key)
+        .toList();
 
-        if (_metar!['carbIcingRisk'] == true)
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Card(
-            color: Colors.red[100],
-            child: Padding(
-              padding: const EdgeInsets.all(8),
-              child: Row(
-                children: const [
-                  Icon(Icons.warning, color: Colors.red),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      '⚠ Serious Carburettor Icing Risk at any power!',
-                      style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
+    final alerts = <Map<String, dynamic>>[
+      {
+        'label': 'Carburettor Icing',
+        'value': metar['carbIcingRisk'] == true,
+        'detail': metar['carbIcingRisk'] == true
+            ? 'Serious carb icing risk'
+            : 'No risk',
+      },
+      {
+        'label': 'Temperature Low',
+        'value': metar['tempLowRisk'] == true,
+        'detail': metar['tempLowRisk'] == true
+            ? 'Potential airframe icing'
+            : 'No risk',
+      },
+      {
+        'label': 'Temperature High',
+        'value': metar['tempHighRisk'] == true,
+        'detail': metar['tempHighRisk'] == true
+            ? 'Potential high density altitude'
+            : 'No risk',
+      },
+      {
+        'label': 'Humidity High',
+        'value': metar['humidityHighRisk'] == true,
+        'detail': metar['humidityHighRisk'] == true
+            ? 'Potential reduced visibility'
+            : 'No risk',
+      },
+      {
+        'label': 'Wind Risk',
+        'value': metar['windRisk'] == true,
+        'detail': metar['windRisk'] == true
+            ? 'Gust and wind threshold exceeded'
+            : 'No risk',
+      },
+      {
+        'label': 'VFR Limits',
+        'value': metar['vfrLimitsRisk'] == true,
+        'detail': metar['vfrLimitsRisk'] == true
+            ? 'Visibility/ceiling/category below limits'
+            : 'No risk',
+      },
+      {
+        'label': 'Terrain Risk',
+        'value': metar['terrainRisk'] == true,
+        'detail': metar['terrainRisk'] == true
+            ? 'Terrain caution advised'
+            : 'No risk',
+      },
+      {
+        'label': 'Phenomena',
+        'value': activePhenomena.isNotEmpty,
+        'detail': activePhenomena.isEmpty
+            ? 'No adverse phenomena detected'
+            : activePhenomena.join(', '),
+      },
+    ];
+
+    return Card(
+      color: Colors.blue[50],
+      margin: const EdgeInsets.only(bottom: 10),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Weather Risks',
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
-          ),
-        ),
-
-        _sectionTitle('Raw METAR & Remarks'),
-        _infoRow('METAR', _metar!['raw'], Icons.code),
-        _infoRow('Remarks', _metar!['remarks'], Icons.comment),
-        _infoRow('Translated Remarks', _metar!['translatedRemarks'], Icons.translate),
-        _sectionTitle('TAF'),
-        SizedBox(
-          height: 160,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _taf.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (_, i) {
-              final f = _taf[i];
-              return SizedBox(
-                width: 160,
-                child: Card(
-                  color: Colors.grey[200],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
+            const SizedBox(height: 8),
+            ...alerts.map((alert) {
+              final isRisk = alert['value'] as bool;
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      isRisk
+                          ? Icons.warning_amber_rounded
+                          : Icons.check_circle_outline,
+                      color: isRisk ? Colors.red : Colors.green,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          style: const TextStyle(
+                              color: Colors.black87, fontSize: 13),
                           children: [
-                            Icon(_getCategoryIcon(f['category'] ?? ''), color: Colors.black54),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                f['time']!,
-                                style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                            TextSpan(
+                              text: '${alert['label']}: ',
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w600),
+                            ),
+                            TextSpan(
+                              text: isRisk ? 'Yes' : 'No',
+                              style: TextStyle(
+                                color: isRisk ? Colors.red : Colors.green,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
+                            TextSpan(text: ' — ${alert['detail']}'),
                           ],
                         ),
-                        const SizedBox(height: 6),
-                        Text('Cat: ${f['category']}', style: const TextStyle(color: Colors.black87)),
-                      ],
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               );
-            },
-          ),
+            }),
+          ],
         ),
-
-        if (_hazards.isNotEmpty) ...[
-          _sectionTitle('Hazards (PIREPs / SIGMETs / AIRMETs)'),
-          Column(
-            children: _hazards.map((h) => _buildHazardCard(h)).toList(),
-          ),
-        ],
-      ],
-    ),
-  );
-}
-
-Widget _buildHazardCard(Map<String, String> hazard) {
-  // Typical keys based on your WeatherService hazard data:
-  // type, station, raw, time, altitude, severity, conditions, flightLevels, phenomenon, movement, intensity, etc.
-  IconData icon;
-  switch (hazard['type']?.toUpperCase()) {
-    case 'PIREPS':
-      icon = Icons.flight;
-      break;
-    case 'SIGMET':
-      icon = Icons.warning;
-      break;
-    case 'G-AIRMET':
-      icon = Icons.shield;
-      break;
-    default:
-      icon = Icons.report_problem;
+      ),
+    );
   }
 
-  return Card(
-    color: Colors.grey[100],
-    margin: const EdgeInsets.symmetric(vertical: 6),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
+  Widget _buildData() {
+    return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(icon, color: Colors.black54),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  '${hazard['type']} @ ${hazard['station']}',
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-              ),
-              if (hazard['time'] != null)
-                Text(hazard['time']!, style: const TextStyle(color: Colors.black54)),
+          _sectionTitle('Station Info'),
+          _dataCard([
+            _infoRow('ICAO', _metar!['icao'], Icons.flight_takeoff),
+            _infoRow('Name', _metar!['name'], Icons.location_city),
+            _infoRow('Latitude', _metar!['latitude'], Icons.my_location),
+            _infoRow('Longitude', _metar!['longitude'], Icons.my_location),
+            _infoRow('Elevation', _metar!['elevation'], Icons.terrain),
+            if (_stationInfo != null) ...[
+              _infoRow('City', _stationInfo!['city'], Icons.location_city),
+              _infoRow('State', _stationInfo!['state'], Icons.flag),
+              _infoRow('Country', _stationInfo!['country'], Icons.public),
+              _infoRow(
+                  'Reporting', _stationInfo!['reporting'], Icons.info_outline),
+              _infoRow('Runways', (_stationInfo!['runways'] as List).join(', '),
+                  Icons.run_circle),
             ],
-          ),
-          const SizedBox(height: 8),
-          if (hazard['severity'] != null)
-            _infoRow('Severity', hazard['severity'], Icons.priority_high),
-          if (hazard['altitude'] != null)
-            _infoRow('Altitude', hazard['altitude'], Icons.height),
-          if (hazard['flightLevels'] != null)
-            _infoRow('Flight Levels', hazard['flightLevels'], Icons.flight),
-          if (hazard['conditions'] != null)
-            _infoRow('Conditions', hazard['conditions'], Icons.cloud_queue),
-          if (hazard['phenomenon'] != null)
-            _infoRow('Phenomenon', hazard['phenomenon'], Icons.flash_on),
-          if (hazard['movement'] != null)
-            _infoRow('Movement', hazard['movement'], Icons.directions_run),
-          if (hazard['intensity'] != null)
-            _infoRow('Intensity', hazard['intensity'], Icons.speed),
-          if (hazard['raw'] != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text('Raw: ${hazard['raw']}', style: const TextStyle(fontSize: 12, color: Colors.black54)),
+          ]),
+          _sectionTitle('Observed'),
+          _infoRow('Time', _metar!['observed'], Icons.access_time),
+          _sectionTitle('Conditions'),
+          _dataCard([
+            _infoRow('Temperature', _metar!['temperature'], Icons.thermostat),
+            _infoRow('Dew Point', _metar!['dewpoint'], Icons.grain),
+            _infoRow('Humidity', _metar!['humidity'], Icons.water_drop),
+            _infoRow('Wind', _metar!['wind'], Icons.air),
+            _infoRow('Visibility', _metar!['visibility'], Icons.remove_red_eye),
+            _infoRow('Clouds', _metar!['clouds'], Icons.cloud),
+            _infoRow('Flight Category', _metar!['category'], Icons.flight),
+            _infoRow('Altimeter', _metar!['altimeter'], Icons.speed),
+            _infoRow('Runway Condition', _metar!['runway'], Icons.run_circle),
+          ]),
+          _sectionTitle('Raw METAR & Remarks'),
+          _infoRow('METAR', _metar!['raw'], Icons.code),
+          _infoRow('Remarks', _metar!['remarks'], Icons.comment),
+          _infoRow('Translated Remarks', _metar!['translatedRemarks'],
+              Icons.translate),
+          _sectionTitle('TAF'),
+          SizedBox(
+            height: 160,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _taf.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) {
+                final f = _taf[i];
+                return SizedBox(
+                  width: 160,
+                  child: Card(
+                    color: Colors.grey[200],
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(_getCategoryIcon(f['category'] ?? ''),
+                                  color: Colors.black54),
+                              const SizedBox(width: 6),
+                              Expanded(
+                                child: Text(
+                                  f['time']!,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 6),
+                          Text('Cat: ${f['category']}',
+                              style: const TextStyle(color: Colors.black87)),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
+          ),
+          if (_hazards.isNotEmpty) ...[
+            _sectionTitle('Hazards (PIREPs / SIGMETs / AIRMETs)'),
+            Column(
+              children: _hazards.map((h) => _buildHazardCard(h)).toList(),
+            ),
+          ],
         ],
       ),
-    ),
-  );
-}
+    );
+  }
+
+  Widget _buildHazardCard(Map<String, String> hazard) {
+    // Typical keys based on your WeatherService hazard data:
+    // type, station, raw, time, altitude, severity, conditions, flightLevels, phenomenon, movement, intensity, etc.
+    IconData icon;
+    switch (hazard['type']?.toUpperCase()) {
+      case 'PIREPS':
+        icon = Icons.flight;
+        break;
+      case 'SIGMET':
+        icon = Icons.warning;
+        break;
+      case 'G-AIRMET':
+        icon = Icons.shield;
+        break;
+      default:
+        icon = Icons.report_problem;
+    }
+
+    return Card(
+      color: Colors.grey[100],
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: Colors.black54),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    '${hazard['type']} @ ${hazard['station']}',
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                ),
+                if (hazard['time'] != null)
+                  Text(hazard['time']!,
+                      style: const TextStyle(color: Colors.black54)),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (hazard['severity'] != null)
+              _infoRow('Severity', hazard['severity'], Icons.priority_high),
+            if (hazard['altitude'] != null)
+              _infoRow('Altitude', hazard['altitude'], Icons.height),
+            if (hazard['flightLevels'] != null)
+              _infoRow('Flight Levels', hazard['flightLevels'], Icons.flight),
+            if (hazard['conditions'] != null)
+              _infoRow('Conditions', hazard['conditions'], Icons.cloud_queue),
+            if (hazard['phenomenon'] != null)
+              _infoRow('Phenomenon', hazard['phenomenon'], Icons.flash_on),
+            if (hazard['movement'] != null)
+              _infoRow('Movement', hazard['movement'], Icons.directions_run),
+            if (hazard['intensity'] != null)
+              _infoRow('Intensity', hazard['intensity'], Icons.speed),
+            if (hazard['raw'] != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text('Raw: ${hazard['raw']}',
+                    style:
+                        const TextStyle(fontSize: 12, color: Colors.black54)),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
   Widget _sectionTitle(String text) => Padding(
         padding: const EdgeInsets.only(top: 12, bottom: 4),
-        child: Text(text, style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold)),
+        child: Text(text,
+            style: const TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
       );
 
   Widget _infoRow(String label, String? value, IconData icon) => Padding(
@@ -346,9 +478,13 @@ Widget _buildHazardCard(Map<String, String> hazard) {
           children: [
             Icon(icon, size: 20, color: Colors.black54),
             const SizedBox(width: 8),
-            Text('$label:', style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.w600)),
+            Text('$label:',
+                style: const TextStyle(
+                    color: Colors.black87, fontWeight: FontWeight.w600)),
             const SizedBox(width: 6),
-            Expanded(child: Text(value ?? 'N/A', style: const TextStyle(color: Colors.black))),
+            Expanded(
+                child: Text(value ?? 'N/A',
+                    style: const TextStyle(color: Colors.black))),
           ],
         ),
       );
@@ -356,7 +492,9 @@ Widget _buildHazardCard(Map<String, String> hazard) {
   Widget _dataCard(List<Widget> children) => Card(
         color: Colors.grey[100],
         margin: const EdgeInsets.symmetric(vertical: 8),
-        child: Padding(padding: const EdgeInsets.all(12), child: Column(children: children)),
+        child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(children: children)),
       );
 
   IconData _getCategoryIcon(String category) {

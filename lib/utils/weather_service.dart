@@ -10,56 +10,89 @@ class WeatherService {
     if (obj is Map<String, dynamic>) {
       return obj['value'];
     }
+    if (obj is Map) {
+      return obj['value'];
+    }
     return obj;
   }
 
-  static Future<Map<String, dynamic>> getDecodedMETAR(String icao) async {
-    final uri = Uri.parse('$_baseUrl/metar/$icao?options=info,translate');
-    final resp = await http.get(uri, headers: {
-      'Authorization': 'Token $_token',
-    });
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value.replaceAll('%', '').trim());
+    if (value is Map) return _parseDouble(_extractValue(value));
+    return null;
+  }
 
-    if (resp.statusCode != 200) {
-      throw Exception('METAR error: ${resp.statusCode}');
+  static String _parseString(dynamic value) {
+    if (value == null) return '';
+    if (value is String) return value;
+    if (value is num) return value.toString();
+    if (value is Map) return _extractValue(value)?.toString() ?? '';
+    return value.toString();
+  }
+
+  static String _formatNumber(double value) {
+    if (value == value.toInt().toDouble()) {
+      return value.toInt().toString();
     }
+    return value.toString();
+  }
 
-    final body = jsonDecode(resp.body) as Map<String, dynamic>;
-
+  static Map<String, dynamic> parseMETARBody(Map<String, dynamic> body) {
     final station = body['station']?.toString() ?? '';
     final name = body['info']?['name']?.toString() ?? '';
     final coords = body['info']?['coordinates'] as List?;
     final latitude = coords != null && coords.length >= 2 ? coords[1].toString() : '';
     final longitude = coords != null && coords.length >= 2 ? coords[0].toString() : '';
     final observed = body['time']?['dt']?.toString() ?? '';
-    final temp = body['temperature'] != null ? _extractValue(body['temperature'])?.toString() ?? '' : '';
-    final dewpoint = body['dewpoint'] != null ? _extractValue(body['dewpoint'])?.toString() ?? '' : '';
-    final humidity = body['humidity']?.toString() ?? '';
+    final temp = _parseString(body['temperature'] != null ? _extractValue(body['temperature']) : null);
+    final dewpoint = _parseString(body['dewpoint'] != null ? _extractValue(body['dewpoint']) : null);
+
+    final humidityRaw = body['relative_humidity'] != null
+        ? _parseDouble(body['relative_humidity'])
+        : body['humidity'] != null
+            ? _parseDouble(body['humidity'])
+            : null;
+    final humidityVal = humidityRaw != null ? humidityRaw * 100 : null;
+    final humidity = humidityVal != null ? '${humidityVal.round()}%' : '';
+
     final elevation = body['info']?['elevation_ft']?.toString() ?? '';
     final category = body['flight_rules']?.toString() ?? '';
     final raw = body['raw']?.toString() ?? '';
     final remarks = body['remarks']?.toString() ?? '';
-    final translatedRemarks = (body['translations']?['remarks'] as List?)?.join('; ') ?? '';
 
-    final windDir = body['wind']?['direction'] != null ? _extractValue(body['wind']?['direction'])?.toString() ?? '' : '';
-    final windSpeed = body['wind']?['speed'] != null ? _extractValue(body['wind']?['speed'])?.toString() ?? '' : '';
-    final windUnit = body['wind']?['speed']?['unit']?.toString() ?? 'kt';
-    final windGusts = body['wind']?['gusts'] != null ? _extractValue(body['wind']?['gusts'])?.toString() ?? '' : '';
+    final translatedRemarksValue = body['translations']?['remarks'];
+    String translatedRemarks = '';
+    if (translatedRemarksValue is List) {
+      translatedRemarks = translatedRemarksValue.join('; ');
+    } else if (translatedRemarksValue is String) {
+      translatedRemarks = translatedRemarksValue;
+    } else if (translatedRemarksValue is Map) {
+      translatedRemarks = translatedRemarksValue.entries.map((entry) => '${entry.key}: ${entry.value}').join('; ');
+    }
 
-    final visibilityVal = body['visibility'] != null ? _extractValue(body['visibility'])?.toString() ?? '' : '';
+    final windDirValue = _parseDouble(body['wind_direction'] ?? body['wind']?['direction']);
+    final windSpeedValue = _parseDouble(body['wind_speed'] ?? body['wind']?['speed']);
+    final windGustsValue = _parseDouble(body['wind_gust'] ?? body['wind']?['gusts']);
+    final windDir = windDirValue != null ? windDirValue.round().toString().padLeft(3, '0') : '';
+    final windSpeed = windSpeedValue != null ? _formatNumber(windSpeedValue) : '';
+    final windUnit = body['units']?['wind_speed']?.toString() ?? body['wind']?['speed']?['unit']?.toString() ?? 'kt';
+    final windGusts = windGustsValue != null ? _formatNumber(windGustsValue) : '';
+
+    final visibilityVal = _parseDouble(body['visibility'])?.toString() ?? '';
     final visibilityUnit = body['visibility']?['unit']?.toString() ?? '';
 
     final altimeter = body['altimeter'] != null ? _extractValue(body['altimeter'])?.toString() ?? '' : '';
     final altUnit = body['altimeter']?['unit']?.toString() ?? 'hPa';
 
-      // 🔑 Parse them into doubles
     final oat = double.tryParse(temp);
     final dew = double.tryParse(dewpoint);
-    final humidityVal = double.tryParse(humidity.replaceAll('%', ''));
-    final windSpeedVal = double.tryParse(windSpeed);
-    final windGustsVal = double.tryParse(windGusts);
+    final humidityPercent = humidityVal != null ? humidityVal : null;
+    final windSpeedVal = windSpeedValue;
+    final windGustsVal = windGustsValue;
     final visibilityKm = visibilityUnit == 'm' ? (double.tryParse(visibilityVal) ?? 0) / 1000 : double.tryParse(visibilityVal) ?? 0;
 
-    // 🔑 Apply boundary rules here
     bool carbIcing = false;
     if (oat != null && dew != null) {
       carbIcing = WeatherBoundaries.carbIcingRisk(oat, dew);
@@ -74,16 +107,15 @@ class WeatherService {
 
     bool humidityHighRisk = false;
     bool humidityLowRisk = false;
-    if (humidityVal != null) {
-      humidityHighRisk = WeatherBoundaries.humidityRiskHigh(humidityVal);
-      humidityLowRisk = WeatherBoundaries.humidityRiskLow(humidityVal);
+    if (humidityPercent != null) {
+      humidityHighRisk = WeatherBoundaries.humidityRiskHigh(humidityPercent);
+      humidityLowRisk = WeatherBoundaries.humidityRiskLow(humidityPercent);
     }
 
     bool windRisk = WeatherBoundaries.windRisk(windSpeedVal, windGustsVal);
 
     final phenomenaRisks = WeatherBoundaries.weatherPhenomenaRisk(raw, translatedRemarks);
 
-    // Estimate ceiling from clouds (lowest BKN/OVC layer in ft)
     double? ceilingFt;
     if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
       final clouds = body['clouds'] as List;
@@ -101,7 +133,6 @@ class WeatherService {
     bool vfrLimitsRisk = WeatherBoundaries.vfrLimitsRisk(visibilityKm, ceilingFt, category);
 
     bool terrainRisk = WeatherBoundaries.terrainRisk(station, latitude != '' ? double.tryParse(latitude) : null, longitude != '' ? double.tryParse(longitude) : null);
-
 
     String clouds = 'Clear skies';
     if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
@@ -122,10 +153,13 @@ class WeatherService {
       'carbIcingRisk': carbIcing,
       'tempLowRisk': tempLowRisk,
       'tempHighRisk': tempHighRisk,
-      'humidity': '$humidity%',
+      'humidity': humidity,
+      'humidityValue': humidityPercent,
       'humidityHighRisk': humidityHighRisk,
       'humidityLowRisk': humidityLowRisk,
       'wind': '$windDir° @ $windSpeed $windUnit',
+      'windSpeed': windSpeedValue,
+      'windGusts': windGustsValue,
       'windRisk': windRisk,
       'visibility': '$visibilityVal $visibilityUnit',
       'clouds': clouds,
@@ -140,6 +174,20 @@ class WeatherService {
       'terrainRisk': terrainRisk,
       'runway': 'Not Reported',
     };
+  }
+
+  static Future<Map<String, dynamic>> getDecodedMETAR(String icao) async {
+    final uri = Uri.parse('$_baseUrl/metar/$icao?options=info,translate');
+    final resp = await http.get(uri, headers: {
+      'Authorization': 'Token $_token',
+    });
+
+    if (resp.statusCode != 200) {
+      throw Exception('METAR error: ${resp.statusCode}');
+    }
+
+    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+    return parseMETARBody(body);
   }
 
   static Future<List<Map<String, String>>> getForecast(String icao) async {

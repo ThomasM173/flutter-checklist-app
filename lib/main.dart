@@ -62,8 +62,45 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         fontFamily: 'NotoSans',
         brightness: Brightness.dark,
-        primaryColor: Colors.red,
+        primaryColor: const Color(0xFF87CEEB),
         scaffoldBackgroundColor: Colors.black,
+        checkboxTheme: CheckboxThemeData(
+          fillColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const Color(0xFF87CEEB);
+            }
+            return Colors.white;
+          }),
+          checkColor: WidgetStateProperty.resolveWith((states) => Colors.white),
+          side: const BorderSide(color: Color(0xFF87CEEB), width: 1.5),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            return const Color(0xFF87CEEB).withValues(alpha: 0.15);
+          }),
+        ),
+        radioTheme: RadioThemeData(
+          fillColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const Color(0xFF87CEEB);
+            }
+            return Colors.white;
+          }),
+          overlayColor: WidgetStateProperty.resolveWith((states) {
+            return const Color(0xFF87CEEB).withValues(alpha: 0.15);
+          }),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: const BorderSide(color: Colors.grey),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(6),
+            borderSide: const BorderSide(color: Color(0xFF87CEEB), width: 2),
+          ),
+        ),
       ),
       initialRoute: '/',
       routes: appRoutes,

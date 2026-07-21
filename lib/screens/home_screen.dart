@@ -52,6 +52,126 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Widget _buildActionButton(
+      String label, Color foregroundColor, VoidCallback onPressed) {
+    return SizedBox(
+      width: 96,
+      child: ElevatedButton(
+        onPressed: onPressed,
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          foregroundColor: foregroundColor,
+          side: const BorderSide(color: Colors.black),
+          minimumSize: const Size(96, 44),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        ),
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          maxLines: 2,
+          overflow: TextOverflow.visible,
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAircraftCard(Map<String, dynamic> aircraft) {
+    return InkWell(
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => aircraft['checklistScreen']),
+      ),
+      borderRadius: BorderRadius.circular(20),
+      splashColor: Colors.deepPurple.shade100,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade300,
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.asset(
+                aircraft['image'],
+                width: 100,
+                height: 70,
+                fit: BoxFit.cover,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Center(
+                child: Text(
+                  aircraft['title'].toString().replaceAll(' ', '\n'),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.visible,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                    height: 1.1,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  _buildActionButton(
+                    'Emergency\nChecklist',
+                    Colors.red,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => aircraft['emergencyScreen']),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionButton(
+                    'Aircraft\nInfo',
+                    Colors.black,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => aircraft['infoScreen']),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  _buildActionButton(
+                    'Aircraft\nChecklist',
+                    Colors.black,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => aircraft['checklistScreen']),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final aircraftList = <Map<String, dynamic>>[
@@ -85,7 +205,10 @@ class _HomeScreenState extends State<HomeScreen> {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+              colors: [
+                Color(0xFFADD8E6),
+                Color(0xFF87CEEB)
+              ], // Light blue to sky blue
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -100,7 +223,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         title: const Text(
           "ClearedToGo",
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         centerTitle: true,
         actions: [
@@ -144,7 +268,8 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Stack(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -153,7 +278,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 InkWell(
                   onTap: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const PreflightGroundSystemsHub()),
+                    MaterialPageRoute(
+                        builder: (_) => const PreflightGroundSystemsHub()),
                   ),
                   borderRadius: BorderRadius.circular(20),
                   child: Container(
@@ -225,113 +351,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     separatorBuilder: (_, __) => const SizedBox(height: 16),
                     itemBuilder: (context, index) {
                       if (index == aircraftList.length - 1) {
-                        // Last item - add logo and text after it
                         final aircraft = aircraftList[index];
                         return Column(
                           children: [
-                            InkWell(
-                              onTap: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => aircraft['checklistScreen']),
-                              ),
-                              borderRadius: BorderRadius.circular(20),
-                              splashColor: Colors.deepPurple.shade100,
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(20),
-                                  boxShadow: [
-                                    BoxShadow(
-                                      color: Colors.grey.shade300,
-                                      blurRadius: 10,
-                                      offset: const Offset(0, 4),
-                                    ),
-                                  ],
-                                ),
-                                padding: const EdgeInsets.all(14),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(12),
-                                      child: Image.asset(
-                                        aircraft['image'],
-                                        width: 110,
-                                        height: 70,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 20),
-                                    Expanded(
-                                      child: Center(
-                                        child: Text(
-                                          aircraft['title'],
-                                          style: const TextStyle(
-                                            fontSize: 22,
-                                            fontWeight: FontWeight.w700,
-                                            color: Colors.black,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    Column(
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (_) => aircraft['emergencyScreen']),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor: Colors.red,
-                                            side: const BorderSide(color: Colors.black),
-                                            minimumSize: const Size(90, 30),
-                                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-                                          child: const Text('Emergency Checklist', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (_) => aircraft['infoScreen']),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor: Colors.black,
-                                            side: const BorderSide(color: Colors.black),
-                                            minimumSize: const Size(90, 30),
-                                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-                                          child: const Text('Aircraft Info', style: TextStyle(fontSize: 12)),
-                                        ),
-                                        const SizedBox(height: 8),
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (_) => aircraft['checklistScreen']),
-                                            );
-                                          },
-                                          style: ElevatedButton.styleFrom(
-                                            backgroundColor: Colors.white,
-                                            foregroundColor: Colors.black,
-                                            side: const BorderSide(color: Colors.black),
-                                            minimumSize: const Size(90, 30),
-                                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                                          ),
-                                          child: const Text('Aircraft Checklist', style: TextStyle(fontSize: 11)),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
+                            _buildAircraftCard(aircraft),
                             const SizedBox(height: 4),
                             Center(
                               child: Image.asset(
@@ -371,111 +394,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         );
                       }
-                      
-                      final aircraft = aircraftList[index];
-                      return InkWell(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (_) => aircraft['checklistScreen']),
-                        ),
-                        borderRadius: BorderRadius.circular(20),
-                        splashColor: Colors.deepPurple.shade100,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.grey.shade300,
-                                blurRadius: 10,
-                                offset: const Offset(0, 4),
-                              ),
-                            ],
-                          ),
-                          padding: const EdgeInsets.all(14),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.asset(
-                                  aircraft['image'],
-                                  width: 110,
-                                  height: 70,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              const SizedBox(width: 20),
-                              Expanded(
-                                child: Center(
-                                  child: Text(
-                                    aircraft['title'],
-                                    style: const TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              Column(
-                                children: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => aircraft['emergencyScreen']),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.red,
-                                      side: const BorderSide(color: Colors.black),
-                                      minimumSize: const Size(90, 30),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    ),
-                                    child: const Text('Emergency Checklist', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => aircraft['infoScreen']),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      side: const BorderSide(color: Colors.black),
-                                      minimumSize: const Size(90, 30),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    ),
-                                    child: const Text('Aircraft Info', style: TextStyle(fontSize: 12)),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (_) => aircraft['checklistScreen']),
-                                      );
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      side: const BorderSide(color: Colors.black),
-                                      minimumSize: const Size(90, 30),
-                                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    ),
-                                    child: const Text('Aircraft Checklist', style: TextStyle(fontSize: 11)),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
+
+                      return _buildAircraftCard(aircraftList[index]);
                     },
                   ),
                 ),

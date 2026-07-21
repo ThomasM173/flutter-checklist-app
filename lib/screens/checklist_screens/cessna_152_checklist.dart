@@ -161,221 +161,233 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
   };
 
   @override
-void initState() {
-  super.initState();
-  checklistSections = {
-    "CHECK A (ONLY FIRST FLIGHT OF DAY)": {
-      "Control Lock                      – REMOVE.": false,
-      "Pitot Cover                       – REMOVE.": false,
-      "First Aid Kit                    – CHECK.": false,
-      "Fire Extinguisher                – CHECK.": false,
-      "Magneto Switch                  – OFF.": false,
-      "Fuel Shutoff Valve                – ON.": false,
-      "Master Switch                     – ON.": false,
-      "Flaps                               – FULL (30°).": false,
-      "Navigation Light                 – ON.": false,
-      "Anti-Collision Light                – ON.": false,
-      "Pitot Heater                      – ON.": false,
-      "Landing Light                     – ON.": false,
-      "External Check (Lights, Pitot Heat, Stall Warner) – ON.": false,
-      "All Electrics                      – OFF.": false,
-      "Master Switch                     – OFF.": false,
-      "Fuel Drains                        – CHECK.": false,
-      "Trim, Check Full Range            – ON.": false,
-      "Windscreen                         – CLEAR.": false,
+  void initState() {
+    super.initState();
+    checklistSections = {
+      "CHECK A (ONLY FIRST FLIGHT OF DAY)": {
+        "Control Lock                      – REMOVE.": false,
+        "Pitot Cover                       – REMOVE.": false,
+        "First Aid Kit                    – CHECK.": false,
+        "Fire Extinguisher                – CHECK.": false,
+        "Magneto Switch                  – OFF.": false,
+        "Fuel Shutoff Valve                – ON.": false,
+        "Master Switch                     – ON.": false,
+        "Flaps                               – FULL (30°).": false,
+        "Navigation Light                 – ON.": false,
+        "Anti-Collision Light                – ON.": false,
+        "Pitot Heater                      – ON.": false,
+        "Landing Light                     – ON.": false,
+        "External Check (Lights, Pitot Heat, Stall Warner) – ON.": false,
+        "All Electrics                      – OFF.": false,
+        "Master Switch                     – OFF.": false,
+        "Fuel Drains                        – CHECK.": false,
+        "Trim, Check Full Range            – ON.": false,
+        "Windscreen                         – CLEAR.": false,
+      },
+      "TRANSIT CHECK (Check A Complete)": {
+        "Control Lock                      – REMOVE.": false,
+        "Pitot Cover                       – REMOVE.": false,
+        "Ignition Switch                  – OFF.": false,
+        "Master Switch                     – ON.": false,
+        "Fuel Drains                        – CHECK.": false,
+        "Fuel Shutoff Valve                – ON.": false,
+        "Master Switch                     – OFF.": false,
+      },
+      "PORT/LEFT WING": {
+        "Flap                               – CONDITION, HINGES.": false,
+        "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.":
+            false,
+        "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.":
+            false,
+        "Wing Tip and Navigation Light    – SECURE.": false,
+        "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.":
+            false,
+        "Stall Warner                     – CHECK CLEAR.": false,
+        "Pitot Head                       – CHECK CLEAR.": false,
+        "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.":
+            false,
+        "Fuel Drain                        – CHECK FOR LEAKS.": false,
+        "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
+      },
+      "FRONT FUSELAGE & ENGINE": {
+        "Windscreen                        – CLEAR.": false,
+        "Static Source Opening            – CHECK.": false,
+        "Engine Intakes                    – CLEAR, ALTERNATOR BELT SECURE":
+            false,
+        "Propeller                         – CONDITION, SECURE": false,
+        "Nose Wheel Strut and Tire        – CHECK.": false,
+        "Engine                            – NO OIL LEAKES": false,
+        "Engine Oil Level                 – CHECK (MIN. 4).": false,
+        "Fuel Drain                       – CHECK.": false,
+      },
+      "STARBOARD/RIGHT WING": {
+        "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
+        "Fuel Drain                        – CHECK FOR LEAKS.": false,
+        "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.":
+            false,
+        "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.":
+            false,
+        "Wing Tip and Navigation Light    – SECURE.": false,
+        "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.":
+            false,
+        "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.":
+            false,
+        "Flap                               – CONDITION, HINGES.": false,
+      },
+      "REAR FUSELAGE & TAIL": {
+        "Rear Fuselage Skin              – CONDITION.": false,
+        "Radio Aerials                   – SECURE.": false,
+        "Elevator & Trim Tab             – CONDITION, FULL/FREE MOVEMENT, TAB LOCK NUT SECURE":
+            false,
+        "Tail Skid                        – CONDITION": false,
+        "Fin & Rudder                    – CONDITION, FULL/FREE MOVEMENT, SECURE":
+            false,
+        "Beacon & Navigation Light      – SECURE": false,
+      },
+      "INTERNAL": {
+        "Passenger Brief                  – COMPLETE.": false,
+        "Cabin Doors                      – CLOSED": false,
+        "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
+        "Headset                          – CONNECTED.": false,
+        "Trimmer                          – NORMAL RANGE, SET TAKEOFF": false,
+        "Circuit Breakers                 – ALL IN.": false,
+        "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
+        "Radios & Electrical Equipment    – OFF.": false,
+        "Flight Controls                  – FREE & CORRECT.": false,
+        "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
+      },
+      "ENGINE START": {
+        "Battery Master                   – ON.": false,
+        "ATC (Start-Up) - IF APPLICIBLE  – REQUEST/NOTIFY.": false,
+        "Fuel                             – ON.": false,
+        "Radios                           – OFF.": false,
+        "Alternator                       – ON.": false,
+        "Mixture                          – CHECK OPERATION, SET RICH.": false,
+        "Throttle                         – FRICTION LOOSE, CHECK OPERATION, OPEN ¼ INCH.":
+            false,
+        "Prime (Up to 3 strokes)          – AS REQUIRED, CHECK LOCKED.": false,
+        "Anti-Collision Light/Beacon     – ON.": false,
+        "Propeller Area                   – CLEAR.": false,
+        "Toe Brakes                       – HOLD ON.": false,
+        "Starter                          – OPERATE.": false,
+        "RPM                             – SET 1200 RPM.": false,
+        "Starter Warning Light            – OUT, IF NOT CLOSE DOWN.": false,
+        "Oil Pressure                     – GREEN (<30s).": false,
+      },
+      "AFTER STARTING": {
+        "Headset                         – FITTED & MICROPHONE ADJUSTED, SET SQUELCH.":
+            false,
+        "Magnetos                        – DEAD CUT CHECK (L, R, BOTH).": false,
+        "Suction                         – WITHIN LIMITS (3 TO 5).": false,
+        "Gyro Instruments                – SYNCRONISED DI WITH COMPASS, CHECK AI LEVEL.":
+            false,
+        "Ammeter                         – CHARGING": false,
+        "Flaps                            – SELECT 30° IN STAGES, RETRACT IN STAGES.":
+            false,
+        "Naviagtion Aids                 – TUNED, TESTED, IDENTIFIED.": false,
+        "Transponder                     – SET 7000, TEST, SET STBY.": false,
+        "Radios                          – TUNED, AUDIO PANEL SET, VOL SET, CALL.":
+            false,
+        "Altimeter                       – SET QFE OR QNH, CHECK WITHIN LIMITS.":
+            false,
+        "Time & Hobbs                    – RECORD": false,
+      },
+      "TAXI": {
+        "ATC (Taxi)                       – REQUEST/NOTIFY.": false,
+        "Brake Check                      – PERFORM.": false,
+        "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).":
+            false,
+      },
+      "POWER CHECKS": {
+        "Aircraft                       – INTO WIND, CLEAR BEHIND.": false,
+        "Toe Brakes                      – HOLD ON.": false,
+        "Oil Temperature               – SUFFICIENT FOR RUN UP.": false,
+        "Throttle                      – SET 1700 RPM, CHECK BRAKES HOLDING.":
+            false,
+        "Alternator                      – FUNCTIONING, CHECK AMMETER CHARGING.":
+            false,
+        "Suction                      – SUFFICIENT (APPROX 5 REQUIRED).": false,
+        "Carburettor Heat              – HOT, CHECK DROP, SET COLD.": false,
+        "Magnetos                      – CHECK, L, R, BOTH (MAX DROP 125RPM, MAX DIFFERENCE 50RPM).":
+            false,
+        "Throttle                      – CLOSE IDLE (500-700RPM), MIN OIL PRESSURE 25PSI, SET 1200RPM.":
+            false,
+      },
+      "PRE TAKE-OFF": {
+        "Elevator Trim                    – TAKEOFF.": false,
+        "Throttle Friction Lock           – ADJUSTED.": false,
+        "Mixture                          – RICH.": false,
+        "Carburetor Heat                  – CHECK OPERATION.": false,
+        "Magnetos                         – CHECK.": false,
+        "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
+        "Primer                           – LOCKED.": false,
+        "Flaps                            – SET (UP / 10°).": false,
+        "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).":
+            false,
+        "Gauges                           – WITHIN LIMITS, CHECK OAT.": false,
+        "Pitot Heat                      – AS REQUIRED (ON IF OAT <5°C).":
+            false,
+        "Cabin Doors                      – CLOSED.": false,
+        "Seats, Seat Belts & Harnesses    – ADJUST & LOCK.": false,
+        "Flying Controls                 – FULL AND FREE MOVEMENT.": false,
+        "Transponder                      – ALT.": false,
+        "Landing & Strobe Lights          – ON.": false,
+      },
+      "AFTER TAKE-OFF": {
+        "Flaps                            – UP.": false,
+        "Engine                           – T'S & P'S.": false,
+        "Trim                             – SET .": false,
+      },
+      "TOP OF CLIMB, CRUISE, APPROACH": {
+        "Fuel                             – CONTENTS SUFFICIENT.": false,
+        "Radio                            – FREQ, TEST VOL AND TRANSPONDER.":
+            false,
+        "Engine                           – CARB HEAT, GAUGES.": false,
+        "DI & Compass                      – DI & COMPASS.": false,
+        "Altimeter                        – QNH OR 1013 OR QFE.": false,
+        "Landing & Strobe Lights          – ON.": false,
+      },
+      "LANDING - CHEF": {
+        "Carburettor Heat                  – ON.": false,
+        "Harnesses                        – SECURE.": false,
+        "Engine                           – GAUGES.": false,
+        "Fuel                             – CONTENTS CHECK, MIXTURE RICH.":
+            false,
+        "Carburettor Heat                  – OFF (300FT).": false,
+      },
+      "AFTER LANDING": {
+        "Clear of Runway                  – STOP.": false,
+        "Carburetor Heat                  – COLD.": false,
+        "Flaps                            – UP.": false,
+        "Trimmer                          – NEUTRAL.": false,
+        "Throttle Friction Nut            – SLACKEN.": false,
+        "Pitot Heat                       – OFF.": false,
+        "Landing & Strobe Lights          – OFF.": false,
+        "Transponder & Nav Aids           – OFF.": false,
+        "Fuel Contents                    – CHECK & REFUEL IF NECESSARY.":
+            false,
+      },
+      "SHUTDOWN": {
+        "Toe Brakes                       – OFF (IN).": false,
+        "Throttle                         – 1200 RPM.": false,
+        "Time & Hobbs                     – RECORD.": false,
+        "Magnetos                         – DEAD CUT CHECK (L, R, BOTH).":
+            false,
+        "Radios                           – OFF.": false,
+        "Throttle                         – OFF.": false,
+        "Mixture                          – IDLE CUT OFF.": false,
+        "Magneto Switch                  – WHEN ENGINE STOPPED, REMOVE KEY.":
+            false,
+        "Master Switch                    – OFF.": false,
+        "Harnesses                        – STOWED NEATLY.": false,
+        "Control Locks                    – IN.": false,
+        "Pitot Cover                      – ON.": false,
+        "Chocks                           – AS REQUIRED.": false,
+      },
+    };
 
-    },
-    "TRANSIT CHECK (Check A Complete)": {
-      "Control Lock                      – REMOVE.": false,
-      "Pitot Cover                       – REMOVE.": false,
-      "Ignition Switch                  – OFF.": false,
-      "Master Switch                     – ON.": false,
-      "Fuel Drains                        – CHECK.": false,
-      "Fuel Shutoff Valve                – ON.": false,
-      "Master Switch                     – OFF.": false,
-
-    },
-    "PORT/LEFT WING": {
-      "Flap                               – CONDITION, HINGES.": false,
-      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
-      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
-      "Wing Tip and Navigation Light    – SECURE.": false,
-      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
-      "Stall Warner                     – CHECK CLEAR.": false,
-      "Pitot Head                       – CHECK CLEAR.": false,
-      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
-      "Fuel Drain                        – CHECK FOR LEAKS.": false,
-      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
-    },
-    "FRONT FUSELAGE & ENGINE": {
-      "Windscreen                        – CLEAR.": false,
-      "Static Source Opening            – CHECK.": false,
-      "Engine Intakes                    – CLEAR, ALTERNATOR BELT SECURE": false,
-      "Propeller                         – CONDITION, SECURE": false,
-      "Nose Wheel Strut and Tire        – CHECK.": false,
-      "Engine                            – NO OIL LEAKES": false,
-      "Engine Oil Level                 – CHECK (MIN. 4).": false,
-      "Fuel Drain                       – CHECK.": false,
-
-    },
-    "STARBOARD/RIGHT WING": {
-      "Landing Gear                     – TYRE CONDITION, BREAK PIPE.": false,
-      "Fuel Drain                        – CHECK FOR LEAKS.": false,
-      "Fuel                               – CONTENTS SUFFICIENT, VENT CLEAR, CAP SECURE.": false,
-      "Leading Edge                      – CONDITION, AIR INLET CLEAR, FUEL VENT CLEAR.": false,
-      "Wing Tip and Navigation Light    – SECURE.": false,
-      "Alieron                            – CONDITION, HINGES, FULL & FREE MOVEMENT.": false,
-      "Wing Surface (Upper and Lower)   – CONDITION, INSPECTION COVERS IN PLACE.": false,
-      "Flap                               – CONDITION, HINGES.": false,
-
-    },
-    "REAR FUSELAGE & TAIL": {
-      "Rear Fuselage Skin              – CONDITION.": false,
-      "Radio Aerials                   – SECURE.": false,
-      "Elevator & Trim Tab             – CONDITION, FULL/FREE MOVEMENT, TAB LOCK NUT SECURE": false,
-      "Tail Skid                        – CONDITION": false,
-      "Fin & Rudder                    – CONDITION, FULL/FREE MOVEMENT, SECURE": false,
-      "Beacon & Navigation Light      – SECURE": false,
-
-    },
-    "INTERNAL": {
-      "Passenger Brief                  – COMPLETE.": false,
-      "Cabin Doors                      – CLOSED": false,
-      "Seats, Belts, Shoulder Harness  – ADJUST & LOCK.": false,
-      "Headset                          – CONNECTED.": false,
-      "Trimmer                          – NORMAL RANGE, SET TAKEOFF": false,
-      "Circuit Breakers                 – ALL IN.": false,
-      "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
-      "Radios & Electrical Equipment    – OFF.": false,
-      "Flight Controls                  – FREE & CORRECT.": false,
-      "Carburettor Heat                 – CHECK OPERATION, SET COLD": false,
-
-    },
-    "ENGINE START": {
-      "Battery Master                   – ON.": false,
-      "ATC (Start-Up) - IF APPLICIBLE  – REQUEST/NOTIFY.": false,
-      "Fuel                             – ON.": false,
-      "Radios                           – OFF.": false,
-      "Alternator                       – ON.": false,
-      "Mixture                          – CHECK OPERATION, SET RICH.": false,
-      "Throttle                         – FRICTION LOOSE, CHECK OPERATION, OPEN ¼ INCH.": false,
-      "Prime (Up to 3 strokes)          – AS REQUIRED, CHECK LOCKED.": false,
-      "Anti-Collision Light/Beacon     – ON.": false,
-      "Propeller Area                   – CLEAR.": false,
-      "Toe Brakes                       – HOLD ON.": false,
-      "Starter                          – OPERATE.": false,
-      "RPM                             – SET 1200 RPM.": false,
-      "Starter Warning Light            – OUT, IF NOT CLOSE DOWN.": false,
-      "Oil Pressure                     – GREEN (<30s).": false,
-
-    },
-    "AFTER STARTING": {
-      "Headset                         – FITTED & MICROPHONE ADJUSTED, SET SQUELCH.": false,
-      "Magnetos                        – DEAD CUT CHECK (L, R, BOTH).": false,
-      "Suction                         – WITHIN LIMITS (3 TO 5).": false,
-      "Gyro Instruments                – SYNCRONISED DI WITH COMPASS, CHECK AI LEVEL.": false,
-      "Ammeter                         – CHARGING": false,
-      "Flaps                            – SELECT 30° IN STAGES, RETRACT IN STAGES.": false,
-      "Naviagtion Aids                 – TUNED, TESTED, IDENTIFIED.": false,
-      "Transponder                     – SET 7000, TEST, SET STBY.": false,
-      "Radios                          – TUNED, AUDIO PANEL SET, VOL SET, CALL.": false,
-      "Altimeter                       – SET QFE OR QNH, CHECK WITHIN LIMITS.": false,
-      "Time & Hobbs                    – RECORD": false,
-
-    },
-    "TAXI": {
-      "ATC (Taxi)                       – REQUEST/NOTIFY.": false,
-      "Brake Check                      – PERFORM.": false,
-      "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
-
-    },
-    "POWER CHECKS": {
-      "Aircraft                       – INTO WIND, CLEAR BEHIND.": false,
-      "Toe Brakes                      – HOLD ON.": false,
-      "Oil Temperature               – SUFFICIENT FOR RUN UP.": false,
-      "Throttle                      – SET 1700 RPM, CHECK BRAKES HOLDING.": false,
-      "Alternator                      – FUNCTIONING, CHECK AMMETER CHARGING.": false,
-      "Suction                      – SUFFICIENT (APPROX 5 REQUIRED).": false,
-      "Carburettor Heat              – HOT, CHECK DROP, SET COLD.": false,
-      "Magnetos                      – CHECK, L, R, BOTH (MAX DROP 125RPM, MAX DIFFERENCE 50RPM).": false,
-      "Throttle                      – CLOSE IDLE (500-700RPM), MIN OIL PRESSURE 25PSI, SET 1200RPM.": false,
-
-    },
-    "PRE TAKE-OFF": {
-      "Elevator Trim                    – TAKEOFF.": false,
-      "Throttle Friction Lock           – ADJUSTED.": false,
-      "Mixture                          – RICH.": false,
-      "Carburetor Heat                  – CHECK OPERATION.": false,
-      "Magnetos                         – CHECK.": false,
-      "Fuel Shutoff Valve               – ON (HORIZONTAL).": false,
-      "Primer                           – LOCKED.": false,
-      "Flaps                            – SET (UP / 10°).": false,
-      "Flight Instruments               – CHECK (Compass, Gyro, Turn Coordinator, AI).": false,
-      "Gauges                           – WITHIN LIMITS, CHECK OAT.": false,
-      "Pitot Heat                      – AS REQUIRED (ON IF OAT <5°C).": false,
-      "Cabin Doors                      – CLOSED.": false,
-      "Seats, Seat Belts & Harnesses    – ADJUST & LOCK.": false,
-      "Flying Controls                 – FULL AND FREE MOVEMENT.": false,
-      "Transponder                      – ALT.": false,
-      "Landing & Strobe Lights          – ON.": false,
-
-    },
-    "AFTER TAKE-OFF": {
-      "Flaps                            – UP.": false,
-      "Engine                           – T'S & P'S.": false,
-      "Trim                             – SET .": false,
-
-    },
-    "TOP OF CLIMB, CRUISE, APPROACH": {
-      "Fuel                             – CONTENTS SUFFICIENT.": false,
-      "Radio                            – FREQ, TEST VOL AND TRANSPONDER.": false,
-      "Engine                           – CARB HEAT, GAUGES.": false,
-      "DI & Compass                      – DI & COMPASS.": false,
-      "Altimeter                        – QNH OR 1013 OR QFE.": false,
-      "Landing & Strobe Lights          – ON.": false,
-
-    },
-    "LANDING - CHEF": {
-      "Carburettor Heat                  – ON.": false,
-      "Harnesses                        – SECURE.": false,
-      "Engine                           – GAUGES.": false,
-      "Fuel                             – CONTENTS CHECK, MIXTURE RICH.": false,
-      "Carburettor Heat                  – OFF (300FT).": false,
-
-    },
-    "AFTER LANDING": {
-      "Clear of Runway                  – STOP.": false,
-      "Carburetor Heat                  – COLD.": false,
-      "Flaps                            – UP.": false,
-      "Trimmer                          – NEUTRAL.": false,
-      "Throttle Friction Nut            – SLACKEN.": false,
-      "Pitot Heat                       – OFF.": false,
-      "Landing & Strobe Lights          – OFF.": false,
-      "Transponder & Nav Aids           – OFF.": false,
-      "Fuel Contents                    – CHECK & REFUEL IF NECESSARY.": false,
-
-    },
-    "SHUTDOWN": {
-      "Toe Brakes                       – OFF (IN).": false,
-      "Throttle                         – 1200 RPM.": false,
-      "Time & Hobbs                     – RECORD.": false,
-      "Magnetos                         – DEAD CUT CHECK (L, R, BOTH).": false,
-      "Radios                           – OFF.": false,
-      "Throttle                         – OFF.": false,
-      "Mixture                          – IDLE CUT OFF.": false,
-      "Magneto Switch                  – WHEN ENGINE STOPPED, REMOVE KEY.": false,
-      "Master Switch                    – OFF.": false,
-      "Harnesses                        – STOWED NEATLY.": false,
-      "Control Locks                    – IN.": false,
-      "Pitot Cover                      – ON.": false,
-      "Chocks                           – AS REQUIRED.": false,
-
-    },
-  };
-  
-  loadChecklist();
-}
-
+    loadChecklist();
+  }
 
   Future<void> loadChecklist() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -411,209 +423,232 @@ void initState() {
     });
   }
 
-void toggleWeatherCondition(String key) {
-  final items = _weatherChecklistItems[key];
-  if (items == null) return;
+  void toggleWeatherCondition(String key) {
+    final items = _weatherChecklistItems[key];
+    if (items == null) return;
 
-  setState(() {
-    if (_activeWeatherConditions.contains(key)) {
-      // REMOVE weather checklist items
-      items.forEach((section, checklistItems) {
-        for (var item in checklistItems) {
-          checklistSections[section]?.remove(item);
-        }
-        checklistSections[section]?.remove('__weather__');
-        if (checklistSections[section]?.isEmpty ?? false) {
-          checklistSections.remove(section);
-        }
-      });
-      _activeWeatherConditions.remove(key);
-    } else {
-      // ADD weather checklist items
-      items.forEach((section, checklistItems) {
-        checklistSections.putIfAbsent(section, () => {});
-        checklistSections[section]!['__weather__'] = true;
-        for (var item in checklistItems) {
-          checklistSections[section]!.putIfAbsent(item, () => false);
-        }
-      });
-      _activeWeatherConditions.add(key);
+    setState(() {
+      if (_activeWeatherConditions.contains(key)) {
+        // REMOVE weather checklist items
+        items.forEach((section, checklistItems) {
+          for (var item in checklistItems) {
+            checklistSections[section]?.remove(item);
+          }
+          checklistSections[section]?.remove('__weather__');
+          if (checklistSections[section]?.isEmpty ?? false) {
+            checklistSections.remove(section);
+          }
+        });
+        _activeWeatherConditions.remove(key);
+      } else {
+        // ADD weather checklist items
+        items.forEach((section, checklistItems) {
+          checklistSections.putIfAbsent(section, () => {});
+          checklistSections[section]!['__weather__'] = true;
+          for (var item in checklistItems) {
+            checklistSections[section]!.putIfAbsent(item, () => false);
+          }
+        });
+        _activeWeatherConditions.add(key);
+      }
+    });
+  }
+
+  String _formatWeatherValue(double value) {
+    if (value == value.toInt().toDouble()) {
+      return value.toInt().toString();
     }
-  });
-}
+    return value.toString();
+  }
 
-void updateCarbIcingItem(bool risk) {
-  const internalSection = "INTERNAL";
-  const powerChecksSection = "POWER CHECKS";
+  void _addChecklistItem(String section, String item, {bool atStart = false}) {
+    checklistSections.putIfAbsent(section, () => {});
+    final sectionItems = checklistSections[section]!;
+    if (sectionItems.containsKey(item)) {
+      return;
+    }
 
-  const internalKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
-  const powerKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
+    if (atStart) {
+      final reordered = <String, bool>{item: false};
+      reordered.addAll(sectionItems);
+      checklistSections[section] = reordered;
+    } else {
+      sectionItems[item] = false;
+    }
+  }
 
-  setState(() {
-    if (risk) {
-      // Add to INTERNAL at the end
-      checklistSections.putIfAbsent(internalSection, () => {});
-      checklistSections[internalSection]![internalKey] = false;
+  void _removeChecklistItem(String section, String item) {
+    checklistSections[section]?.remove(item);
+  }
 
-      // Add to POWER CHECKS before Carburettor Heat
-      checklistSections.putIfAbsent(powerChecksSection, () => {});
-      final Map<String, bool> powerItems = checklistSections[powerChecksSection]!;
+  void updateCarbIcingItem(bool risk) {
+    const internalSection = "INTERNAL";
+    const powerChecksSection = "POWER CHECKS";
 
-      final Map<String, bool> newPowerItems = {};
-      bool inserted = false;
+    const internalKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
+    const powerKey = "CARBURETTOR ICING RISK - TAKE CAUTION";
 
-      for (var entry in powerItems.entries) {
-        // Insert warning before any key that contains "Carburettor Heat"
-        if (!inserted && entry.key.contains("Carburettor Heat")) {
+    setState(() {
+      if (risk) {
+        // Add to INTERNAL at the end
+        checklistSections.putIfAbsent(internalSection, () => {});
+        checklistSections[internalSection]![internalKey] = false;
+
+        // Add to POWER CHECKS before Carburettor Heat
+        checklistSections.putIfAbsent(powerChecksSection, () => {});
+        final Map<String, bool> powerItems =
+            checklistSections[powerChecksSection]!;
+
+        final Map<String, bool> newPowerItems = {};
+        bool inserted = false;
+
+        for (var entry in powerItems.entries) {
+          // Insert warning before any key that contains "Carburettor Heat"
+          if (!inserted && entry.key.contains("Carburettor Heat")) {
+            newPowerItems[powerKey] = false;
+            inserted = true;
+          }
+          newPowerItems[entry.key] = entry.value;
+        }
+
+        // If no carb heat found, append at end
+        if (!inserted) {
           newPowerItems[powerKey] = false;
-          inserted = true;
         }
-        newPowerItems[entry.key] = entry.value;
+
+        checklistSections[powerChecksSection] = newPowerItems;
+      } else {
+        // Remove from INTERNAL
+        checklistSections[internalSection]?.remove(internalKey);
+
+        // Remove from POWER CHECKS
+        checklistSections[powerChecksSection]?.remove(powerKey);
+      }
+    });
+  }
+
+  void updateTemperatureItem(bool lowRisk, bool highRisk, double? temperature) {
+    const lowSections = <String>[
+      "CHECK A (ONLY FIRST FLIGHT OF DAY)",
+      "TRANSIT CHECK (Check A Complete)",
+      "INTERNAL",
+      "PORT/LEFT WING",
+      "STARBOARD/RIGHT WING"
+    ];
+    const internalSection = "INTERNAL";
+
+    final lowItem = temperature != null
+        ? 'Temperature: ${_formatWeatherValue(temperature)}°C - Potential Airframe Icing.'
+        : 'Temperature: N/A°C - Potential Airframe Icing.';
+    final highItem = temperature != null
+        ? 'Temperature: ${_formatWeatherValue(temperature)}°C - Potential high density altitude.'
+        : 'Temperature: N/A°C - Potential high density altitude.';
+
+    setState(() {
+      for (final section in lowSections) {
+        if (lowRisk) {
+          _addChecklistItem(section, lowItem);
+        } else {
+          _removeChecklistItem(section, lowItem);
+        }
       }
 
-      // If no carb heat found, append at end
-      if (!inserted) {
-        newPowerItems[powerKey] = false;
+      if (highRisk) {
+        _addChecklistItem(internalSection, highItem, atStart: true);
+      } else {
+        _removeChecklistItem(internalSection, highItem);
       }
+    });
+  }
 
-      checklistSections[powerChecksSection] = newPowerItems;
-    } else {
-      // Remove from INTERNAL
-      checklistSections[internalSection]?.remove(internalKey);
+  void updateHumidityItem(bool highRisk, double? humidityValue) {
+    const internalSection = "INTERNAL";
 
-      // Remove from POWER CHECKS
-      checklistSections[powerChecksSection]?.remove(powerKey);
-    }
-  });
-}
+    final highItem = humidityValue != null
+        ? 'Humidity: ${_formatWeatherValue(humidityValue)}% - Potential Reduced Visibility.'
+        : 'Humidity: N/A% - Potential Reduced Visibility.';
 
-void updateTemperatureItem(bool lowRisk, bool highRisk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-  const engineStartSection = "ENGINE START";
-  const afterStartingSection = "AFTER STARTING";
-  const powerChecksSection = "POWER CHECKS";
+    setState(() {
+      if (highRisk) {
+        _addChecklistItem(internalSection, highItem, atStart: true);
+      } else {
+        _removeChecklistItem(internalSection, highItem);
+      }
+    });
+  }
 
-  setState(() {
-    if (lowRisk) {
-      // Add to CHECK A
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ Remove frost, ice, and snow from all surfaces; use de-icing fluid."] = false;
+  void updateWindItem(bool risk, double? windSpeed, double? windGusts) {
+    const internalSection = "INTERNAL";
+    const taxiSection = "TAXI";
 
-      // Add to ENGINE START
-      checklistSections.putIfAbsent(engineStartSection, () => {});
-      checklistSections[engineStartSection]!["✅ Wait until oil temperature reaches the green range."] = false;
-      checklistSections[engineStartSection]!["✅ Verify oil pressure rises within 30 seconds after start."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ Remove frost, ice, and snow from all surfaces; use de-icing fluid.");
-      checklistSections[engineStartSection]?.remove("✅ Wait until oil temperature reaches the green range.");
-      checklistSections[engineStartSection]?.remove("✅ Verify oil pressure rises within 30 seconds after start.");
-    }
+    final windText = windSpeed != null ? _formatWeatherValue(windSpeed) : 'N/A';
+    final gustText = windGusts != null ? _formatWeatherValue(windGusts) : null;
+    final message = gustText != null
+        ? 'Wind: $windText kt, Gusts: $gustText kt'
+        : 'Wind: $windText kt';
 
-    if (highRisk) {
-      // Add to CHECK A
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ Carry sufficient water and ensure pilot hydration."] = false;
+    setState(() {
+      if (risk) {
+        _addChecklistItem(taxiSection, message, atStart: true);
+        _addChecklistItem(internalSection, message);
+      } else {
+        _removeChecklistItem(taxiSection, message);
+        _removeChecklistItem(internalSection, message);
+      }
+    });
+  }
 
-      // Add to AFTER STARTING
-      checklistSections.putIfAbsent(afterStartingSection, () => {});
-      checklistSections[afterStartingSection]!["✅ Verify cabin ventilation and ensure adequate cooling airflow."] = false;
+  void updatePhenomenaItem(bool risk) {
+    const internalSection = "INTERNAL";
+    final item =
+        '⚠️ Adverse weather phenomena detected (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB).';
 
-      // Add to POWER CHECKS
-      checklistSections.putIfAbsent(powerChecksSection, () => {});
-      checklistSections[powerChecksSection]!["✅ Avoid prolonged idle; monitor oil temperature closely."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ Carry sufficient water and ensure pilot hydration.");
-      checklistSections[afterStartingSection]?.remove("✅ Verify cabin ventilation and ensure adequate cooling airflow.");
-      checklistSections[powerChecksSection]?.remove("✅ Avoid prolonged idle; monitor oil temperature closely.");
-    }
-  });
-}
+    setState(() {
+      if (risk) {
+        _addChecklistItem(internalSection, item, atStart: true);
+      } else {
+        _removeChecklistItem(internalSection, item);
+      }
+    });
+  }
 
-void updateHumidityItem(bool highRisk, bool lowRisk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-  const powerChecksSection = "POWER CHECKS";
+  void updateVfrLimitsItem(bool risk) {
+    final item =
+        '⚠️ VFR minima not met — visibility, ceiling, or flight category are below limits.';
 
-  setState(() {
-    if (highRisk) {
-      // Add to CHECK A
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ Check for water contamination in fuel tanks."] = false;
+    setState(() {
+      if (risk) {
+        for (final section in checklistSections.keys.toList()) {
+          _addChecklistItem(section, item);
+        }
+      } else {
+        for (final section in checklistSections.keys.toList()) {
+          _removeChecklistItem(section, item);
+        }
+      }
+    });
+  }
 
-      // Add to POWER CHECKS
-      checklistSections.putIfAbsent(powerChecksSection, () => {});
-      checklistSections[powerChecksSection]!["✅ Emphasize carburettor heat checks during run-up."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ Check for water contamination in fuel tanks.");
-      checklistSections[powerChecksSection]?.remove("✅ Emphasize carburettor heat checks during run-up.");
-    }
+  void updateTerrainItem(bool risk) {
+    const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
 
-    if (lowRisk) {
-      // Add to CHECK A
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ Inspect air intake and filter for dust or blockage (“fod check”)."] = false;
-      checklistSections[checkASection]!["✅ Ensure windscreen and canopy are clean and clear."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ Inspect air intake and filter for dust or blockage (“fod check”).");
-      checklistSections[checkASection]?.remove("✅ Ensure windscreen and canopy are clean and clear.");
-    }
-  });
-}
-
-void updateWindItem(bool risk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-
-  setState(() {
-    if (risk) {
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ If gusts > 20 knots, review aircraft crosswind limitations before flight."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ If gusts > 20 knots, review aircraft crosswind limitations before flight.");
-    }
-  });
-}
-
-void updatePhenomenaItem(bool risk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-
-  setState(() {
-    if (risk) {
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["✅ Check for adverse codes (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB)."] = false;
-      checklistSections[checkASection]!["✅ Apply corresponding actions (wet runway, performance checks, no-go conditions, etc.)."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("✅ Check for adverse codes (RA, SN, SG, IC, FZRA, PL, GR, TS, SHRA with CB).");
-      checklistSections[checkASection]?.remove("✅ Apply corresponding actions (wet runway, performance checks, no-go conditions, etc.).");
-    }
-  });
-}
-
-void updateVfrLimitsItem(bool risk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-
-  setState(() {
-    if (risk) {
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["⚠️ VFR minima not reached — flight not permitted under VFR."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("⚠️ VFR minima not reached — flight not permitted under VFR.");
-    }
-  });
-}
-
-void updateTerrainItem(bool risk) {
-  const checkASection = "CHECK A (ONLY FIRST FLIGHT OF DAY)";
-
-  setState(() {
-    if (risk) {
-      checklistSections.putIfAbsent(checkASection, () => {});
-      checklistSections[checkASection]!["⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity."] = false;
-      checklistSections[checkASection]!["⚠️ Use chart references and ensure at least two forms of navigation/planning."] = false;
-    } else {
-      checklistSections[checkASection]?.remove("⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity.");
-      checklistSections[checkASection]?.remove("⚠️ Use chart references and ensure at least two forms of navigation/planning.");
-    }
-  });
-}
+    setState(() {
+      if (risk) {
+        checklistSections.putIfAbsent(checkASection, () => {});
+        checklistSections[checkASection]![
+                "⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity."] =
+            false;
+        checklistSections[checkASection]![
+                "⚠️ Use chart references and ensure at least two forms of navigation/planning."] =
+            false;
+      } else {
+        checklistSections[checkASection]?.remove(
+            "⚠️ If operating in Scotland, Wales, or Southwest England, note terrain proximity.");
+        checklistSections[checkASection]?.remove(
+            "⚠️ Use chart references and ensure at least two forms of navigation/planning.");
+      }
+    });
+  }
 
   Future<void> _fetchWeatherAndUpdateChecklist() async {
     final icao = _airportController.text.trim().toUpperCase();
@@ -643,19 +678,23 @@ void updateTerrainItem(bool risk) {
       // Update temperature items
       final tempLowRisk = metarData['tempLowRisk'] as bool? ?? false;
       final tempHighRisk = metarData['tempHighRisk'] as bool? ?? false;
-      updateTemperatureItem(tempLowRisk, tempHighRisk);
+      final tempValue = metarData['Air Temperature'] as num?;
+      updateTemperatureItem(tempLowRisk, tempHighRisk, tempValue?.toDouble());
 
       // Update humidity items
       final humidityHighRisk = metarData['humidityHighRisk'] as bool? ?? false;
-      final humidityLowRisk = metarData['humidityLowRisk'] as bool? ?? false;
-      updateHumidityItem(humidityHighRisk, humidityLowRisk);
+      final humidityValue = metarData['humidityValue'] as num?;
+      updateHumidityItem(humidityHighRisk, humidityValue?.toDouble());
 
       // Update wind item
       final windRisk = metarData['windRisk'] as bool? ?? false;
-      updateWindItem(windRisk);
+      final windSpeed = metarData['windSpeed'] as num?;
+      final windGusts = metarData['windGusts'] as num?;
+      updateWindItem(windRisk, windSpeed?.toDouble(), windGusts?.toDouble());
 
       // Update phenomena item
-      final phenomenaRisks = metarData['phenomenaRisks'] as Map<String, bool>? ?? {};
+      final phenomenaRisks =
+          metarData['phenomenaRisks'] as Map<String, bool>? ?? {};
       final phenomenaRisk = phenomenaRisks.values.any((v) => v);
       updatePhenomenaItem(phenomenaRisk);
 
@@ -666,7 +705,6 @@ void updateTerrainItem(bool risk) {
       // Update terrain item
       final terrainRisk = metarData['terrainRisk'] as bool? ?? false;
       updateTerrainItem(terrainRisk);
-
     } catch (e) {
       setState(() {
         _weatherError = 'Failed to fetch weather data: $e';
@@ -698,7 +736,7 @@ void updateTerrainItem(bool risk) {
           header: (context) {
             final authService = AuthService();
             final user = authService.currentUser;
-            
+
             return pdfWidgets.Column(
               crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
               children: [
@@ -709,22 +747,27 @@ void updateTerrainItem(bool risk) {
                     fontWeight: pdfWidgets.FontWeight.bold,
                   ),
                 ),
-                if (user?.fullName != null || user?.licenseNumber != null || user?.homeBase != null)
+                if (user?.fullName != null ||
+                    user?.licenseNumber != null ||
+                    user?.homeBase != null)
                   pdfWidgets.SizedBox(height: 8),
                 if (user?.fullName != null)
                   pdfWidgets.Text(
                     "Pilot: ${user!.fullName}",
-                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                    style: pdfWidgets.TextStyle(
+                        fontSize: 12, color: PdfColors.grey800),
                   ),
                 if (user?.licenseNumber != null)
                   pdfWidgets.Text(
                     "License: ${user!.licenseNumber}",
-                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                    style: pdfWidgets.TextStyle(
+                        fontSize: 12, color: PdfColors.grey800),
                   ),
                 if (user?.homeBase != null)
                   pdfWidgets.Text(
                     "Home Base: ${user!.homeBase}",
-                    style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                    style: pdfWidgets.TextStyle(
+                        fontSize: 12, color: PdfColors.grey800),
                   ),
                 pdfWidgets.Divider(thickness: 2),
                 pdfWidgets.SizedBox(height: 10),
@@ -740,11 +783,13 @@ void updateTerrainItem(bool risk) {
                 children: [
                   pdfWidgets.Text(
                     "Generated: ${DateTime.now().toString().split('.')[0]}",
-                    style: pdfWidgets.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                    style: pdfWidgets.TextStyle(
+                        fontSize: 8, color: PdfColors.grey700),
                   ),
                   pdfWidgets.Text(
                     "Page ${context.pageNumber} of ${context.pagesCount}",
-                    style: pdfWidgets.TextStyle(fontSize: 8, color: PdfColors.grey700),
+                    style: pdfWidgets.TextStyle(
+                        fontSize: 8, color: PdfColors.grey700),
                   ),
                 ],
               ),
@@ -757,7 +802,8 @@ void updateTerrainItem(bool risk) {
                 children: [
                   pdfWidgets.Container(
                     width: double.infinity,
-                    padding: pdfWidgets.EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                    padding: pdfWidgets.EdgeInsets.symmetric(
+                        vertical: 8, horizontal: 12),
                     decoration: pdfWidgets.BoxDecoration(
                       color: PdfColors.blue900,
                       borderRadius: pdfWidgets.BorderRadius.circular(4),
@@ -772,7 +818,9 @@ void updateTerrainItem(bool risk) {
                     ),
                   ),
                   pdfWidgets.SizedBox(height: 8),
-                  ...entry.value.entries.where((item) => item.key != '__weather__').map((item) {
+                  ...entry.value.entries
+                      .where((item) => item.key != '__weather__')
+                      .map((item) {
                     return pdfWidgets.Padding(
                       padding: pdfWidgets.EdgeInsets.only(left: 12, bottom: 6),
                       child: pdfWidgets.Row(
@@ -781,7 +829,8 @@ void updateTerrainItem(bool risk) {
                           pdfWidgets.Container(
                             width: 14,
                             height: 14,
-                            margin: pdfWidgets.EdgeInsets.only(right: 8, top: 1),
+                            margin:
+                                pdfWidgets.EdgeInsets.only(right: 8, top: 1),
                             decoration: pdfWidgets.BoxDecoration(
                               border: pdfWidgets.Border.all(width: 1.5),
                               borderRadius: pdfWidgets.BorderRadius.circular(2),
@@ -804,6 +853,10 @@ void updateTerrainItem(bool risk) {
                               style: pdfWidgets.TextStyle(
                                 fontSize: 11,
                                 lineSpacing: 1.3,
+                                color: item.key.contains('⚠️') ||
+                                        item.key.contains('VFR minima')
+                                    ? PdfColors.red
+                                    : PdfColors.black,
                               ),
                             ),
                           ),
@@ -823,12 +876,13 @@ void updateTerrainItem(bool risk) {
       final file = File("${output.path}/Cessna_152_Checklist.pdf");
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-      
+
       // Upload to backend (non-blocking)
       try {
         await PdfUploadService().uploadPdf(
           pdfBytes,
-          title: 'Cessna 152 Checklist - ${DateTime.now().toString().split(' ')[0]}',
+          title:
+              'Cessna 152 Checklist - ${DateTime.now().toString().split(' ')[0]}',
           aircraftId: 'G-152', // Replace with actual registration if available
           type: 'cessna_152_checklist',
         );
@@ -836,7 +890,7 @@ void updateTerrainItem(bool risk) {
         debugPrint('Failed to upload PDF to backend: $e');
         // Continue with local file opening even if upload fails
       }
-      
+
       OpenFile.open(file.path);
     } catch (_) {
       if (mounted) {
@@ -880,7 +934,10 @@ void updateTerrainItem(bool risk) {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+              colors: [
+                Color(0xFFADD8E6),
+                Color(0xFF87CEEB)
+              ], // Light blue to sky blue
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -900,19 +957,20 @@ void updateTerrainItem(bool risk) {
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.redAccent,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10)),
                 ),
                 onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => Cessna152EmergencyScreen())),
+                    MaterialPageRoute(
+                        builder: (_) => Cessna152EmergencyScreen())),
                 icon: Icon(Icons.warning, color: Colors.white),
                 label: Text(
                   "Emergency Procedures",
                   style: TextStyle(
-                    fontSize: 18, 
-                    fontWeight: FontWeight.bold, 
-                    color: Colors.white
-                    ),
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ),
@@ -935,13 +993,12 @@ void updateTerrainItem(bool risk) {
               ),
               Column(
                 children: [
-                 IconButton(
-  icon: Icon(Icons.search, color: Colors.black),
-  onPressed: () {
-    _fetchWeatherAndUpdateChecklist();
-  },
-),
-
+                  IconButton(
+                    icon: Icon(Icons.search, color: Colors.black),
+                    onPressed: () {
+                      _fetchWeatherAndUpdateChecklist();
+                    },
+                  ),
                   SizedBox(height: 2),
                   Text("Search",
                       style: TextStyle(color: Colors.black, fontSize: 12)),
@@ -963,19 +1020,80 @@ void updateTerrainItem(bool risk) {
                   children: [
                     Text(
                       'Weather Data for ${_metarData!['icao']} (${_metarData!['name']})',
-                      style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.black),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 6),
                     Text(
                       'Temperature: ${_metarData!['Air Temperature']}°C, Dewpoint: ${_metarData!['Dewpoint']}°C',
                       style: TextStyle(color: Colors.black),
                     ),
+                    const SizedBox(height: 4),
                     Text(
                       'Carb Icing Risk: ${_metarData!['carbIcingRisk'] ? 'YES - Warning Added' : 'No'}',
                       style: TextStyle(
-                        color: _metarData!['carbIcingRisk'] ? Colors.red : Colors.green,
-                        fontWeight: _metarData!['carbIcingRisk'] ? FontWeight.bold : FontWeight.normal,
+                        color: _metarData!['carbIcingRisk']
+                            ? Colors.red
+                            : Colors.green,
+                        fontWeight: _metarData!['carbIcingRisk']
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Temperature Low: ${_metarData!['tempLowRisk'] == true ? 'Yes - Potential Airframe Icing' : 'No'}',
+                      style: TextStyle(
+                        color: _metarData!['tempLowRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'Temperature High: ${_metarData!['tempHighRisk'] == true ? 'Yes - Potential high density altitude' : 'No'}',
+                      style: TextStyle(
+                        color: _metarData!['tempHighRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'Humidity High: ${_metarData!['humidityHighRisk'] == true ? 'Yes - Potential Reduced Visibility' : 'No'} (${_metarData!['humidity'] ?? 'N/A'})',
+                      style: TextStyle(
+                        color: _metarData!['humidityHighRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Wind: ${_metarData!['wind'] ?? 'N/A'} - Risk: ${_metarData!['windRisk'] == true ? 'Yes' : 'No'}',
+                      style: TextStyle(
+                        color: _metarData!['windRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'VFR Limits: ${_metarData!['vfrLimitsRisk'] == true ? 'Below limits' : 'Within limits'}',
+                      style: TextStyle(
+                        color: _metarData!['vfrLimitsRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    Text(
+                      'Terrain Risk: ${_metarData!['terrainRisk'] == true ? 'Yes' : 'No'}',
+                      style: TextStyle(
+                        color: _metarData!['terrainRisk'] == true
+                            ? Colors.red
+                            : Colors.green,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Phenomena: ${(_metarData!['phenomenaRisks'] as Map<String, bool>?)?.entries.where((e) => e.value).map((e) => e.key).join(', ') ?? 'None'}',
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ],
                 ),
@@ -993,7 +1111,8 @@ void updateTerrainItem(bool risk) {
                 ),
                 child: Text(
                   'Weather Error: $_weatherError',
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style:
+                      TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                 ),
               ),
               SizedBox(height: 10),
@@ -1099,39 +1218,39 @@ void updateTerrainItem(bool risk) {
     );
   }
 
-Widget _weatherButton(String label, IconData icon, String conditionKey) {
-  final isActive = _activeWeatherConditions.contains(conditionKey);
+  Widget _weatherButton(String label, IconData icon, String conditionKey) {
+    final isActive = _activeWeatherConditions.contains(conditionKey);
 
-  return InkWell(
-    onTap: () => toggleWeatherCondition(conditionKey),
-    borderRadius: BorderRadius.circular(30),
-    splashColor: Colors.white24,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: isActive ? Color(0xFF87CEEB) : Colors.blueGrey.shade700,
-            shape: BoxShape.rectangle,
-            border: Border.all(color: Colors.black, width: 1.5),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey,
-                blurRadius: 4,
-                offset: Offset(1, 2),
-              ),
-            ],
+    return InkWell(
+      onTap: () => toggleWeatherCondition(conditionKey),
+      borderRadius: BorderRadius.circular(30),
+      splashColor: Colors.white24,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: isActive ? Color(0xFF87CEEB) : Colors.blueGrey.shade700,
+              shape: BoxShape.rectangle,
+              border: Border.all(color: Colors.black, width: 1.5),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey,
+                  blurRadius: 4,
+                  offset: Offset(1, 2),
+                ),
+              ],
+            ),
+            padding: EdgeInsets.all(14),
+            child: Icon(icon, color: Colors.white, size: 26),
           ),
-          padding: EdgeInsets.all(14),
-          child: Icon(icon, color: Colors.white, size: 26),
-        ),
-        SizedBox(height: 4),
-        Text(label, style: TextStyle(color: Colors.black, fontSize: 12)),
-      ],
-    ),
-  );
-}
+          SizedBox(height: 4),
+          Text(label, style: TextStyle(color: Colors.black, fontSize: 12)),
+        ],
+      ),
+    );
+  }
 
   Widget _iconButton(
       IconData icon, String label, Color color, VoidCallback onTap) {
@@ -1206,7 +1325,8 @@ class ChecklistExpansionTile extends StatelessWidget {
                     if (isSectionComplete)
                       Padding(
                         padding: const EdgeInsets.only(right: 6.0),
-                        child: Icon(Icons.check_circle, color: Colors.green, size: 20),
+                        child: Icon(Icons.check_circle,
+                            color: Colors.green, size: 20),
                       ),
                     Text(
                       title,
@@ -1230,7 +1350,8 @@ class ChecklistExpansionTile extends StatelessWidget {
                       ),
                     ),
                     child: Text('WX',
-                        style: TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
+                        style:
+                            TextStyle(color: Color(0xFFADD8E6), fontSize: 12)),
                   ),
               ],
             ),
@@ -1241,30 +1362,34 @@ class ChecklistExpansionTile extends StatelessWidget {
                 final Color highlightColor = isWeatherAdded
                     ? Color(0xFFADD8E6).withOpacity(0.1)
                     : Colors.transparent;
-                final bool isWeatherWarning = entry.key.contains("RISK") || entry.key.contains("⚠️");
-                
+                final bool isWeatherWarning =
+                    entry.key.contains("RISK") || entry.key.contains("⚠️");
+
                 // Parse item name and action
                 final parts = entry.key.split('–');
                 final itemName = parts[0].trim();
                 final action = parts.length > 1 ? parts[1].trim() : '';
-                
+
                 return Container(
                   color: highlightColor,
                   child: InkWell(
                     onTap: () => updateChecklist(entry.key, !entry.value),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 8.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // Custom checkbox
                           GestureDetector(
-                            onTap: () => updateChecklist(entry.key, !entry.value),
+                            onTap: () =>
+                                updateChecklist(entry.key, !entry.value),
                             child: Container(
                               width: 24,
                               height: 24,
                               decoration: BoxDecoration(
-                                color: entry.value ? Colors.green : Colors.white,
+                                color:
+                                    entry.value ? Colors.green : Colors.white,
                                 border: Border.all(
                                   color: Colors.black,
                                   width: 2,
@@ -1280,9 +1405,13 @@ class ChecklistExpansionTile extends StatelessWidget {
                             child: Text(
                               itemName,
                               style: TextStyle(
-                                color: isWeatherWarning ? Colors.red : Colors.black,
+                                color: isWeatherWarning
+                                    ? Colors.red
+                                    : Colors.black,
                                 fontSize: 14,
-                                fontWeight: isWeatherWarning ? FontWeight.bold : FontWeight.normal,
+                                fontWeight: isWeatherWarning
+                                    ? FontWeight.bold
+                                    : FontWeight.normal,
                               ),
                             ),
                           ),
@@ -1295,7 +1424,9 @@ class ChecklistExpansionTile extends StatelessWidget {
                                 action,
                                 textAlign: TextAlign.right,
                                 style: TextStyle(
-                                  color: isWeatherWarning ? Colors.red : Colors.black,
+                                  color: isWeatherWarning
+                                      ? Colors.red
+                                      : Colors.black,
                                   fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                 ),

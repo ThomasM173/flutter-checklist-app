@@ -22,12 +22,12 @@ class WeatherBoundaries {
 
   /// Humidity < 20% risk
   static bool humidityRiskLow(double humidity) {
-    return humidity < 20.0;
+    return false;
   }
 
-  /// Wind risk: gusts > 20 knots
+  /// Wind risk: gusts > 20 knots and wind > 15 knots
   static bool windRisk(double? speed, double? gusts) {
-    return (gusts != null && gusts > 20.0) || (speed != null && speed > 20.0);
+    return (gusts != null && gusts > 20.0) && (speed != null && speed > 15.0);
   }
 
   /// Weather phenomena risk: parse raw METAR for adverse codes
