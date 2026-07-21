@@ -18,12 +18,12 @@ class PaveAssessmentScreen extends StatefulWidget {
 
 class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // PAVE Fields
   final _pilotNameController = TextEditingController();
   final _dateController = TextEditingController();
   final _flightNumberController = TextEditingController();
-  
+
   // Pilot Assessment
   String _imsafeIllness = '';
   String _imsafeMedication = '';
@@ -32,32 +32,32 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
   String _imsafeFatigue = '';
   String _imsafeEating = '';
   final _pilotNotesController = TextEditingController();
-  
+
   // Aircraft Assessment
   final _aircraftRegistrationController = TextEditingController();
   String _aircraftServiceability = 'Serviceable';
   final _aircraftDefectsController = TextEditingController();
   final _aircraftNotesController = TextEditingController();
-  
+
   // enVironment Assessment
   final _departureAirportController = TextEditingController();
   final _destinationAirportController = TextEditingController();
   final _weatherConditionsController = TextEditingController();
   String _vfrIfrConditions = 'VFR';
   final _environmentNotesController = TextEditingController();
-  
+
   // External Pressures
   String _timeConstraints = 'No';
   String _passengerPressure = 'No';
   final _externalPressuresController = TextEditingController();
-  
+
   // 5P Assessment
   String _fivePPlan = 'Satisfactory';
   String _fivePPlane = 'Satisfactory';
   String _fivePPilot = 'Satisfactory';
   String _fivePPassengers = 'Satisfactory';
   String _fivePProgramming = 'Satisfactory';
-  
+
   String _overallRiskLevel = 'Low';
 
   @override
@@ -71,7 +71,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _pilotNameController.text = prefs.getString('pave_pilotName') ?? '';
-      _aircraftRegistrationController.text = prefs.getString('pave_aircraftReg') ?? '';
+      _aircraftRegistrationController.text =
+          prefs.getString('pave_aircraftReg') ?? '';
     });
   }
 
@@ -85,7 +86,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
 
     final prefs = await SharedPreferences.getInstance();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    
+
     final entryData = {
       'timestamp': timestamp,
       'pilotName': _pilotNameController.text,
@@ -122,17 +123,19 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     final historyKey = 'pave_history';
     final historyJson = prefs.getString(historyKey) ?? '[]';
     final List<dynamic> history = jsonDecode(historyJson);
-    
+
     // Remove entries older than 7 days
-    final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
+    final sevenDaysAgo =
+        DateTime.now().subtract(const Duration(days: 7)).millisecondsSinceEpoch;
     history.removeWhere((entry) => entry['timestamp'] < sevenDaysAgo);
-    
+
     history.add(entryData);
     await prefs.setString(historyKey, jsonEncode(history));
-    
+
     // Save current values for next time
     await prefs.setString('pave_pilotName', _pilotNameController.text);
-    await prefs.setString('pave_aircraftReg', _aircraftRegistrationController.text);
+    await prefs.setString(
+        'pave_aircraftReg', _aircraftRegistrationController.text);
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +147,9 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
   Future<void> _generatePDF() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all required fields before generating PDF')),
+        const SnackBar(
+            content: Text(
+                'Please fill in all required fields before generating PDF')),
       );
       return;
     }
@@ -152,7 +157,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF generation only works on Android/iOS')),
+          const SnackBar(
+              content: Text('PDF generation only works on Android/iOS')),
         );
       }
       return;
@@ -160,7 +166,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
 
     try {
       final pdf = pw.Document();
-      final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final fontData =
+          await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
 
       pdf.addPage(
@@ -173,7 +180,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
             children: [
               pw.Text(
                 "PAVE Risk Assessment & IMSAFE Check",
-                style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
               ),
               pw.Divider(thickness: 2),
               pw.SizedBox(height: 10),
@@ -209,7 +217,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               _pdfRow("Date", _dateController.text),
               _pdfRow("Flight Number", _flightNumberController.text),
             ]),
-            
+
             // IMSAFE
             _pdfSection("I.M.S.A.F.E. Check", [
               _pdfRow("Illness", _imsafeIllness),
@@ -221,7 +229,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               if (_pilotNotesController.text.isNotEmpty)
                 _pdfRow("Notes", _pilotNotesController.text),
             ]),
-            
+
             // Aircraft
             _pdfSection("Aircraft (PAVE: A)", [
               _pdfRow("Registration", _aircraftRegistrationController.text),
@@ -231,7 +239,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               if (_aircraftNotesController.text.isNotEmpty)
                 _pdfRow("Notes", _aircraftNotesController.text),
             ]),
-            
+
             // Environment
             _pdfSection("enVironment (PAVE: V)", [
               _pdfRow("Departure", _departureAirportController.text),
@@ -241,7 +249,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               if (_environmentNotesController.text.isNotEmpty)
                 _pdfRow("Notes", _environmentNotesController.text),
             ]),
-            
+
             // External Pressures
             _pdfSection("External Pressures (PAVE: E)", [
               _pdfRow("Time Constraints", _timeConstraints),
@@ -249,7 +257,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               if (_externalPressuresController.text.isNotEmpty)
                 _pdfRow("Notes", _externalPressuresController.text),
             ]),
-            
+
             // 5P Check
             _pdfSection("5P Assessment", [
               _pdfRow("Plan", _fivePPlan),
@@ -258,7 +266,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
               _pdfRow("Passengers", _fivePPassengers),
               _pdfRow("Programming", _fivePProgramming),
             ]),
-            
+
             // Overall Risk
             pw.Container(
               margin: pw.EdgeInsets.only(top: 20),
@@ -287,7 +295,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ),
             ),
-            
+
             pw.SizedBox(height: 30),
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -295,7 +303,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text("Pilot Signature:", style: pw.TextStyle(fontSize: 10)),
+                    pw.Text("Pilot Signature:",
+                        style: pw.TextStyle(fontSize: 10)),
                     pw.SizedBox(height: 5),
                     pw.Container(
                       width: 200,
@@ -305,7 +314,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                       ),
                       child: pw.Text(
                         _pilotNameController.text,
-                        style: pw.TextStyle(fontSize: 14, fontStyle: pw.FontStyle.italic),
+                        style: pw.TextStyle(
+                            fontSize: 14, fontStyle: pw.FontStyle.italic),
                       ),
                     ),
                   ],
@@ -337,25 +347,27 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
       await _saveEntry();
 
       final output = await getTemporaryDirectory();
-      final fileName = "PAVE_Assessment_${_dateController.text}_${_pilotNameController.text.replaceAll(' ', '_')}.pdf";
+      final fileName =
+          "PAVE_Assessment_${_dateController.text}_${_pilotNameController.text.replaceAll(' ', '_')}.pdf";
       final file = File("${output.path}/$fileName");
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-      
+
       // Upload to backend (non-blocking)
       try {
         await PdfUploadService().uploadPdf(
           pdfBytes,
-          title: 'PAVE Assessment - ${_pilotNameController.text} - ${_dateController.text}',
-          aircraftId: _aircraftRegistrationController.text.isNotEmpty 
-              ? _aircraftRegistrationController.text 
+          title:
+              'PAVE Assessment - ${_pilotNameController.text} - ${_dateController.text}',
+          aircraftId: _aircraftRegistrationController.text.isNotEmpty
+              ? _aircraftRegistrationController.text
               : 'UNKNOWN',
           type: 'pave_assessment',
         );
       } catch (e) {
         debugPrint('Failed to upload PDF to backend: $e');
       }
-      
+
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -478,18 +490,23 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             _buildSection(
               "I.M.S.A.F.E. Check (Pilot)",
               Icons.health_and_safety,
               Colors.purple,
               [
-                _buildRadioGroup("Illness", _imsafeIllness, (val) => setState(() => _imsafeIllness = val!)),
-                _buildRadioGroup("Medication", _imsafeMedication, (val) => setState(() => _imsafeMedication = val!)),
-                _buildRadioGroup("Stress", _imsafeStress, (val) => setState(() => _imsafeStress = val!)),
-                _buildRadioGroup("Alcohol (8hr rule)", _imsafeAlcohol, (val) => setState(() => _imsafeAlcohol = val!)),
-                _buildRadioGroup("Fatigue", _imsafeFatigue, (val) => setState(() => _imsafeFatigue = val!)),
-                _buildRadioGroup("Eating/Hydration", _imsafeEating, (val) => setState(() => _imsafeEating = val!)),
+                _buildRadioGroup("Illness", _imsafeIllness,
+                    (val) => setState(() => _imsafeIllness = val!)),
+                _buildRadioGroup("Medication", _imsafeMedication,
+                    (val) => setState(() => _imsafeMedication = val!)),
+                _buildRadioGroup("Stress", _imsafeStress,
+                    (val) => setState(() => _imsafeStress = val!)),
+                _buildRadioGroup("Alcohol (8hr rule)", _imsafeAlcohol,
+                    (val) => setState(() => _imsafeAlcohol = val!)),
+                _buildRadioGroup("Fatigue", _imsafeFatigue,
+                    (val) => setState(() => _imsafeFatigue = val!)),
+                _buildRadioGroup("Eating/Hydration", _imsafeEating,
+                    (val) => setState(() => _imsafeEating = val!)),
                 _buildTextField(
                   controller: _pilotNotesController,
                   label: "Additional Notes",
@@ -498,7 +515,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             _buildSection(
               "Aircraft (PAVE: A)",
               Icons.airplanemode_active,
@@ -514,7 +530,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                   label: "Serviceability",
                   value: _aircraftServiceability,
                   items: ['Serviceable', 'Unserviceable'],
-                  onChanged: (val) => setState(() => _aircraftServiceability = val!),
+                  onChanged: (val) =>
+                      setState(() => _aircraftServiceability = val!),
                 ),
                 _buildTextField(
                   controller: _aircraftDefectsController,
@@ -530,7 +547,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             _buildSection(
               "enVironment (PAVE: V)",
               Icons.cloud,
@@ -569,7 +585,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             _buildSection(
               "External Pressures (PAVE: E)",
               Icons.timer,
@@ -595,7 +610,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             _buildSection(
               "5P Assessment",
               Icons.checklist,
@@ -633,7 +647,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 ),
               ],
             ),
-            
             Card(
               elevation: 3,
               shape: RoundedRectangleBorder(
@@ -676,26 +689,28 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                         border: OutlineInputBorder(),
                         filled: true,
                         fillColor: Colors.white,
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
                       items: ['Low', 'Medium', 'High']
-                          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                          .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)))
                           .toList(),
-                      onChanged: (val) => setState(() => _overallRiskLevel = val!),
+                      onChanged: (val) =>
+                          setState(() => _overallRiskLevel = val!),
                     ),
                   ],
                 ),
               ),
             ),
-            
             const SizedBox(height: 24),
-            
             ElevatedButton.icon(
               onPressed: _generatePDF,
               icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
               label: const Text(
                 "Generate PDF & Save",
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF87CEEB),
@@ -707,7 +722,6 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                 elevation: 3,
               ),
             ),
-            
             const SizedBox(height: 40),
           ],
         ),
@@ -715,7 +729,8 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     );
   }
 
-  Widget _buildSection(String title, IconData icon, Color color, List<Widget> children) {
+  Widget _buildSection(
+      String title, IconData icon, Color color, List<Widget> children) {
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 2,
@@ -781,44 +796,89 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
           filled: true,
           fillColor: Colors.white,
         ),
-        items: items.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+        items: items
+            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+            .toList(),
         onChanged: onChanged,
       ),
     );
   }
 
-  Widget _buildRadioGroup(String label, String value, ValueChanged<String?> onChanged) {
+  Widget _buildRadioGroup(
+      String label, String value, ValueChanged<String?> onChanged) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w500)),
-          Row(
-            children: [
-              Expanded(
-                child: RadioListTile<String>(
-                  title: const Text("OK", style: TextStyle(fontSize: 12)),
-                  value: "OK",
-                  groupValue: value,
-                  onChanged: onChanged,
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(6),
+          border: Border.all(color: Colors.grey.shade300),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 3,
+              offset: const Offset(0, 1),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              child: Text(
+                label,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontSize: 14,
                 ),
               ),
-              Expanded(
-                child: RadioListTile<String>(
-                  title: const Text("Concern", style: TextStyle(fontSize: 12)),
-                  value: "Concern",
-                  groupValue: value,
-                  onChanged: onChanged,
-                  dense: true,
-                  contentPadding: EdgeInsets.zero,
+            ),
+            const Divider(height: 1),
+            Row(
+              children: [
+                Expanded(
+                  child: RadioListTile<String>(
+                    title: const Text("OK",
+                        style: TextStyle(fontSize: 12, color: Colors.black87)),
+                    value: "OK",
+                    groupValue: value,
+                    onChanged: onChanged,
+                    dense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    activeColor: const Color(0xFF87CEEB),
+                    fillColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return const Color(0xFF87CEEB);
+                      }
+                      return Colors.white;
+                    }),
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ],
+                Expanded(
+                  child: RadioListTile<String>(
+                    title: const Text("Concern",
+                        style: TextStyle(fontSize: 12, color: Colors.black87)),
+                    value: "Concern",
+                    groupValue: value,
+                    onChanged: onChanged,
+                    dense: true,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 12),
+                    activeColor: const Color(0xFF87CEEB),
+                    fillColor: WidgetStateProperty.resolveWith((states) {
+                      if (states.contains(WidgetState.selected)) {
+                        return const Color(0xFF87CEEB);
+                      }
+                      return Colors.white;
+                    }),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
       ),
     );
   }
@@ -827,9 +887,9 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     final prefs = await SharedPreferences.getInstance();
     final historyJson = prefs.getString('pave_history') ?? '[]';
     final List<dynamic> history = jsonDecode(historyJson);
-    
+
     if (!mounted) return;
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -843,9 +903,11 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                   itemCount: history.length,
                   itemBuilder: (context, index) {
                     final entry = history[history.length - 1 - index];
-                    final date = DateTime.fromMillisecondsSinceEpoch(entry['timestamp']);
+                    final date =
+                        DateTime.fromMillisecondsSinceEpoch(entry['timestamp']);
                     return ListTile(
-                      title: Text("${entry['pilotName']} - ${entry['flightNumber']}"),
+                      title: Text(
+                          "${entry['pilotName']} - ${entry['flightNumber']}"),
                       subtitle: Text(date.toString().split('.')[0]),
                       trailing: Text(entry['overallRiskLevel']),
                     );
