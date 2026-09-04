@@ -21,7 +21,8 @@ class LocalChecklistRepository implements ChecklistRepository {
   }) async {
     // If flight school is provided, check for custom checklist first
     if (flightSchoolId != null) {
-      final customChecklists = await getCustomChecklistsBySchool(flightSchoolId);
+      final customChecklists =
+          await getCustomChecklistsBySchool(flightSchoolId);
       try {
         return customChecklists.firstWhere(
           (c) => c.aircraftType == aircraftType,
@@ -30,7 +31,7 @@ class LocalChecklistRepository implements ChecklistRepository {
         // No custom checklist found, fall through to default
       }
     }
-    
+
     // Return default checklist
     return _getDefaultChecklistByType(aircraftType);
   }
@@ -48,7 +49,7 @@ class LocalChecklistRepository implements ChecklistRepository {
   ChecklistTemplate? _getDefaultChecklistByType(String aircraftType) {
     // These are simplified defaults for the local repository.
     // The checklist data should eventually be sourced from the app's existing content.
-    
+
     switch (aircraftType) {
       case 'C152':
         return ChecklistTemplate(
@@ -77,7 +78,7 @@ class LocalChecklistRepository implements ChecklistRepository {
             ),
           ],
         );
-      
+
       case 'C172':
         return ChecklistTemplate(
           id: 'default-c172',
@@ -90,12 +91,13 @@ class LocalChecklistRepository implements ChecklistRepository {
               items: [
                 ChecklistItem(id: '1', text: 'Documents - Check', order: 1),
                 ChecklistItem(id: '2', text: 'Fuel Quantity - Check', order: 2),
-                ChecklistItem(id: '3', text: 'Oil Level - Check (6-8 qts)', order: 3),
+                ChecklistItem(
+                    id: '3', text: 'Oil Level - Check (6-8 qts)', order: 3),
               ],
             ),
           ],
         );
-      
+
       case 'PA28':
         return ChecklistTemplate(
           id: 'default-pa28',
@@ -113,22 +115,24 @@ class LocalChecklistRepository implements ChecklistRepository {
             ),
           ],
         );
-      
+
       default:
         return null;
     }
   }
 
   @override
-  Future<List<ChecklistTemplate>> getCustomChecklistsBySchool(String flightSchoolId) async {
+  Future<List<ChecklistTemplate>> getCustomChecklistsBySchool(
+      String flightSchoolId) async {
     final prefs = await SharedPreferences.getInstance();
     final checklistsJson = prefs.getString(_customChecklistsKey);
-    
+
     if (checklistsJson == null) {
       return [];
     }
-    
-    final allChecklists = List<Map<String, dynamic>>.from(json.decode(checklistsJson));
+
+    final allChecklists =
+        List<Map<String, dynamic>>.from(json.decode(checklistsJson));
     return allChecklists
         .map((c) => ChecklistTemplate.fromJson(c))
         .where((c) => c.flightSchoolId == flightSchoolId)
@@ -139,21 +143,21 @@ class LocalChecklistRepository implements ChecklistRepository {
   Future<void> saveChecklistTemplate(ChecklistTemplate template) async {
     final prefs = await SharedPreferences.getInstance();
     final checklistsJson = prefs.getString(_customChecklistsKey);
-    
+
     List<Map<String, dynamic>> checklists = [];
     if (checklistsJson != null) {
       checklists = List<Map<String, dynamic>>.from(json.decode(checklistsJson));
     }
-    
+
     // Remove existing template with same ID if exists
     checklists.removeWhere((c) => c['id'] == template.id);
-    
+
     // Add updated template
     final updatedTemplate = template.copyWith(
       updatedAt: DateTime.now(),
     );
     checklists.add(updatedTemplate.toJson());
-    
+
     await prefs.setString(_customChecklistsKey, json.encode(checklists));
   }
 
@@ -161,9 +165,10 @@ class LocalChecklistRepository implements ChecklistRepository {
   Future<void> deleteChecklistTemplate(String id) async {
     final prefs = await SharedPreferences.getInstance();
     final checklistsJson = prefs.getString(_customChecklistsKey);
-    
+
     if (checklistsJson != null) {
-      var checklists = List<Map<String, dynamic>>.from(json.decode(checklistsJson));
+      var checklists =
+          List<Map<String, dynamic>>.from(json.decode(checklistsJson));
       checklists.removeWhere((c) => c['id'] == id);
       await prefs.setString(_customChecklistsKey, json.encode(checklists));
     }

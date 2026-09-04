@@ -112,7 +112,8 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
             Expanded(
               child: ListView.separated(
                 itemCount: emergencyOptions.length,
-                separatorBuilder: (context, index) => const SizedBox(height: 10),
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 10),
                 itemBuilder: (context, index) {
                   final option = emergencyOptions[index];
                   return ElevatedButton(
@@ -130,8 +131,7 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                option['screen'] as Widget),
+                            builder: (context) => option['screen'] as Widget),
                       );
                     },
                     child: Center(
@@ -151,7 +151,8 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
-                iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+                iconButton(
+                    Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
                 iconButton(
                   Icons.info_outline,
                   'Details',

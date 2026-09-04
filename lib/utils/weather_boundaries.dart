@@ -1,4 +1,3 @@
-
 class WeatherBoundaries {
   /// Checks for serious carburettor icing at any power
   static bool carbIcingRisk(double oat, double dew) {
@@ -31,7 +30,8 @@ class WeatherBoundaries {
   }
 
   /// Weather phenomena risk: parse raw METAR for adverse codes
-  static Map<String, bool> weatherPhenomenaRisk(String rawMetar, String remarks) {
+  static Map<String, bool> weatherPhenomenaRisk(
+      String rawMetar, String remarks) {
     final raw = '${rawMetar.toUpperCase()} ${remarks.toUpperCase()}';
     return {
       'rain': raw.contains('RA'),
@@ -44,15 +44,20 @@ class WeatherBoundaries {
   }
 
   /// VFR limits risk: visibility <5km or ceiling <1500ft or not VFR category
-  static bool vfrLimitsRisk(double visibilityKm, double? ceilingFt, String category) {
-    return visibilityKm < 5.0 || (ceilingFt != null && ceilingFt < 1500.0) || category != 'VFR';
+  static bool vfrLimitsRisk(
+      double visibilityKm, double? ceilingFt, String category) {
+    return visibilityKm < 5.0 ||
+        (ceilingFt != null && ceilingFt < 1500.0) ||
+        category != 'VFR';
   }
-  
+
   /// Terrain risk: Scotland (EGPN-EGPE), Wales (EGFF area), SW England (EGTE-EGHH)
   static bool terrainRisk(String icao, double? lat, double? lon) {
     final upperIcao = icao.toUpperCase();
-    if (upperIcao.startsWith('EGPN') || upperIcao.startsWith('EGPE') ||
-        upperIcao.startsWith('EGFF') || upperIcao.startsWith('EGTE') ||
+    if (upperIcao.startsWith('EGPN') ||
+        upperIcao.startsWith('EGPE') ||
+        upperIcao.startsWith('EGFF') ||
+        upperIcao.startsWith('EGTE') ||
         upperIcao.startsWith('EGHH')) {
       return true;
     }

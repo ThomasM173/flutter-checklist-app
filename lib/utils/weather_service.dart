@@ -48,7 +48,9 @@ class WeatherService {
   static double? _parseDouble(dynamic value) {
     if (value == null) return null;
     if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value.replaceAll('%', '').trim());
+    if (value is String) {
+      return double.tryParse(value.replaceAll('%', '').trim());
+    }
     if (value is Map) return _parseDouble(_extractValue(value));
     return null;
   }
@@ -72,11 +74,16 @@ class WeatherService {
     final station = body['station']?.toString() ?? '';
     final name = body['info']?['name']?.toString() ?? '';
     final coords = body['info']?['coordinates'] as List?;
-    final latitude = coords != null && coords.length >= 2 ? coords[1].toString() : '';
-    final longitude = coords != null && coords.length >= 2 ? coords[0].toString() : '';
+    final latitude =
+        coords != null && coords.length >= 2 ? coords[1].toString() : '';
+    final longitude =
+        coords != null && coords.length >= 2 ? coords[0].toString() : '';
     final observed = body['time']?['dt']?.toString() ?? '';
-    final temp = _parseString(body['temperature'] != null ? _extractValue(body['temperature']) : null);
-    final dewpoint = _parseString(body['dewpoint'] != null ? _extractValue(body['dewpoint']) : null);
+    final temp = _parseString(body['temperature'] != null
+        ? _extractValue(body['temperature'])
+        : null);
+    final dewpoint = _parseString(
+        body['dewpoint'] != null ? _extractValue(body['dewpoint']) : null);
 
     final humidityRaw = body['relative_humidity'] != null
         ? _parseDouble(body['relative_humidity'])
@@ -98,21 +105,34 @@ class WeatherService {
     } else if (translatedRemarksValue is String) {
       translatedRemarks = translatedRemarksValue;
     } else if (translatedRemarksValue is Map) {
-      translatedRemarks = translatedRemarksValue.entries.map((entry) => '${entry.key}: ${entry.value}').join('; ');
+      translatedRemarks = translatedRemarksValue.entries
+          .map((entry) => '${entry.key}: ${entry.value}')
+          .join('; ');
     }
 
-    final windDirValue = _parseDouble(body['wind_direction'] ?? body['wind']?['direction']);
-    final windSpeedValue = _parseDouble(body['wind_speed'] ?? body['wind']?['speed']);
-    final windGustsValue = _parseDouble(body['wind_gust'] ?? body['wind']?['gusts']);
-    final windDir = windDirValue != null ? windDirValue.round().toString().padLeft(3, '0') : '';
-    final windSpeed = windSpeedValue != null ? _formatNumber(windSpeedValue) : '';
-    final windUnit = body['units']?['wind_speed']?.toString() ?? body['wind']?['speed']?['unit']?.toString() ?? 'kt';
-    final windGusts = windGustsValue != null ? _formatNumber(windGustsValue) : '';
+    final windDirValue =
+        _parseDouble(body['wind_direction'] ?? body['wind']?['direction']);
+    final windSpeedValue =
+        _parseDouble(body['wind_speed'] ?? body['wind']?['speed']);
+    final windGustsValue =
+        _parseDouble(body['wind_gust'] ?? body['wind']?['gusts']);
+    final windDir = windDirValue != null
+        ? windDirValue.round().toString().padLeft(3, '0')
+        : '';
+    final windSpeed =
+        windSpeedValue != null ? _formatNumber(windSpeedValue) : '';
+    final windUnit = body['units']?['wind_speed']?.toString() ??
+        body['wind']?['speed']?['unit']?.toString() ??
+        'kt';
+    final windGusts =
+        windGustsValue != null ? _formatNumber(windGustsValue) : '';
 
     final visibilityVal = _parseDouble(body['visibility'])?.toString() ?? '';
     final visibilityUnit = body['visibility']?['unit']?.toString() ?? '';
 
-    final altimeter = body['altimeter'] != null ? _extractValue(body['altimeter'])?.toString() ?? '' : '';
+    final altimeter = body['altimeter'] != null
+        ? _extractValue(body['altimeter'])?.toString() ?? ''
+        : '';
     final altUnit = body['altimeter']?['unit']?.toString() ?? 'hPa';
 
     final oat = double.tryParse(temp);
@@ -120,7 +140,9 @@ class WeatherService {
     final humidityPercent = humidityVal;
     final windSpeedVal = windSpeedValue;
     final windGustsVal = windGustsValue;
-    final visibilityKm = visibilityUnit == 'm' ? (double.tryParse(visibilityVal) ?? 0) / 1000 : double.tryParse(visibilityVal) ?? 0;
+    final visibilityKm = visibilityUnit == 'm'
+        ? (double.tryParse(visibilityVal) ?? 0) / 1000
+        : double.tryParse(visibilityVal) ?? 0;
 
     bool carbIcing = false;
     if (oat != null && dew != null) {
@@ -143,7 +165,8 @@ class WeatherService {
 
     bool windRisk = WeatherBoundaries.windRisk(windSpeedVal, windGustsVal);
 
-    final phenomenaRisks = WeatherBoundaries.weatherPhenomenaRisk(raw, translatedRemarks);
+    final phenomenaRisks =
+        WeatherBoundaries.weatherPhenomenaRisk(raw, translatedRemarks);
 
     double? ceilingFt;
     if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
@@ -151,7 +174,10 @@ class WeatherService {
       for (final cloud in clouds) {
         final type = cloud['type']?.toString() ?? '';
         if (type == 'BKN' || type == 'OVC') {
-          final altFt = cloud['altitude'] != null ? double.tryParse(_extractValue(cloud['altitude'])?.toString() ?? '') : null;
+          final altFt = cloud['altitude'] != null
+              ? double.tryParse(
+                  _extractValue(cloud['altitude'])?.toString() ?? '')
+              : null;
           if (altFt != null && (ceilingFt == null || altFt < ceilingFt)) {
             ceilingFt = altFt;
           }
@@ -159,9 +185,13 @@ class WeatherService {
       }
     }
 
-    bool vfrLimitsRisk = WeatherBoundaries.vfrLimitsRisk(visibilityKm, ceilingFt, category);
+    bool vfrLimitsRisk =
+        WeatherBoundaries.vfrLimitsRisk(visibilityKm, ceilingFt, category);
 
-    bool terrainRisk = WeatherBoundaries.terrainRisk(station, latitude != '' ? double.tryParse(latitude) : null, longitude != '' ? double.tryParse(longitude) : null);
+    bool terrainRisk = WeatherBoundaries.terrainRisk(
+        station,
+        latitude != '' ? double.tryParse(latitude) : null,
+        longitude != '' ? double.tryParse(longitude) : null);
 
     String clouds = 'Clear skies';
     if (body['clouds'] is List && (body['clouds'] as List).isNotEmpty) {
@@ -197,7 +227,8 @@ class WeatherService {
       'altimeter': '$altimeter $altUnit',
       'raw': raw,
       'remarks': remarks.isNotEmpty ? remarks : 'None',
-      'translatedRemarks': translatedRemarks.isNotEmpty ? translatedRemarks : 'None available',
+      'translatedRemarks':
+          translatedRemarks.isNotEmpty ? translatedRemarks : 'None available',
       'phenomenaRisks': phenomenaRisks,
       'vfrLimitsRisk': vfrLimitsRisk,
       'terrainRisk': terrainRisk,
@@ -212,16 +243,22 @@ class WeatherService {
   }
 
   static Future<List<Map<String, String>>> getForecast(String icao) async {
-    final body =
-        await _invoke('taf', icao: icao, options: 'translate') as Map<String, dynamic>;
+    final body = await _invoke('taf', icao: icao, options: 'translate')
+        as Map<String, dynamic>;
     final periods = (body['forecast'] as List<dynamic>? ?? []).take(6);
 
     return periods.map((item) {
       final m = item as Map<String, dynamic>;
 
-      final start = m['start_time']?['dt']?.toString() ?? m['time']?['from']?.toString() ?? '';
-      final end = m['end_time']?['dt']?.toString() ?? m['time']?['to']?.toString() ?? '';
-      final cat = m['flight_rules']?.toString() ?? m['flight_category']?.toString() ?? '';
+      final start = m['start_time']?['dt']?.toString() ??
+          m['time']?['from']?.toString() ??
+          '';
+      final end = m['end_time']?['dt']?.toString() ??
+          m['time']?['to']?.toString() ??
+          '';
+      final cat = m['flight_rules']?.toString() ??
+          m['flight_category']?.toString() ??
+          '';
 
       return {
         'time': '$start → $end',
@@ -229,7 +266,6 @@ class WeatherService {
       };
     }).toList();
   }
-
 
 //i dont think this is used
   static Future<List<Map<String, String>>> getHazards(String icao) async {
@@ -257,11 +293,25 @@ class WeatherService {
       final data = await _invoke('pirep', icao: icao);
       if (data is List) {
         for (final entry in data) {
-          final aircraft = (entry['aircraft'] is Map) ? entry['aircraft']['type']?.toString() ?? 'Unknown' : 'Unknown';
-          final altitude = (entry['altitude'] is Map) ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
-          final icing = (entry['icing'] is Map) ? entry['icing']['severity']?.toString() ?? 'None' : 'None';
-          final turbulence = (entry['turbulence'] is Map) ? entry['turbulence']['severity']?.toString() ?? 'None' : 'None';
-          final wxCodes = (entry['wx_codes'] is List) ? (entry['wx_codes'] as List).where((w) => w != null).map((w) => _extractValue(w)?.toString() ?? '').where((w) => w.isNotEmpty).join(', ') : 'None';
+          final aircraft = (entry['aircraft'] is Map)
+              ? entry['aircraft']['type']?.toString() ?? 'Unknown'
+              : 'Unknown';
+          final altitude = (entry['altitude'] is Map)
+              ? entry['altitude']['repr']?.toString() ?? 'N/A'
+              : 'N/A';
+          final icing = (entry['icing'] is Map)
+              ? entry['icing']['severity']?.toString() ?? 'None'
+              : 'None';
+          final turbulence = (entry['turbulence'] is Map)
+              ? entry['turbulence']['severity']?.toString() ?? 'None'
+              : 'None';
+          final wxCodes = (entry['wx_codes'] is List)
+              ? (entry['wx_codes'] as List)
+                  .where((w) => w != null)
+                  .map((w) => _extractValue(w)?.toString() ?? '')
+                  .where((w) => w.isNotEmpty)
+                  .join(', ')
+              : 'None';
 
           hazards.add({
             'type': 'PIREP',
@@ -270,9 +320,17 @@ class WeatherService {
             'time': entry['time']?['dt']?.toString() ?? 'N/A',
             'aircraft': aircraft,
             'altitude': altitude,
-            'severity': icing != 'None' ? icing : turbulence != 'None' ? turbulence : 'None',
+            'severity': icing != 'None'
+                ? icing
+                : turbulence != 'None'
+                    ? turbulence
+                    : 'None',
             'conditions': wxCodes,
-            'phenomenon': icing != 'None' ? 'ICING' : turbulence != 'None' ? 'TURBULENCE' : 'None',
+            'phenomenon': icing != 'None'
+                ? 'ICING'
+                : turbulence != 'None'
+                    ? 'TURBULENCE'
+                    : 'None',
           });
         }
       }
@@ -291,7 +349,9 @@ class WeatherService {
           for (final entry in reports) {
             final startTime = entry['start_time']?['dt']?.toString() ?? '';
             final endTime = entry['end_time']?['dt']?.toString() ?? '';
-            final altitude = entry['altitude'] is Map ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
+            final altitude = entry['altitude'] is Map
+                ? entry['altitude']['repr']?.toString() ?? 'N/A'
+                : 'N/A';
             final phenomenon = entry['phenomenon']?.toString() ?? 'Unknown';
             final severity = entry['severity']?.toString() ?? 'Moderate';
             final bulletin = entry['bulletin']?.toString() ?? '';
@@ -303,7 +363,9 @@ class WeatherService {
               'type': type,
               'raw': entry['raw']?.toString() ?? 'Unknown',
               'station': entry['station']?.toString() ?? 'N/A',
-              'time': startTime.isNotEmpty && endTime.isNotEmpty ? '$startTime → $endTime' : 'N/A',
+              'time': startTime.isNotEmpty && endTime.isNotEmpty
+                  ? '$startTime → $endTime'
+                  : 'N/A',
               'altitude': altitude,
               'phenomenon': phenomenon,
               'severity': severity,

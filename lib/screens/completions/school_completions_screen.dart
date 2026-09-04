@@ -221,7 +221,8 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
                         ),
                       ),
                       items: _aircraftOptions
-                          .map((a) => DropdownMenuItem(value: a, child: Text(a)))
+                          .map(
+                              (a) => DropdownMenuItem(value: a, child: Text(a)))
                           .toList(),
                       onChanged: (v) =>
                           setState(() => _aircraftFilter = v ?? 'All aircraft'),
@@ -240,7 +241,8 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
                         ),
                       ),
                       items: _typeOptions
-                          .map((t) => DropdownMenuItem(value: t, child: Text(t)))
+                          .map(
+                              (t) => DropdownMenuItem(value: t, child: Text(t)))
                           .toList(),
                       onChanged: (v) =>
                           setState(() => _typeFilter = v ?? 'All types'),

@@ -34,7 +34,8 @@ const String kYearlyPrice = '£100';
 /// These placeholders will NOT resolve against the store — querying them
 /// returns "not found" until the real auto-renewable subscription products
 /// exist and are in a purchasable state.
-const String kMonthlySubscriptionId = 'TODO_REPLACE_clearedtogo_premium_monthly';
+const String kMonthlySubscriptionId =
+    'TODO_REPLACE_clearedtogo_premium_monthly';
 const String kYearlySubscriptionId = 'TODO_REPLACE_clearedtogo_premium_yearly';
 
 /// All subscription product IDs the paywall queries.

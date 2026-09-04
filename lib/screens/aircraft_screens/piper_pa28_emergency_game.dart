@@ -74,14 +74,16 @@ class _PiperPA28EmergencyGameState extends State<PiperPA28EmergencyGame> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => option['screen'] as Widget),
+                  MaterialPageRoute(
+                      builder: (context) => option['screen'] as Widget),
                 );
               },
               child: Center(
                 child: Text(
                   option['title'] as String,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
                 ),
               ),
             );

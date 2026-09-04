@@ -30,7 +30,10 @@ Until then, all tools and checklists are offered to support pilot awareness and 
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue to sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -38,7 +41,8 @@ Until then, all tools and checklists are offered to support pilot awareness and 
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black), // Black burger icon
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Black burger icon
         ),
       ),
       drawer: const AppDrawer(currentIndex: 0),

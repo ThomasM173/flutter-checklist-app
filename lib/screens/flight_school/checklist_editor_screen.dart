@@ -16,7 +16,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
   final _authService = SupabaseAuthService();
   final _checklistRepo = LocalChecklistRepository();
   final _uuid = const Uuid();
-  
+
   String? _selectedAircraftType;
   ChecklistTemplate? _currentTemplate;
   bool _loading = false;
@@ -32,16 +32,16 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   Future<void> _loadChecklist(String aircraftType) async {
     setState(() => _loading = true);
-    
+
     try {
       final flightSchoolId = _authService.flightSchoolId;
       if (flightSchoolId == null) return;
-      
+
       final template = await _checklistRepo.getChecklistTemplate(
         aircraftType: aircraftType,
         flightSchoolId: flightSchoolId,
       );
-      
+
       setState(() {
         if (template != null && template.flightSchoolId == flightSchoolId) {
           // Custom checklist exists
@@ -66,11 +66,11 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   Future<void> _saveChecklist() async {
     if (_currentTemplate == null) return;
-    
+
     try {
       await _checklistRepo.saveChecklistTemplate(_currentTemplate!);
       setState(() => _hasChanges = false);
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Checklist saved successfully')),
@@ -87,14 +87,14 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   void _addSection() {
     if (_currentTemplate == null) return;
-    
+
     final newSection = ChecklistSection(
       id: _uuid.v4(),
       title: 'New Section',
       order: _currentTemplate!.sections.length + 1,
       items: [],
     );
-    
+
     setState(() {
       _currentTemplate = _currentTemplate!.copyWith(
         sections: [..._currentTemplate!.sections, newSection],
@@ -105,17 +105,19 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   void _deleteSection(ChecklistSection section) {
     if (_currentTemplate == null) return;
-    
+
     setState(() {
-      final sections = _currentTemplate!.sections.where((s) => s.id != section.id).toList();
+      final sections =
+          _currentTemplate!.sections.where((s) => s.id != section.id).toList();
       _currentTemplate = _currentTemplate!.copyWith(sections: sections);
       _hasChanges = true;
     });
   }
 
-  void _updateSection(ChecklistSection oldSection, ChecklistSection newSection) {
+  void _updateSection(
+      ChecklistSection oldSection, ChecklistSection newSection) {
     if (_currentTemplate == null) return;
-    
+
     setState(() {
       final sections = _currentTemplate!.sections.map((s) {
         return s.id == oldSection.id ? newSection : s;
@@ -131,11 +133,11 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
       text: 'New Item',
       order: section.items.length + 1,
     );
-    
+
     final updatedSection = section.copyWith(
       items: [...section.items, newItem],
     );
-    
+
     _updateSection(section, updatedSection);
   }
 
@@ -143,15 +145,17 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
     final updatedSection = section.copyWith(
       items: section.items.where((i) => i.id != item.id).toList(),
     );
-    
+
     _updateSection(section, updatedSection);
   }
 
-  void _updateItem(ChecklistSection section, ChecklistItem oldItem, ChecklistItem newItem) {
+  void _updateItem(
+      ChecklistSection section, ChecklistItem oldItem, ChecklistItem newItem) {
     final updatedSection = section.copyWith(
-      items: section.items.map((i) => i.id == oldItem.id ? newItem : i).toList(),
+      items:
+          section.items.map((i) => i.id == oldItem.id ? newItem : i).toList(),
     );
-    
+
     _updateSection(section, updatedSection);
   }
 
@@ -161,7 +165,8 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
       appBar: AppBar(
         title: const Text(
           'Edit Checklists',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -214,7 +219,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
               },
             ),
           ),
-          
+
           // Checklist editor
           Expanded(
             child: _loading
@@ -256,7 +261,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   Widget _buildChecklistEditor() {
     if (_currentTemplate == null) return const SizedBox();
-    
+
     return Column(
       children: [
         // Info banner
@@ -278,7 +283,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
             ],
           ),
         ),
-        
+
         // Sections list
         Expanded(
           child: _currentTemplate!.sections.isEmpty
@@ -294,22 +299,25 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
                   onReorder: (oldIndex, newIndex) {
                     setState(() {
                       if (newIndex > oldIndex) newIndex--;
-                      final sections = List<ChecklistSection>.from(_currentTemplate!.sections);
+                      final sections = List<ChecklistSection>.from(
+                          _currentTemplate!.sections);
                       final section = sections.removeAt(oldIndex);
                       sections.insert(newIndex, section);
-                      
+
                       // Update order numbers
                       for (int i = 0; i < sections.length; i++) {
                         sections[i] = sections[i].copyWith(order: i + 1);
                       }
-                      
-                      _currentTemplate = _currentTemplate!.copyWith(sections: sections);
+
+                      _currentTemplate =
+                          _currentTemplate!.copyWith(sections: sections);
                       _hasChanges = true;
                     });
                   },
                   itemBuilder: (context, index) {
                     final section = _currentTemplate!.sections[index];
-                    return _buildSectionCard(section, key: ValueKey(section.id));
+                    return _buildSectionCard(section,
+                        key: ValueKey(section.id));
                   },
                 ),
         ),
@@ -336,69 +344,70 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: ExpansionTile(
-        leading: const Icon(Icons.drag_handle),
-        title: InkWell(
-          onTap: () => _editSectionTitle(section),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  section.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
+          leading: const Icon(Icons.drag_handle),
+          title: InkWell(
+            onTap: () => _editSectionTitle(section),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    section.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87,
+                    ),
                   ),
                 ),
+                Text(
+                  '${section.items.length} items',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          trailing: PopupMenuButton<String>(
+            onSelected: (value) {
+              if (value == 'rename') {
+                _editSectionTitle(section);
+              } else if (value == 'delete') {
+                _confirmDeleteSection(section);
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'rename',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 20),
+                    SizedBox(width: 8),
+                    Text('Rename'),
+                  ],
+                ),
               ),
-              Text(
-                '${section.items.length} items',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[600],
+              const PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete, size: 20, color: Colors.red),
+                    SizedBox(width: 8),
+                    Text('Delete', style: TextStyle(color: Colors.red)),
+                  ],
                 ),
               ),
             ],
           ),
-        ),
-        trailing: PopupMenuButton<String>(
-          onSelected: (value) {
-            if (value == 'rename') {
-              _editSectionTitle(section);
-            } else if (value == 'delete') {
-              _confirmDeleteSection(section);
-            }
-          },
-          itemBuilder: (context) => [
-            const PopupMenuItem(
-              value: 'rename',
-              child: Row(
-                children: [
-                  Icon(Icons.edit, size: 20),
-                  SizedBox(width: 8),
-                  Text('Rename'),
-                ],
-              ),
-            ),
-            const PopupMenuItem(
-              value: 'delete',
-              child: Row(
-                children: [
-                  Icon(Icons.delete, size: 20, color: Colors.red),
-                  SizedBox(width: 8),
-                  Text('Delete', style: TextStyle(color: Colors.red)),
-                ],
-              ),
+          children: [
+            ...section.items.map((item) => _buildItemTile(section, item)),
+            ListTile(
+              leading: const Icon(Icons.add_circle_outline, color: Colors.blue),
+              title:
+                  const Text('Add Item', style: TextStyle(color: Colors.blue)),
+              onTap: () => _addItemToSection(section),
             ),
           ],
-        ),
-        children: [
-          ...section.items.map((item) => _buildItemTile(section, item)),
-          ListTile(
-            leading: const Icon(Icons.add_circle_outline, color: Colors.blue),
-            title: const Text('Add Item', style: TextStyle(color: Colors.blue)),
-            onTap: () => _addItemToSection(section),
-          ),
-        ],
         ),
       ),
     );
@@ -420,7 +429,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
 
   Future<void> _editSectionTitle(ChecklistSection section) async {
     final controller = TextEditingController(text: section.title);
-    
+
     final newTitle = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -445,15 +454,16 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
         ],
       ),
     );
-    
+
     if (newTitle != null && newTitle.isNotEmpty) {
       _updateSection(section, section.copyWith(title: newTitle));
     }
   }
 
-  Future<void> _editItemText(ChecklistSection section, ChecklistItem item) async {
+  Future<void> _editItemText(
+      ChecklistSection section, ChecklistItem item) async {
     final controller = TextEditingController(text: item.text);
-    
+
     final newText = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
@@ -479,7 +489,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
         ],
       ),
     );
-    
+
     if (newText != null && newText.isNotEmpty) {
       _updateItem(section, item, item.copyWith(text: newText));
     }
@@ -504,7 +514,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
         ],
       ),
     );
-    
+
     if (confirmed == true) {
       _deleteSection(section);
     }

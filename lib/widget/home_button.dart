@@ -15,7 +15,8 @@ class HomeButton extends StatelessWidget {
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.red,
           padding: EdgeInsets.symmetric(vertical: 15),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         ),
         onPressed: () => Navigator.pushNamed(context, route),
         child: Text(label, style: TextStyle(fontSize: 18, color: Colors.white)),

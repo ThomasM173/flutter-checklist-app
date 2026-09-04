@@ -10,84 +10,134 @@ class Cessna172PFL extends StatefulWidget {
 
 class _Cessna172PFL extends State<Cessna172PFL> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for emergency landing without engine power:",
-    "correct": "Airspeed - Pitch Down – 65 KTS",
-    "options": ["Airspeed - Pitch Down – 65 KTS", "Mixture – RICH", "Throttle – IDLE"]
-  },
-  {
-    "question": "After establishing best glide, what should you do next?",
-    "correct": "Find Field Suitable, Then RESTART",
-    "options": ["Find Field Suitable, Then RESTART", "MAYDAY RADIO CALL", "Flaps – AS REQUIRED"]
-  },
-  {
-    "question": "First step in engine restart attempt:",
-    "correct": "Mixture – RICH",
-    "options": ["Mixture – RICH", "Primer – IN AND LOCKED", "Throttle – IDLE"]
-  },
-  {
-    "question": "Second step in engine restart attempt:",
-    "correct": "Fuel Shutoff Valve – ON",
-    "options": ["Fuel Shutoff Valve – ON", "Doors – UNLATCH", "Flaps – AS REQUIRED"]
-  },
-  {
-    "question": "Third step in engine restart attempt:",
-    "correct": "Carb Heat – HOT",
-    "options": ["Carb Heat – HOT", "Mixture – CUT OFF", "Master Switch – WHEN FLAPS AND RADIOS DONE"]
-  },
-  {
-    "question": "Fourth step in engine restart attempt:",
-    "correct": "Ignition Switch – BOTH, TRY L AND R",
-    "options": ["Ignition Switch – BOTH, TRY L AND R", "MAYDAY RADIO CALL", "Fuel Shutoff Valve – OFF"]
-  },
-  {
-    "question": "Final step in restart attempt:",
-    "correct": "Primer – IN AND LOCKED",
-    "options": ["Primer – IN AND LOCKED", "Ignition Switch – OFF", "Throttle – IDLE"]
-  },
-  {
-    "question": "If restart unsuccessful, what is the first action?",
-    "correct": "MAYDAY RADIO CALL",
-    "options": ["MAYDAY RADIO CALL", "Fuel Shutoff Valve – OFF", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "First shutdown step after unsuccessful restart:",
-    "correct": "Throttle – IDLE",
-    "options": ["Throttle – IDLE", "Mixture – RICH", "Carb Heat – HOT"]
-  },
-  {
-    "question": "After setting throttle to idle, next shutdown action:",
-    "correct": "Mixture – CUT OFF",
-    "options": ["Mixture – CUT OFF", "Ignition Switch – OFF", "Flaps – AS REQUIRED"]
-  },
-  {
-    "question": "After mixture is cut off, next shutdown action:",
-    "correct": "Fuel Shutoff Valve – OFF",
-    "options": ["Fuel Shutoff Valve – OFF", "Primer – IN AND LOCKED", "MAYDAY RADIO CALL"]
-  },
-  {
-    "question": "Next step after fuel shutoff valve is OFF:",
-    "correct": "Ignition Switch – OFF",
-    "options": ["Ignition Switch – OFF", "Carb Heat – HOT", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "When should flaps be set during engine-out emergency?",
-    "correct": "Flaps – AS REQUIRED",
-    "options": ["Flaps – AS REQUIRED", "Fuel Shutoff Valve – OFF", "Master Switch – WHEN FLAPS AND RADIOS DONE"]
-  },
-  {
-    "question": "When should the master switch be turned off?",
-    "correct": "Master Switch – WHEN FLAPS AND RADIOS DONE",
-    "options": ["Master Switch – WHEN FLAPS AND RADIOS DONE", "Mixture – RICH", "Doors – UNLATCH"]
-  },
-  {
-    "question": "Final cockpit action before touchdown during PFL:",
-    "correct": "Doors – UNLATCH",
-    "options": ["Doors – UNLATCH", "Mixture – CUT OFF", "Ignition Switch – OFF"]
-  }
-];
-
-
+    {
+      "question": "First action for emergency landing without engine power:",
+      "correct": "Airspeed - Pitch Down – 65 KTS",
+      "options": [
+        "Airspeed - Pitch Down – 65 KTS",
+        "Mixture – RICH",
+        "Throttle – IDLE"
+      ]
+    },
+    {
+      "question": "After establishing best glide, what should you do next?",
+      "correct": "Find Field Suitable, Then RESTART",
+      "options": [
+        "Find Field Suitable, Then RESTART",
+        "MAYDAY RADIO CALL",
+        "Flaps – AS REQUIRED"
+      ]
+    },
+    {
+      "question": "First step in engine restart attempt:",
+      "correct": "Mixture – RICH",
+      "options": ["Mixture – RICH", "Primer – IN AND LOCKED", "Throttle – IDLE"]
+    },
+    {
+      "question": "Second step in engine restart attempt:",
+      "correct": "Fuel Shutoff Valve – ON",
+      "options": [
+        "Fuel Shutoff Valve – ON",
+        "Doors – UNLATCH",
+        "Flaps – AS REQUIRED"
+      ]
+    },
+    {
+      "question": "Third step in engine restart attempt:",
+      "correct": "Carb Heat – HOT",
+      "options": [
+        "Carb Heat – HOT",
+        "Mixture – CUT OFF",
+        "Master Switch – WHEN FLAPS AND RADIOS DONE"
+      ]
+    },
+    {
+      "question": "Fourth step in engine restart attempt:",
+      "correct": "Ignition Switch – BOTH, TRY L AND R",
+      "options": [
+        "Ignition Switch – BOTH, TRY L AND R",
+        "MAYDAY RADIO CALL",
+        "Fuel Shutoff Valve – OFF"
+      ]
+    },
+    {
+      "question": "Final step in restart attempt:",
+      "correct": "Primer – IN AND LOCKED",
+      "options": [
+        "Primer – IN AND LOCKED",
+        "Ignition Switch – OFF",
+        "Throttle – IDLE"
+      ]
+    },
+    {
+      "question": "If restart unsuccessful, what is the first action?",
+      "correct": "MAYDAY RADIO CALL",
+      "options": [
+        "MAYDAY RADIO CALL",
+        "Fuel Shutoff Valve – OFF",
+        "Mixture – CUT OFF"
+      ]
+    },
+    {
+      "question": "First shutdown step after unsuccessful restart:",
+      "correct": "Throttle – IDLE",
+      "options": ["Throttle – IDLE", "Mixture – RICH", "Carb Heat – HOT"]
+    },
+    {
+      "question": "After setting throttle to idle, next shutdown action:",
+      "correct": "Mixture – CUT OFF",
+      "options": [
+        "Mixture – CUT OFF",
+        "Ignition Switch – OFF",
+        "Flaps – AS REQUIRED"
+      ]
+    },
+    {
+      "question": "After mixture is cut off, next shutdown action:",
+      "correct": "Fuel Shutoff Valve – OFF",
+      "options": [
+        "Fuel Shutoff Valve – OFF",
+        "Primer – IN AND LOCKED",
+        "MAYDAY RADIO CALL"
+      ]
+    },
+    {
+      "question": "Next step after fuel shutoff valve is OFF:",
+      "correct": "Ignition Switch – OFF",
+      "options": [
+        "Ignition Switch – OFF",
+        "Carb Heat – HOT",
+        "Mixture – CUT OFF"
+      ]
+    },
+    {
+      "question": "When should flaps be set during engine-out emergency?",
+      "correct": "Flaps – AS REQUIRED",
+      "options": [
+        "Flaps – AS REQUIRED",
+        "Fuel Shutoff Valve – OFF",
+        "Master Switch – WHEN FLAPS AND RADIOS DONE"
+      ]
+    },
+    {
+      "question": "When should the master switch be turned off?",
+      "correct": "Master Switch – WHEN FLAPS AND RADIOS DONE",
+      "options": [
+        "Master Switch – WHEN FLAPS AND RADIOS DONE",
+        "Mixture – RICH",
+        "Doors – UNLATCH"
+      ]
+    },
+    {
+      "question": "Final cockpit action before touchdown during PFL:",
+      "correct": "Doors – UNLATCH",
+      "options": [
+        "Doors – UNLATCH",
+        "Mixture – CUT OFF",
+        "Ignition Switch – OFF"
+      ]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -120,7 +170,8 @@ class _Cessna172PFL extends State<Cessna172PFL> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -159,14 +210,18 @@ class _Cessna172PFL extends State<Cessna172PFL> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -216,7 +271,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -224,7 +280,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -232,7 +289,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

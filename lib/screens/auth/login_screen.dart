@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Title
                   const Text(
                     "ClearedToGo",
@@ -117,7 +117,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Error message
                   if (_errorMessage != null)
                     Container(
@@ -141,7 +141,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-                  
+
                   // Username field
                   TextFormField(
                     controller: _usernameController,
@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Password field
                   TextFormField(
                     controller: _passwordController,
@@ -184,7 +184,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Login button
                   SizedBox(
                     width: double.infinity,
@@ -210,7 +210,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 24),
-                  
+
                   // Disclaimer
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -228,7 +228,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   // Sign up link
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -240,7 +240,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const SignupScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const SignupScreen()),
                           );
                         },
                         child: const Text(

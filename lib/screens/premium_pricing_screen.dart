@@ -298,7 +298,8 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.black),
                           ),
                         )
                       : const Text(

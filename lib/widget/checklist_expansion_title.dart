@@ -5,7 +5,11 @@ class ChecklistExpansionTile extends StatelessWidget {
   final Map<String, bool> checklistItems;
   final Function(String, bool) updateChecklist;
 
-  const ChecklistExpansionTile({super.key, required this.title, required this.checklistItems, required this.updateChecklist});
+  const ChecklistExpansionTile(
+      {super.key,
+      required this.title,
+      required this.checklistItems,
+      required this.updateChecklist});
 
   @override
   Widget build(BuildContext context) {

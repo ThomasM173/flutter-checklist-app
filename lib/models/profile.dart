@@ -16,10 +16,9 @@ enum UserRole {
   String get dbValue =>
       this == UserRole.flightSchoolAdmin ? 'flight_school_admin' : 'pilot';
 
-  static UserRole fromDb(String? value) =>
-      value == 'flight_school_admin'
-          ? UserRole.flightSchoolAdmin
-          : UserRole.pilot;
+  static UserRole fromDb(String? value) => value == 'flight_school_admin'
+      ? UserRole.flightSchoolAdmin
+      : UserRole.pilot;
 }
 
 /// App-level user, backed by the Supabase `profiles` row joined with the

@@ -56,7 +56,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
-            
             _buildPolicySection(
               title: 'What We Collect',
               icon: Icons.inventory_2_outlined,
@@ -66,7 +65,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Optional pilot information (name, license number, home base) stored locally on your device',
               ],
             ),
-            
             _buildPolicySection(
               title: 'How We Use Your Data',
               icon: Icons.settings_outlined,
@@ -77,7 +75,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'We use Supabase Auth to protect your account',
               ],
             ),
-            
             _buildPolicySection(
               title: 'Data Storage',
               icon: Icons.storage_outlined,
@@ -87,7 +84,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Account credentials: Handled securely by Supabase Auth',
               ],
             ),
-            
             _buildPolicySection(
               title: 'Data Sharing',
               icon: Icons.share_outlined,
@@ -97,7 +93,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'Personal pilot details remain on your device and appear only in PDFs you choose to generate',
               ],
             ),
-            
             _buildPolicySection(
               title: 'Your Rights',
               icon: Icons.security_outlined,
@@ -107,7 +102,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 'All data is handled securely and transparently',
               ],
             ),
-            
             const SizedBox(height: 24),
             Container(
               padding: const EdgeInsets.all(16),
@@ -132,7 +126,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildPolicySection({
     required String title,
     required IconData icon,
@@ -159,32 +153,34 @@ class PrivacyPolicyScreen extends StatelessWidget {
             ),
           ),
           childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-          children: content.map((item) => Padding(
-            padding: const EdgeInsets.only(bottom: 12, left: 8),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  '• ',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Expanded(
-                  child: Text(
-                    item,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
-                      height: 1.4,
+          children: content
+              .map((item) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12, left: 8),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          '• ',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            item,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 15,
+                              height: 1.4,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                ),
-              ],
-            ),
-          )).toList(),
+                  ))
+              .toList(),
         ),
       ),
     );

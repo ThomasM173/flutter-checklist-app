@@ -3,7 +3,7 @@ class ChecklistItem {
   final String id;
   final String text;
   final int order;
-  
+
   ChecklistItem({
     required this.id,
     required this.text,
@@ -11,16 +11,16 @@ class ChecklistItem {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'text': text,
-    'order': order,
-  };
+        'id': id,
+        'text': text,
+        'order': order,
+      };
 
   factory ChecklistItem.fromJson(Map<String, dynamic> json) => ChecklistItem(
-    id: json['id'],
-    text: json['text'],
-    order: json['order'],
-  );
+        id: json['id'],
+        text: json['text'],
+        order: json['order'],
+      );
 
   ChecklistItem copyWith({
     String? id,
@@ -41,7 +41,7 @@ class ChecklistSection {
   final String title;
   final int order;
   final List<ChecklistItem> items;
-  
+
   ChecklistSection({
     required this.id,
     required this.title,
@@ -50,20 +50,21 @@ class ChecklistSection {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'order': order,
-    'items': items.map((i) => i.toJson()).toList(),
-  };
+        'id': id,
+        'title': title,
+        'order': order,
+        'items': items.map((i) => i.toJson()).toList(),
+      };
 
-  factory ChecklistSection.fromJson(Map<String, dynamic> json) => ChecklistSection(
-    id: json['id'],
-    title: json['title'],
-    order: json['order'],
-    items: (json['items'] as List)
-        .map((i) => ChecklistItem.fromJson(i))
-        .toList(),
-  );
+  factory ChecklistSection.fromJson(Map<String, dynamic> json) =>
+      ChecklistSection(
+        id: json['id'],
+        title: json['title'],
+        order: json['order'],
+        items: (json['items'] as List)
+            .map((i) => ChecklistItem.fromJson(i))
+            .toList(),
+      );
 
   ChecklistSection copyWith({
     String? id,
@@ -88,7 +89,7 @@ class ChecklistTemplate {
   final List<ChecklistSection> sections;
   final DateTime createdAt;
   final DateTime updatedAt;
-  
+
   ChecklistTemplate({
     required this.id,
     required this.aircraftType,
@@ -96,31 +97,32 @@ class ChecklistTemplate {
     required this.sections,
     DateTime? createdAt,
     DateTime? updatedAt,
-  }) : createdAt = createdAt ?? DateTime.now(),
-       updatedAt = updatedAt ?? DateTime.now();
+  })  : createdAt = createdAt ?? DateTime.now(),
+        updatedAt = updatedAt ?? DateTime.now();
 
   bool get isCustom => flightSchoolId != null;
   bool get isDefault => flightSchoolId == null;
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'aircraftType': aircraftType,
-    'flightSchoolId': flightSchoolId,
-    'sections': sections.map((s) => s.toJson()).toList(),
-    'createdAt': createdAt.toIso8601String(),
-    'updatedAt': updatedAt.toIso8601String(),
-  };
+        'id': id,
+        'aircraftType': aircraftType,
+        'flightSchoolId': flightSchoolId,
+        'sections': sections.map((s) => s.toJson()).toList(),
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+      };
 
-  factory ChecklistTemplate.fromJson(Map<String, dynamic> json) => ChecklistTemplate(
-    id: json['id'],
-    aircraftType: json['aircraftType'],
-    flightSchoolId: json['flightSchoolId'],
-    sections: (json['sections'] as List)
-        .map((s) => ChecklistSection.fromJson(s))
-        .toList(),
-    createdAt: DateTime.parse(json['createdAt']),
-    updatedAt: DateTime.parse(json['updatedAt']),
-  );
+  factory ChecklistTemplate.fromJson(Map<String, dynamic> json) =>
+      ChecklistTemplate(
+        id: json['id'],
+        aircraftType: json['aircraftType'],
+        flightSchoolId: json['flightSchoolId'],
+        sections: (json['sections'] as List)
+            .map((s) => ChecklistSection.fromJson(s))
+            .toList(),
+        createdAt: DateTime.parse(json['createdAt']),
+        updatedAt: DateTime.parse(json['updatedAt']),
+      );
 
   ChecklistTemplate copyWith({
     String? id,

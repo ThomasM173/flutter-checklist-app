@@ -9,7 +9,9 @@ class BottomNavBar extends StatelessWidget {
   const BottomNavBar({super.key, required this.currentIndex});
 
   void _onTap(BuildContext context, int index) {
-    if (index == currentIndex) return; // Don't navigate to the current screen again
+    if (index == currentIndex) {
+      return; // Don't navigate to the current screen again
+    }
 
     switch (index) {
       case 0:
@@ -21,13 +23,15 @@ class BottomNavBar extends StatelessWidget {
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const flight.FlightConditionsScreen()),
+          MaterialPageRoute(
+              builder: (context) => const flight.FlightConditionsScreen()),
         );
         break;
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const game.LearningGameScreen()),
+          MaterialPageRoute(
+              builder: (context) => const game.LearningGameScreen()),
         );
         break;
     }

@@ -85,7 +85,9 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to rotate code: $e'), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text('Failed to rotate code: $e'),
+              backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -105,12 +107,13 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
   @override
   Widget build(BuildContext context) {
     final user = _authService.currentUser;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
           'Flight School Portal',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
         ),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -151,7 +154,7 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                     ),
                   ),
                   const SizedBox(height: 32),
-                  
+
                   // Stats cards
                   Row(
                     children: [
@@ -243,13 +246,14 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                               tooltip: 'Copy code',
                             ),
                             IconButton(
-                              onPressed: _rotatingCode ? null : _rotateInviteCode,
+                              onPressed:
+                                  _rotatingCode ? null : _rotateInviteCode,
                               icon: _rotatingCode
                                   ? const SizedBox(
                                       width: 18,
                                       height: 18,
-                                      child:
-                                          CircularProgressIndicator(strokeWidth: 2),
+                                      child: CircularProgressIndicator(
+                                          strokeWidth: 2),
                                     )
                                   : const Icon(Icons.refresh),
                               tooltip: 'Rotate code',
@@ -272,7 +276,7 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
+
                   _buildActionButton(
                     'Checklist Completions',
                     'Every pre-boarding checklist your pilots completed',
@@ -292,7 +296,8 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                     'Customize checklists for your aircraft',
                     Icons.edit_note,
                     Colors.blue,
-                    () => Navigator.pushNamed(context, '/flight-school/checklists'),
+                    () => Navigator.pushNamed(
+                        context, '/flight-school/checklists'),
                   ),
                 ],
               ),
@@ -300,7 +305,8 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      String title, String value, IconData icon, Color color) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -468,7 +474,8 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
           const Divider(color: Colors.black12),
           ListTile(
             leading: const Icon(Icons.logout, color: Colors.black),
-            title: const Text('Sign Out', style: TextStyle(color: Colors.black)),
+            title:
+                const Text('Sign Out', style: TextStyle(color: Colors.black)),
             onTap: () async {
               await _authService.signOut();
               if (context.mounted) {

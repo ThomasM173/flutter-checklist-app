@@ -10,44 +10,73 @@ class Cessna152EFATRA extends StatefulWidget {
 
 class _Cessna152EFATRA extends State<Cessna152EFATRA> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for engine failure after takeoff (RWY available):",
-    "correct": "Airspeed - Pitch Down – 65 KTS",
-    "options": ["Airspeed - Pitch Down – 65 KTS", "Throttle – IDLE", "Master Switch – OFF"]
-  },
-  {
-    "question": "Second action for engine failure after takeoff (RWY available):",
-    "correct": "Throttle – IDLE",
-    "options": ["Throttle – IDLE", "Ignition Switch – OFF", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "Third action for engine failure after takeoff (RWY available):",
-    "correct": "Mixture – CUT OFF",
-    "options": ["Mixture – CUT OFF", "Fuel Shutoff Valve – OFF", "Touch Down"]
-  },
-  {
-    "question": "Fourth action for engine failure after takeoff (RWY available):",
-    "correct": "Fuel Shutoff Valve – OFF",
-    "options": ["Fuel Shutoff Valve – OFF", "Throttle – IDLE", "Ignition Switch – OFF"]
-  },
-  {
-    "question": "Fifth action for engine failure after takeoff (RWY available):",
-    "correct": "Ignition Switch – OFF",
-    "options": ["Ignition Switch – OFF", "Airspeed - Pitch Down – 65 KTS", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "Sixth action for engine failure after takeoff (RWY available):",
-    "correct": "Master Switch – OFF",
-    "options": ["Master Switch – OFF", "Fuel Shutoff Valve – OFF", "Throttle – IDLE"]
-  },
-  {
-    "question": "Final action for engine failure after takeoff (RWY available):",
-    "correct": "Touch Down",
-    "options": ["Touch Down", "Master Switch – OFF", "Airspeed - Pitch Down – 65 KTS"]
-  }
-];
-
-
+    {
+      "question":
+          "First action for engine failure after takeoff (RWY available):",
+      "correct": "Airspeed - Pitch Down – 65 KTS",
+      "options": [
+        "Airspeed - Pitch Down – 65 KTS",
+        "Throttle – IDLE",
+        "Master Switch – OFF"
+      ]
+    },
+    {
+      "question":
+          "Second action for engine failure after takeoff (RWY available):",
+      "correct": "Throttle – IDLE",
+      "options": [
+        "Throttle – IDLE",
+        "Ignition Switch – OFF",
+        "Mixture – CUT OFF"
+      ]
+    },
+    {
+      "question":
+          "Third action for engine failure after takeoff (RWY available):",
+      "correct": "Mixture – CUT OFF",
+      "options": ["Mixture – CUT OFF", "Fuel Shutoff Valve – OFF", "Touch Down"]
+    },
+    {
+      "question":
+          "Fourth action for engine failure after takeoff (RWY available):",
+      "correct": "Fuel Shutoff Valve – OFF",
+      "options": [
+        "Fuel Shutoff Valve – OFF",
+        "Throttle – IDLE",
+        "Ignition Switch – OFF"
+      ]
+    },
+    {
+      "question":
+          "Fifth action for engine failure after takeoff (RWY available):",
+      "correct": "Ignition Switch – OFF",
+      "options": [
+        "Ignition Switch – OFF",
+        "Airspeed - Pitch Down – 65 KTS",
+        "Mixture – CUT OFF"
+      ]
+    },
+    {
+      "question":
+          "Sixth action for engine failure after takeoff (RWY available):",
+      "correct": "Master Switch – OFF",
+      "options": [
+        "Master Switch – OFF",
+        "Fuel Shutoff Valve – OFF",
+        "Throttle – IDLE"
+      ]
+    },
+    {
+      "question":
+          "Final action for engine failure after takeoff (RWY available):",
+      "correct": "Touch Down",
+      "options": [
+        "Touch Down",
+        "Master Switch – OFF",
+        "Airspeed - Pitch Down – 65 KTS"
+      ]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -56,17 +85,17 @@ class _Cessna152EFATRA extends State<Cessna152EFATRA> {
   String? selectedAnswer;
 
   @override
-void initState() {
-  super.initState();
+  void initState() {
+    super.initState();
 
-  // Shuffle the order of questions
-  questions = List.from(allQuestions)..shuffle(Random());
+    // Shuffle the order of questions
+    questions = List.from(allQuestions)..shuffle(Random());
 
-  // Shuffle the options inside each question
-  for (var q in questions) {
-    q["options"].shuffle(Random());
+    // Shuffle the options inside each question
+    for (var q in questions) {
+      q["options"].shuffle(Random());
+    }
   }
-}
 
   void checkAnswer(String answer) {
     setState(() {
@@ -87,7 +116,8 @@ void initState() {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -126,19 +156,22 @@ void initState() {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
               );
-
             }).toList(),
             SizedBox(height: 20),
             if (answered)
@@ -184,7 +217,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -192,7 +226,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -200,7 +235,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

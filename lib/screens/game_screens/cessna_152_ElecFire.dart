@@ -10,49 +10,81 @@ class Cessna152ElecFire extends StatefulWidget {
 
 class _Cessna152ElecFire extends State<Cessna152ElecFire> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for electrical fire in flight:",
-    "correct": "Master Switch – OFF",
-    "options": ["Master Switch – OFF", "Fire Extinguisher – ACTIVATE", "Radios – ON (ONE AT A TIME)"]
-  },
-  {
-    "question": "Second action for electrical fire in flight:",
-    "correct": "All Switches (except ign) – OFF",
-    "options": ["All Switches (except ign) – OFF", "Circuit Breakers – CHECK TRIPPED", "Vents & Cabin Air/Heat – OPEN"]
-  },
-  {
-    "question": "Third action for electrical fire in flight:",
-    "correct": "Vents & Cabin Air/Heat – CLOSED",
-    "options": ["Vents & Cabin Air/Heat – CLOSED", "Radios – ON (ONE AT A TIME)", "Master Switch – ON"]
-  },
-  {
-    "question": "Fourth action for electrical fire in flight:",
-    "correct": "Fire Extinguisher – ACTIVATE",
-    "options": ["Fire Extinguisher – ACTIVATE", "Vents & Cabin Air/Heat – OPEN", "All Switches (except ign) – OFF"]
-  },
-  {
-    "question": "After fire is out and power is needed, what is the first step?",
-    "correct": "Master Switch – ON",
-    "options": ["Master Switch – ON", "Fire Extinguisher – ACTIVATE", "Vents & Cabin Air/Heat – CLOSED"]
-  },
-  {
-    "question": "After restoring power, what should be checked?",
-    "correct": "Circuit Breakers – CHECK TRIPPED",
-    "options": ["Circuit Breakers – CHECK TRIPPED", "Vents & Cabin Air/Heat – CLOSED", "All Switches (except ign) – OFF"]
-  },
-  {
-    "question": "After checking circuit breakers, what comes next?",
-    "correct": "Radios – ON (ONE AT A TIME)",
-    "options": ["Radios – ON (ONE AT A TIME)", "Fire Extinguisher – ACTIVATE", "Master Switch – OFF"]
-  },
-  {
-    "question": "Final action after electrical fire in flight if fire is out:",
-    "correct": "Vents & Cabin Air/Heat – OPEN",
-    "options": ["Vents & Cabin Air/Heat – OPEN", "Circuit Breakers – CHECK TRIPPED", "Master Switch – ON"]
-  }
-];
-
-
+    {
+      "question": "First action for electrical fire in flight:",
+      "correct": "Master Switch – OFF",
+      "options": [
+        "Master Switch – OFF",
+        "Fire Extinguisher – ACTIVATE",
+        "Radios – ON (ONE AT A TIME)"
+      ]
+    },
+    {
+      "question": "Second action for electrical fire in flight:",
+      "correct": "All Switches (except ign) – OFF",
+      "options": [
+        "All Switches (except ign) – OFF",
+        "Circuit Breakers – CHECK TRIPPED",
+        "Vents & Cabin Air/Heat – OPEN"
+      ]
+    },
+    {
+      "question": "Third action for electrical fire in flight:",
+      "correct": "Vents & Cabin Air/Heat – CLOSED",
+      "options": [
+        "Vents & Cabin Air/Heat – CLOSED",
+        "Radios – ON (ONE AT A TIME)",
+        "Master Switch – ON"
+      ]
+    },
+    {
+      "question": "Fourth action for electrical fire in flight:",
+      "correct": "Fire Extinguisher – ACTIVATE",
+      "options": [
+        "Fire Extinguisher – ACTIVATE",
+        "Vents & Cabin Air/Heat – OPEN",
+        "All Switches (except ign) – OFF"
+      ]
+    },
+    {
+      "question":
+          "After fire is out and power is needed, what is the first step?",
+      "correct": "Master Switch – ON",
+      "options": [
+        "Master Switch – ON",
+        "Fire Extinguisher – ACTIVATE",
+        "Vents & Cabin Air/Heat – CLOSED"
+      ]
+    },
+    {
+      "question": "After restoring power, what should be checked?",
+      "correct": "Circuit Breakers – CHECK TRIPPED",
+      "options": [
+        "Circuit Breakers – CHECK TRIPPED",
+        "Vents & Cabin Air/Heat – CLOSED",
+        "All Switches (except ign) – OFF"
+      ]
+    },
+    {
+      "question": "After checking circuit breakers, what comes next?",
+      "correct": "Radios – ON (ONE AT A TIME)",
+      "options": [
+        "Radios – ON (ONE AT A TIME)",
+        "Fire Extinguisher – ACTIVATE",
+        "Master Switch – OFF"
+      ]
+    },
+    {
+      "question":
+          "Final action after electrical fire in flight if fire is out:",
+      "correct": "Vents & Cabin Air/Heat – OPEN",
+      "options": [
+        "Vents & Cabin Air/Heat – OPEN",
+        "Circuit Breakers – CHECK TRIPPED",
+        "Master Switch – ON"
+      ]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -85,7 +117,8 @@ class _Cessna152ElecFire extends State<Cessna152ElecFire> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -124,14 +157,18 @@ class _Cessna152ElecFire extends State<Cessna152ElecFire> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -181,7 +218,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -189,7 +227,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -197,7 +236,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -206,4 +246,3 @@ class GameOverScreen extends StatelessWidget {
     );
   }
 }
-

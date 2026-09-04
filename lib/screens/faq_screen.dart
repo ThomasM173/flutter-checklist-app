@@ -18,19 +18,23 @@ class FAQScreen extends StatelessWidget {
       },
       {
         'q': 'What is the Dynamic Checklist?',
-        'a': 'It’s an intelligent checklist that adapts to your inputs and flight conditions, helping you reflect and stay situationally aware.'
+        'a':
+            'It’s an intelligent checklist that adapts to your inputs and flight conditions, helping you reflect and stay situationally aware.'
       },
       {
         'q': 'Where does the information come from?',
-        'a': 'We use trusted CAA and aircraft manufacturer sources to ensure accuracy.'
+        'a':
+            'We use trusted CAA and aircraft manufacturer sources to ensure accuracy.'
       },
       {
         'q': 'Can I track my progress?',
-        'a': 'Yes! You’ll see completed items and get learning feedback as you go.'
+        'a':
+            'Yes! You’ll see completed items and get learning feedback as you go.'
       },
       {
         'q': 'How do insights improve my safety?',
-        'a': 'Our checklist highlights common human factors and encourages safer decision-making before and during flight.'
+        'a':
+            'Our checklist highlights common human factors and encourages safer decision-making before and during flight.'
       },
       {
         'q': 'Can I contribute feedback or ideas?',
@@ -50,7 +54,10 @@ class FAQScreen extends StatelessWidget {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue → sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue → sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -58,7 +65,8 @@ class FAQScreen extends StatelessWidget {
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black), // Burger icon black
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Burger icon black
         ),
       ),
       drawer: const AppDrawer(currentIndex: 0),
@@ -71,7 +79,8 @@ class FAQScreen extends StatelessWidget {
           color: Colors.grey[200],
           margin: const EdgeInsets.symmetric(vertical: 8),
           elevation: 2,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: ExpansionTile(
             title: Text(
               faqs[i]['q']!,

@@ -10,49 +10,83 @@ class Cessna172FDS extends StatefulWidget {
 
 class _Cessna172FDS extends State<Cessna172FDS> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for engine fire during start:",
-    "correct": "Cranking – CONTINUE",
-    "options": ["Cranking – CONTINUE", "Mixture – CUT OFF", "Throttle – FULL OPEN"]
-  },
-  {
-    "question": "If engine starts during fire, next action:",
-    "correct": "Power – 1700 RPM → Engine – SHUTDOWN",
-    "options": ["Power – 1700 RPM → Engine – SHUTDOWN", "Fire – EXTINGUISH", "Throttle – FULL OPEN"]
-  },
-  {
-    "question": "If engine does not start during fire, next action:",
-    "correct": "Throttle – FULL OPEN",
-    "options": ["Throttle – FULL OPEN", "Cranking – CONTINUE", "Engine – SECURE (Ignition, Master, Fuel OFF)"]
-  },
-  {
-    "question": "After opening throttle, what’s the next action for engine fire during start?",
-    "correct": "Mixture – CUT OFF",
-    "options": ["Mixture – CUT OFF", "Fire Extinguisher – OBTAIN", "Cranking – CONTINUE"]
-  },
-  {
-    "question": "After mixture is cut off, what’s next action for engine fire during start?",
-    "correct": "Cranking – CONTINUE",
-    "options": ["Cranking – CONTINUE", "Engine – SECURE (Ignition, Master, Fuel OFF)", "Throttle – FULL OPEN"]
-  },
-  {
-    "question": "Once engine shutdown steps are complete, what do you obtain?",
-    "correct": "Fire Extinguisher – OBTAIN",
-    "options": ["Fire Extinguisher – OBTAIN", "Cranking – CONTINUE", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "After obtaining fire extinguisher, what must you do to the engine?",
-    "correct": "Engine – SECURE (Ignition, Master, Fuel OFF)",
-    "options": ["Engine – SECURE (Ignition, Master, Fuel OFF)", "Power – 1700 RPM → Engine – SHUTDOWN", "Throttle – FULL OPEN"]
-  },
-  {
-    "question": "Final action for engine fire during start:",
-    "correct": "Fire – EXTINGUISH",
-    "options": ["Fire – EXTINGUISH", "Mixture – CUT OFF", "Fire Extinguisher – OBTAIN"]
-  }
-];
-
-
+    {
+      "question": "First action for engine fire during start:",
+      "correct": "Cranking – CONTINUE",
+      "options": [
+        "Cranking – CONTINUE",
+        "Mixture – CUT OFF",
+        "Throttle – FULL OPEN"
+      ]
+    },
+    {
+      "question": "If engine starts during fire, next action:",
+      "correct": "Power – 1700 RPM → Engine – SHUTDOWN",
+      "options": [
+        "Power – 1700 RPM → Engine – SHUTDOWN",
+        "Fire – EXTINGUISH",
+        "Throttle – FULL OPEN"
+      ]
+    },
+    {
+      "question": "If engine does not start during fire, next action:",
+      "correct": "Throttle – FULL OPEN",
+      "options": [
+        "Throttle – FULL OPEN",
+        "Cranking – CONTINUE",
+        "Engine – SECURE (Ignition, Master, Fuel OFF)"
+      ]
+    },
+    {
+      "question":
+          "After opening throttle, what’s the next action for engine fire during start?",
+      "correct": "Mixture – CUT OFF",
+      "options": [
+        "Mixture – CUT OFF",
+        "Fire Extinguisher – OBTAIN",
+        "Cranking – CONTINUE"
+      ]
+    },
+    {
+      "question":
+          "After mixture is cut off, what’s next action for engine fire during start?",
+      "correct": "Cranking – CONTINUE",
+      "options": [
+        "Cranking – CONTINUE",
+        "Engine – SECURE (Ignition, Master, Fuel OFF)",
+        "Throttle – FULL OPEN"
+      ]
+    },
+    {
+      "question":
+          "Once engine shutdown steps are complete, what do you obtain?",
+      "correct": "Fire Extinguisher – OBTAIN",
+      "options": [
+        "Fire Extinguisher – OBTAIN",
+        "Cranking – CONTINUE",
+        "Mixture – CUT OFF"
+      ]
+    },
+    {
+      "question":
+          "After obtaining fire extinguisher, what must you do to the engine?",
+      "correct": "Engine – SECURE (Ignition, Master, Fuel OFF)",
+      "options": [
+        "Engine – SECURE (Ignition, Master, Fuel OFF)",
+        "Power – 1700 RPM → Engine – SHUTDOWN",
+        "Throttle – FULL OPEN"
+      ]
+    },
+    {
+      "question": "Final action for engine fire during start:",
+      "correct": "Fire – EXTINGUISH",
+      "options": [
+        "Fire – EXTINGUISH",
+        "Mixture – CUT OFF",
+        "Fire Extinguisher – OBTAIN"
+      ]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -85,7 +119,8 @@ class _Cessna172FDS extends State<Cessna172FDS> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -124,14 +159,18 @@ class _Cessna172FDS extends State<Cessna172FDS> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -181,7 +220,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -189,7 +229,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -197,7 +238,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -206,4 +248,3 @@ class GameOverScreen extends StatelessWidget {
     );
   }
 }
-

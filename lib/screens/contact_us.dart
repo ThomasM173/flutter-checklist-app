@@ -12,7 +12,7 @@ class ContactUs extends StatelessWidget {
       path: 'support@clearedtogo.app',
       query: 'subject=Support Request',
     );
-    
+
     try {
       final bool canLaunch = await canLaunchUrl(emailUri);
       if (canLaunch) {
@@ -30,7 +30,7 @@ class ContactUs extends StatelessWidget {
   Future<void> _launchGoogleForm() async {
     final Uri formUri = Uri.parse(
         'https://docs.google.com/forms/d/e/1FAIpQLSc_RV1Tq0qgVE6sGPLQMij7ESsicX74ECK1-Vf-trFoCIZPFw/viewform?usp=dialog');
-    
+
     try {
       final bool canLaunch = await canLaunchUrl(formUri);
       if (canLaunch) {
@@ -58,7 +58,10 @@ class ContactUs extends StatelessWidget {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue to sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -66,7 +69,8 @@ class ContactUs extends StatelessWidget {
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black), // Black burger icon
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Black burger icon
         ),
       ),
       drawer: const AppDrawer(currentIndex: 0),

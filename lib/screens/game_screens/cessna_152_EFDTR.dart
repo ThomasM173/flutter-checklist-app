@@ -18,7 +18,11 @@ class _Cessna152EFDTR extends State<Cessna152EFDTR> {
     {
       "question": "Second action for engine failure during takeoff roll:",
       "correct": "Brakes – APPLY",
-      "options": ["Brakes – APPLY", "Ignition Switch – OFF", "Mixture – CUT OFF"]
+      "options": [
+        "Brakes – APPLY",
+        "Ignition Switch – OFF",
+        "Mixture – CUT OFF"
+      ]
     },
     {
       "question": "Third action for engine failure during takeoff roll:",
@@ -33,17 +37,29 @@ class _Cessna152EFDTR extends State<Cessna152EFDTR> {
     {
       "question": "Fifth action for engine failure during takeoff roll:",
       "correct": "Fuel Shutoff Valve – OFF",
-      "options": ["Fuel Shutoff Valve – OFF", "Ignition Switch – OFF", "Flaps – UP"]
+      "options": [
+        "Fuel Shutoff Valve – OFF",
+        "Ignition Switch – OFF",
+        "Flaps – UP"
+      ]
     },
     {
       "question": "Sixth action for engine failure during takeoff roll:",
       "correct": "Ignition Switch – OFF",
-      "options": ["Ignition Switch – OFF", "Throttle – IDLE", "Mixture – CUT OFF"]
+      "options": [
+        "Ignition Switch – OFF",
+        "Throttle – IDLE",
+        "Mixture – CUT OFF"
+      ]
     },
     {
       "question": "Final action for engine failure during takeoff roll:",
       "correct": "Master Switch – OFF",
-      "options": ["Master Switch – OFF", "Fuel Shutoff Valve – OFF", "Brakes – APPLY"]
+      "options": [
+        "Master Switch – OFF",
+        "Fuel Shutoff Valve – OFF",
+        "Brakes – APPLY"
+      ]
     }
   ];
 
@@ -78,7 +94,8 @@ class _Cessna152EFDTR extends State<Cessna152EFDTR> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -117,14 +134,18 @@ class _Cessna152EFDTR extends State<Cessna152EFDTR> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -174,7 +195,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -182,7 +204,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -190,7 +213,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

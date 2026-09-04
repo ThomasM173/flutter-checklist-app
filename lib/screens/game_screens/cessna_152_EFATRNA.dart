@@ -10,48 +10,79 @@ class Cessna152EFATRNA extends StatefulWidget {
 
 class _Cessna152EFATRNA extends State<Cessna152EFATRNA> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Airspeed - Pitch Down – 65 KTS",
-    "options": ["Airspeed - Pitch Down – 65 KTS", "Mixture – CUT OFF", "Throttle – IDLE"]
-  },
-  {
-    "question": "Second action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Best Field - 30° Off Nose – CHOOSE",
-    "options": ["Best Field - 30° Off Nose – CHOOSE", "Ignition Switch – OFF", "Touch Down"]
-  },
-  {
-    "question": "Third action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Throttle – IDLE",
-    "options": ["Throttle – IDLE", "Fuel Shutoff Valve – OFF", "Best Field - 30° Off Nose – CHOOSE"]
-  },
-  {
-    "question": "Fourth action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Mixture – CUT OFF",
-    "options": ["Mixture – CUT OFF", "Master Switch – OFF", "Airspeed - Pitch Down – 65 KTS"]
-  },
-  {
-    "question": "Fifth action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Fuel Shutoff Valve – OFF",
-    "options": ["Fuel Shutoff Valve – OFF", "Touch Down", "Mixture – CUT OFF"]
-  },
-  {
-    "question": "Sixth action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Ignition Switch – OFF",
-    "options": ["Ignition Switch – OFF", "Throttle – IDLE", "Best Field - 30° Off Nose – CHOOSE"]
-  },
-  {
-    "question": "Seventh action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Master Switch – OFF",
-    "options": ["Master Switch – OFF", "Fuel Shutoff Valve – OFF", "Airspeed - Pitch Down – 65 KTS"]
-  },
-  {
-    "question": "Final action for engine failure after takeoff (RWY NOT available):",
-    "correct": "Touch Down",
-    "options": ["Touch Down", "Master Switch – OFF", "Ignition Switch – OFF"]
-  }
-];
-
+    {
+      "question":
+          "First action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Airspeed - Pitch Down – 65 KTS",
+      "options": [
+        "Airspeed - Pitch Down – 65 KTS",
+        "Mixture – CUT OFF",
+        "Throttle – IDLE"
+      ]
+    },
+    {
+      "question":
+          "Second action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Best Field - 30° Off Nose – CHOOSE",
+      "options": [
+        "Best Field - 30° Off Nose – CHOOSE",
+        "Ignition Switch – OFF",
+        "Touch Down"
+      ]
+    },
+    {
+      "question":
+          "Third action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Throttle – IDLE",
+      "options": [
+        "Throttle – IDLE",
+        "Fuel Shutoff Valve – OFF",
+        "Best Field - 30° Off Nose – CHOOSE"
+      ]
+    },
+    {
+      "question":
+          "Fourth action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Mixture – CUT OFF",
+      "options": [
+        "Mixture – CUT OFF",
+        "Master Switch – OFF",
+        "Airspeed - Pitch Down – 65 KTS"
+      ]
+    },
+    {
+      "question":
+          "Fifth action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Fuel Shutoff Valve – OFF",
+      "options": ["Fuel Shutoff Valve – OFF", "Touch Down", "Mixture – CUT OFF"]
+    },
+    {
+      "question":
+          "Sixth action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Ignition Switch – OFF",
+      "options": [
+        "Ignition Switch – OFF",
+        "Throttle – IDLE",
+        "Best Field - 30° Off Nose – CHOOSE"
+      ]
+    },
+    {
+      "question":
+          "Seventh action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Master Switch – OFF",
+      "options": [
+        "Master Switch – OFF",
+        "Fuel Shutoff Valve – OFF",
+        "Airspeed - Pitch Down – 65 KTS"
+      ]
+    },
+    {
+      "question":
+          "Final action for engine failure after takeoff (RWY NOT available):",
+      "correct": "Touch Down",
+      "options": ["Touch Down", "Master Switch – OFF", "Ignition Switch – OFF"]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -84,7 +115,8 @@ class _Cessna152EFATRNA extends State<Cessna152EFATRNA> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -123,14 +155,18 @@ class _Cessna152EFATRNA extends State<Cessna152EFATRNA> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -180,7 +216,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -188,7 +225,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -196,7 +234,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),

@@ -18,41 +18,41 @@ class WeightBalanceScreen extends StatefulWidget {
 
 class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Aircraft Selection
   String _selectedAircraft = 'Cessna 152';
-  
+
   // Flight Details
   final _pilotNameController = TextEditingController();
   final _dateController = TextEditingController();
   final _aircraftRegistrationController = TextEditingController();
   final _departureController = TextEditingController();
   final _destinationController = TextEditingController();
-  
+
   // Weight & Balance Data
   final _basicEmptyWeightController = TextEditingController();
   final _basicEmptyMomentController = TextEditingController();
-  
+
   // Pilot & Front Seat
   final _frontSeatWeightController = TextEditingController();
   final _frontSeatArmController = TextEditingController();
-  
+
   // Rear Seat
   final _rearSeatWeightController = TextEditingController();
   final _rearSeatArmController = TextEditingController();
-  
+
   // Baggage Area 1
   final _baggage1WeightController = TextEditingController();
   final _baggage1ArmController = TextEditingController();
-  
+
   // Baggage Area 2 (if applicable)
   final _baggage2WeightController = TextEditingController();
   final _baggage2ArmController = TextEditingController();
-  
+
   // Fuel
   final _fuelWeightController = TextEditingController();
   final _fuelArmController = TextEditingController();
-  
+
   // Aircraft Templates
   final Map<String, Map<String, dynamic>> _aircraftTemplates = {
     'Cessna 152': {
@@ -120,14 +120,16 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _pilotNameController.text = prefs.getString('wb_pilotName') ?? '';
-      _aircraftRegistrationController.text = prefs.getString('wb_registration') ?? '';
+      _aircraftRegistrationController.text =
+          prefs.getString('wb_registration') ?? '';
     });
   }
 
   Future<void> _saveEntry() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('wb_pilotName', _pilotNameController.text);
-    await prefs.setString('wb_registration', _aircraftRegistrationController.text);
+    await prefs.setString(
+        'wb_registration', _aircraftRegistrationController.text);
   }
 
   double _calculateMoment(String weightStr, String armStr) {
@@ -137,28 +139,47 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
   }
 
   Map<String, double> _calculateTotals() {
-    final basicWeight = double.tryParse(_basicEmptyWeightController.text) ?? 0.0;
-    final basicMoment = double.tryParse(_basicEmptyMomentController.text) ?? 0.0;
-    
+    final basicWeight =
+        double.tryParse(_basicEmptyWeightController.text) ?? 0.0;
+    final basicMoment =
+        double.tryParse(_basicEmptyMomentController.text) ?? 0.0;
+
     final frontWeight = double.tryParse(_frontSeatWeightController.text) ?? 0.0;
-    final frontMoment = _calculateMoment(_frontSeatWeightController.text, _frontSeatArmController.text);
-    
+    final frontMoment = _calculateMoment(
+        _frontSeatWeightController.text, _frontSeatArmController.text);
+
     final rearWeight = double.tryParse(_rearSeatWeightController.text) ?? 0.0;
-    final rearMoment = _calculateMoment(_rearSeatWeightController.text, _rearSeatArmController.text);
-    
-    final baggage1Weight = double.tryParse(_baggage1WeightController.text) ?? 0.0;
-    final baggage1Moment = _calculateMoment(_baggage1WeightController.text, _baggage1ArmController.text);
-    
-    final baggage2Weight = double.tryParse(_baggage2WeightController.text) ?? 0.0;
-    final baggage2Moment = _calculateMoment(_baggage2WeightController.text, _baggage2ArmController.text);
-    
+    final rearMoment = _calculateMoment(
+        _rearSeatWeightController.text, _rearSeatArmController.text);
+
+    final baggage1Weight =
+        double.tryParse(_baggage1WeightController.text) ?? 0.0;
+    final baggage1Moment = _calculateMoment(
+        _baggage1WeightController.text, _baggage1ArmController.text);
+
+    final baggage2Weight =
+        double.tryParse(_baggage2WeightController.text) ?? 0.0;
+    final baggage2Moment = _calculateMoment(
+        _baggage2WeightController.text, _baggage2ArmController.text);
+
     final fuelWeight = double.tryParse(_fuelWeightController.text) ?? 0.0;
-    final fuelMoment = _calculateMoment(_fuelWeightController.text, _fuelArmController.text);
-    
-    final totalWeight = basicWeight + frontWeight + rearWeight + baggage1Weight + baggage2Weight + fuelWeight;
-    final totalMoment = basicMoment + frontMoment + rearMoment + baggage1Moment + baggage2Moment + fuelMoment;
+    final fuelMoment =
+        _calculateMoment(_fuelWeightController.text, _fuelArmController.text);
+
+    final totalWeight = basicWeight +
+        frontWeight +
+        rearWeight +
+        baggage1Weight +
+        baggage2Weight +
+        fuelWeight;
+    final totalMoment = basicMoment +
+        frontMoment +
+        rearMoment +
+        baggage1Moment +
+        baggage2Moment +
+        fuelMoment;
     final cg = totalWeight > 0 ? (totalMoment * 1000) / totalWeight : 0.0;
-    
+
     return {
       'totalWeight': totalWeight,
       'totalMoment': totalMoment,
@@ -173,23 +194,23 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     final template = _aircraftTemplates[_selectedAircraft]!;
     final maxWeight = template['maxWeight'];
     final cgLimits = template['cgLimits'] as Map<String, dynamic>;
-    
+
     if (weight > maxWeight) {
       return '❌ OVERWEIGHT - Reduce weight by ${(weight - maxWeight).toStringAsFixed(1)} lbs';
     }
-    
+
     // Simplified CG check (you may need to interpolate for exact limits)
     final forwardLimit = cgLimits.values.toList()[0] as double;
     final aftLimit = cgLimits.values.toList()[2] as double;
-    
+
     if (cg < forwardLimit) {
       return '❌ CG TOO FORWARD - ${cg.toStringAsFixed(2)}" (limit: ${forwardLimit.toStringAsFixed(2)}")';
     }
-    
+
     if (cg > aftLimit) {
       return '❌ CG TOO AFT - ${cg.toStringAsFixed(2)}" (limit: ${aftLimit.toStringAsFixed(2)}")';
     }
-    
+
     return '✅ WITHIN LIMITS';
   }
 
@@ -204,7 +225,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF generation only works on Android/iOS')),
+          const SnackBar(
+              content: Text('PDF generation only works on Android/iOS')),
         );
       }
       return;
@@ -213,11 +235,12 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     try {
       final totals = _calculateTotals();
       final cgStatus = _checkCGLimits();
-      
+
       final pdf = pw.Document();
-      final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final fontData =
+          await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
-      
+
       final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
@@ -231,16 +254,23 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
             children: [
               pw.Text(
                 "WEIGHT & BALANCE LOADSHEET",
-                style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
               ),
               pw.Divider(thickness: 2),
               pw.SizedBox(height: 10),
-              
-              if (user?.fullName != null) pw.Text("Pilot: ${user!.fullName}", style: pw.TextStyle(fontSize: 11)),
-              if (user?.licenseNumber != null) pw.Text("License: ${user!.licenseNumber}", style: pw.TextStyle(fontSize: 11)),
-              if (user?.homeBase != null) pw.Text("Home Base: ${user!.homeBase}", style: pw.TextStyle(fontSize: 11)),
+
+              if (user?.fullName != null)
+                pw.Text("Pilot: ${user!.fullName}",
+                    style: pw.TextStyle(fontSize: 11)),
+              if (user?.licenseNumber != null)
+                pw.Text("License: ${user!.licenseNumber}",
+                    style: pw.TextStyle(fontSize: 11)),
+              if (user?.homeBase != null)
+                pw.Text("Home Base: ${user!.homeBase}",
+                    style: pw.TextStyle(fontSize: 11)),
               pw.SizedBox(height: 10),
-              
+
               // Flight Details
               _pdfRow("Aircraft Type:", _selectedAircraft),
               _pdfRow("Registration:", _aircraftRegistrationController.text),
@@ -248,14 +278,15 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
               _pdfRow("Departure:", _departureController.text),
               _pdfRow("Destination:", _destinationController.text),
               pw.SizedBox(height: 15),
-              
+
               // Weight & Balance Table
               pw.Text(
                 "WEIGHT & BALANCE CALCULATION",
-                style: pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
+                style:
+                    pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold),
               ),
               pw.SizedBox(height: 8),
-              
+
               pw.Table(
                 border: pw.TableBorder.all(),
                 columnWidths: {
@@ -266,49 +297,89 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 },
                 children: [
                   _pdfTableHeader(),
-                  _pdfTableRow("Basic Empty Weight", _basicEmptyWeightController.text, "-", _basicEmptyMomentController.text),
-                  _pdfTableRow("Front Seat", _frontSeatWeightController.text, _frontSeatArmController.text, 
-                      _calculateMoment(_frontSeatWeightController.text, _frontSeatArmController.text).toStringAsFixed(2)),
-                  if ((double.tryParse(_rearSeatWeightController.text) ?? 0) > 0)
-                    _pdfTableRow("Rear Seat", _rearSeatWeightController.text, _rearSeatArmController.text,
-                        _calculateMoment(_rearSeatWeightController.text, _rearSeatArmController.text).toStringAsFixed(2)),
-                  if ((double.tryParse(_baggage1WeightController.text) ?? 0) > 0)
-                    _pdfTableRow("Baggage 1", _baggage1WeightController.text, _baggage1ArmController.text,
-                        _calculateMoment(_baggage1WeightController.text, _baggage1ArmController.text).toStringAsFixed(2)),
-                  if ((double.tryParse(_baggage2WeightController.text) ?? 0) > 0)
-                    _pdfTableRow("Baggage 2", _baggage2WeightController.text, _baggage2ArmController.text,
-                        _calculateMoment(_baggage2WeightController.text, _baggage2ArmController.text).toStringAsFixed(2)),
-                  _pdfTableRow("Fuel", _fuelWeightController.text, _fuelArmController.text,
-                      _calculateMoment(_fuelWeightController.text, _fuelArmController.text).toStringAsFixed(2)),
+                  _pdfTableRow(
+                      "Basic Empty Weight",
+                      _basicEmptyWeightController.text,
+                      "-",
+                      _basicEmptyMomentController.text),
+                  _pdfTableRow(
+                      "Front Seat",
+                      _frontSeatWeightController.text,
+                      _frontSeatArmController.text,
+                      _calculateMoment(_frontSeatWeightController.text,
+                              _frontSeatArmController.text)
+                          .toStringAsFixed(2)),
+                  if ((double.tryParse(_rearSeatWeightController.text) ?? 0) >
+                      0)
+                    _pdfTableRow(
+                        "Rear Seat",
+                        _rearSeatWeightController.text,
+                        _rearSeatArmController.text,
+                        _calculateMoment(_rearSeatWeightController.text,
+                                _rearSeatArmController.text)
+                            .toStringAsFixed(2)),
+                  if ((double.tryParse(_baggage1WeightController.text) ?? 0) >
+                      0)
+                    _pdfTableRow(
+                        "Baggage 1",
+                        _baggage1WeightController.text,
+                        _baggage1ArmController.text,
+                        _calculateMoment(_baggage1WeightController.text,
+                                _baggage1ArmController.text)
+                            .toStringAsFixed(2)),
+                  if ((double.tryParse(_baggage2WeightController.text) ?? 0) >
+                      0)
+                    _pdfTableRow(
+                        "Baggage 2",
+                        _baggage2WeightController.text,
+                        _baggage2ArmController.text,
+                        _calculateMoment(_baggage2WeightController.text,
+                                _baggage2ArmController.text)
+                            .toStringAsFixed(2)),
+                  _pdfTableRow(
+                      "Fuel",
+                      _fuelWeightController.text,
+                      _fuelArmController.text,
+                      _calculateMoment(_fuelWeightController.text,
+                              _fuelArmController.text)
+                          .toStringAsFixed(2)),
                   pw.TableRow(
                     decoration: pw.BoxDecoration(color: PdfColors.grey300),
                     children: [
                       _pdfCell("TOTAL", bold: true),
-                      _pdfCell("${totals['totalWeight']!.toStringAsFixed(1)} lbs", bold: true),
+                      _pdfCell(
+                          "${totals['totalWeight']!.toStringAsFixed(1)} lbs",
+                          bold: true),
                       _pdfCell("-", bold: true),
-                      _pdfCell(totals['totalMoment']!.toStringAsFixed(2), bold: true),
+                      _pdfCell(totals['totalMoment']!.toStringAsFixed(2),
+                          bold: true),
                     ],
                   ),
                   pw.TableRow(
                     children: [
                       _pdfCell("CENTER OF GRAVITY", bold: true),
                       _pdfCell(""),
-                      _pdfCell("${totals['cg']!.toStringAsFixed(2)}\"", bold: true, colSpan: 2),
+                      _pdfCell("${totals['cg']!.toStringAsFixed(2)}\"",
+                          bold: true, colSpan: 2),
                       _pdfCell(""),
                     ],
                   ),
                 ],
               ),
-              
+
               pw.SizedBox(height: 15),
-              
+
               // CG Status
               pw.Container(
                 padding: pw.EdgeInsets.all(12),
                 decoration: pw.BoxDecoration(
-                  color: cgStatus.contains('✅') ? PdfColors.green50 : PdfColors.red50,
+                  color: cgStatus.contains('✅')
+                      ? PdfColors.green50
+                      : PdfColors.red50,
                   border: pw.Border.all(
-                    color: cgStatus.contains('✅') ? PdfColors.green : PdfColors.red,
+                    color: cgStatus.contains('✅')
+                        ? PdfColors.green
+                        : PdfColors.red,
                     width: 2,
                   ),
                   borderRadius: pw.BorderRadius.circular(4),
@@ -318,13 +389,15 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                   style: pw.TextStyle(
                     fontSize: 13,
                     fontWeight: pw.FontWeight.bold,
-                    color: cgStatus.contains('✅') ? PdfColors.green900 : PdfColors.red900,
+                    color: cgStatus.contains('✅')
+                        ? PdfColors.green900
+                        : PdfColors.red900,
                   ),
                 ),
               ),
-              
+
               pw.Spacer(),
-              
+
               // Signature
               pw.Row(
                 mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
@@ -332,7 +405,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                   pw.Column(
                     crossAxisAlignment: pw.CrossAxisAlignment.start,
                     children: [
-                      pw.Text("Pilot Signature:", style: pw.TextStyle(fontSize: 10)),
+                      pw.Text("Pilot Signature:",
+                          style: pw.TextStyle(fontSize: 10)),
                       pw.SizedBox(height: 5),
                       pw.Container(
                         width: 200,
@@ -342,7 +416,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                         ),
                         child: pw.Text(
                           _pilotNameController.text,
-                          style: pw.TextStyle(fontSize: 12, fontStyle: pw.FontStyle.italic),
+                          style: pw.TextStyle(
+                              fontSize: 12, fontStyle: pw.FontStyle.italic),
                         ),
                       ),
                     ],
@@ -375,9 +450,10 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
       await _saveEntry();
 
       final pdfBytes = await pdf.save();
-      
+
       final output = await getTemporaryDirectory();
-      final fileName = "W&B_${_selectedAircraft.replaceAll(' ', '_')}_${_dateController.text}.pdf";
+      final fileName =
+          "W&B_${_selectedAircraft.replaceAll(' ', '_')}_${_dateController.text}.pdf";
       final file = File("${output.path}/$fileName");
       await file.writeAsBytes(pdfBytes);
 
@@ -395,7 +471,9 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF generated and saved successfully!'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('PDF generated and saved successfully!'),
+              backgroundColor: Colors.green),
         );
       }
 
@@ -403,7 +481,9 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Error generating PDF: $e"), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text("Error generating PDF: $e"),
+              backgroundColor: Colors.red),
         );
       }
     }
@@ -421,7 +501,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     );
   }
 
-  pw.TableRow _pdfTableRow(String item, String weight, String arm, String moment) {
+  pw.TableRow _pdfTableRow(
+      String item, String weight, String arm, String moment) {
     return pw.TableRow(
       children: [
         _pdfCell(item),
@@ -432,7 +513,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     );
   }
 
-  pw.Widget _pdfCell(String text, {bool bold = false, PdfColor? color, int colSpan = 1}) {
+  pw.Widget _pdfCell(String text,
+      {bool bold = false, PdfColor? color, int colSpan = 1}) {
     return pw.Padding(
       padding: pw.EdgeInsets.all(6),
       child: pw.Text(
@@ -469,7 +551,7 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
     final totals = _calculateTotals();
     final cgStatus = _checkCGLimits();
     final template = _aircraftTemplates[_selectedAircraft]!;
-    
+
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
@@ -499,7 +581,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
             // Aircraft Selection Card
             Card(
               elevation: 3,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -507,11 +590,13 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                   children: [
                     Row(
                       children: const [
-                        Icon(Icons.airplanemode_active, color: Color(0xFF87CEEB)),
+                        Icon(Icons.airplanemode_active,
+                            color: Color(0xFF87CEEB)),
                         SizedBox(width: 8),
                         Text(
                           'Aircraft Type',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
@@ -524,7 +609,8 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                         fillColor: Colors.white,
                       ),
                       items: _aircraftTemplates.keys
-                          .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                          .map(
+                              (e) => DropdownMenuItem(value: e, child: Text(e)))
                           .toList(),
                       onChanged: (val) {
                         setState(() {
@@ -542,52 +628,66 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Flight Details
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.flight, color: Colors.purple),
-                title: const Text('Flight Details', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Flight Details',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_pilotNameController, 'Pilot Name *', Icons.person, required: true),
-                        _buildTextField(_dateController, 'Date *', Icons.calendar_today, required: true),
-                        _buildTextField(_aircraftRegistrationController, 'Registration *', Icons.tag, required: true),
-                        _buildTextField(_departureController, 'Departure', Icons.flight_takeoff),
-                        _buildTextField(_destinationController, 'Destination', Icons.flight_land),
+                        _buildTextField(
+                            _pilotNameController, 'Pilot Name *', Icons.person,
+                            required: true),
+                        _buildTextField(
+                            _dateController, 'Date *', Icons.calendar_today,
+                            required: true),
+                        _buildTextField(_aircraftRegistrationController,
+                            'Registration *', Icons.tag,
+                            required: true),
+                        _buildTextField(_departureController, 'Departure',
+                            Icons.flight_takeoff),
+                        _buildTextField(_destinationController, 'Destination',
+                            Icons.flight_land),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Basic Empty Weight
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.construction, color: Colors.orange),
-                title: const Text('Basic Empty Weight', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Basic Empty Weight',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_basicEmptyWeightController, 'Weight (lbs) *', Icons.scale, 
+                        _buildTextField(_basicEmptyWeightController,
+                            'Weight (lbs) *', Icons.scale,
                             required: true, keyboardType: TextInputType.number),
-                        _buildTextField(_basicEmptyMomentController, 'Moment (/1000) *', Icons.architecture,
+                        _buildTextField(_basicEmptyMomentController,
+                            'Moment (/1000) *', Icons.architecture,
                             required: true, keyboardType: TextInputType.number),
                       ],
                     ),
@@ -595,25 +695,29 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Front Seat
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.event_seat, color: Colors.blue),
-                title: const Text('Front Seat', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Front Seat',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_frontSeatWeightController, 'Weight (lbs)', Icons.person,
+                        _buildTextField(_frontSeatWeightController,
+                            'Weight (lbs)', Icons.person,
                             keyboardType: TextInputType.number),
-                        _buildTextField(_frontSeatArmController, 'Arm (in)', Icons.straighten,
+                        _buildTextField(_frontSeatArmController, 'Arm (in)',
+                            Icons.straighten,
                             keyboardType: TextInputType.number, enabled: false),
                       ],
                     ),
@@ -621,26 +725,31 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ],
               ),
             ),
-            
+
             // Rear Seat (if applicable)
             if (template['rearSeatArm'] > 0) ...[
               const SizedBox(height: 16),
               Card(
                 elevation: 2,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
                 child: ExpansionTile(
                   initiallyExpanded: false,
                   leading: const Icon(Icons.event_seat, color: Colors.blue),
-                  title: const Text('Rear Seat', style: TextStyle(fontWeight: FontWeight.bold)),
+                  title: const Text('Rear Seat',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                   children: [
                     Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         children: [
-                          _buildTextField(_rearSeatWeightController, 'Weight (lbs)', Icons.person,
+                          _buildTextField(_rearSeatWeightController,
+                              'Weight (lbs)', Icons.person,
                               keyboardType: TextInputType.number),
-                          _buildTextField(_rearSeatArmController, 'Arm (in)', Icons.straighten,
-                              keyboardType: TextInputType.number, enabled: false),
+                          _buildTextField(_rearSeatArmController, 'Arm (in)',
+                              Icons.straighten,
+                              keyboardType: TextInputType.number,
+                              enabled: false),
                         ],
                       ),
                     ),
@@ -648,30 +757,37 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ),
               ),
             ],
-            
+
             // Baggage
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.luggage, color: Colors.brown),
-                title: const Text('Baggage', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Baggage',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_baggage1WeightController, 'Baggage 1 Weight (lbs)', Icons.work,
+                        _buildTextField(_baggage1WeightController,
+                            'Baggage 1 Weight (lbs)', Icons.work,
                             keyboardType: TextInputType.number),
-                        _buildTextField(_baggage1ArmController, 'Arm (in)', Icons.straighten,
+                        _buildTextField(_baggage1ArmController, 'Arm (in)',
+                            Icons.straighten,
                             keyboardType: TextInputType.number, enabled: false),
                         if (template['baggage2Arm'] > 0) ...[
                           const SizedBox(height: 12),
-                          _buildTextField(_baggage2WeightController, 'Baggage 2 Weight (lbs)', Icons.work,
+                          _buildTextField(_baggage2WeightController,
+                              'Baggage 2 Weight (lbs)', Icons.work,
                               keyboardType: TextInputType.number),
-                          _buildTextField(_baggage2ArmController, 'Arm (in)', Icons.straighten,
-                              keyboardType: TextInputType.number, enabled: false),
+                          _buildTextField(_baggage2ArmController, 'Arm (in)',
+                              Icons.straighten,
+                              keyboardType: TextInputType.number,
+                              enabled: false),
                         ],
                       ],
                     ),
@@ -679,30 +795,37 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 16),
-            
+
             // Fuel
             Card(
               elevation: 2,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.local_gas_station, color: Colors.red),
-                title: const Text('Fuel', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Fuel',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_fuelWeightController, 'Weight (lbs) *', Icons.opacity,
+                        _buildTextField(_fuelWeightController, 'Weight (lbs) *',
+                            Icons.opacity,
                             required: true, keyboardType: TextInputType.number),
-                        _buildTextField(_fuelArmController, 'Arm (in)', Icons.straighten,
+                        _buildTextField(
+                            _fuelArmController, 'Arm (in)', Icons.straighten,
                             keyboardType: TextInputType.number, enabled: false),
                         const SizedBox(height: 8),
                         Text(
                           'Note: 1 US Gallon AvGas ≈ 6 lbs',
-                          style: TextStyle(fontSize: 12, color: Colors.grey[600], fontStyle: FontStyle.italic),
+                          style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                              fontStyle: FontStyle.italic),
                         ),
                       ],
                     ),
@@ -710,13 +833,14 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Results Card
             Card(
               elevation: 4,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)),
               color: cgStatus.contains('✅') ? Colors.green[50] : Colors.red[50],
               child: Padding(
                 padding: const EdgeInsets.all(20),
@@ -726,28 +850,36 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                       children: [
                         Icon(
                           Icons.calculate,
-                          color: cgStatus.contains('✅') ? Colors.green[700] : Colors.red[700],
+                          color: cgStatus.contains('✅')
+                              ? Colors.green[700]
+                              : Colors.red[700],
                           size: 28,
                         ),
                         const SizedBox(width: 12),
                         const Text(
                           'Weight & Balance Results',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
                     ),
                     const Divider(height: 24),
-                    _buildResultRow('Total Weight:', '${totals['totalWeight']!.toStringAsFixed(1)} lbs'),
-                    _buildResultRow('Max Weight:', '${template['maxWeight']} lbs'),
+                    _buildResultRow('Total Weight:',
+                        '${totals['totalWeight']!.toStringAsFixed(1)} lbs'),
+                    _buildResultRow(
+                        'Max Weight:', '${template['maxWeight']} lbs'),
                     const SizedBox(height: 8),
-                    _buildResultRow('Total Moment:', totals['totalMoment']!.toStringAsFixed(2)),
-                    _buildResultRow('Center of Gravity:', '${totals['cg']!.toStringAsFixed(2)}"'),
+                    _buildResultRow('Total Moment:',
+                        totals['totalMoment']!.toStringAsFixed(2)),
+                    _buildResultRow('Center of Gravity:',
+                        '${totals['cg']!.toStringAsFixed(2)}"'),
                     const Divider(height: 24),
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: cgStatus.contains('✅') ? Colors.green : Colors.red,
+                        color:
+                            cgStatus.contains('✅') ? Colors.green : Colors.red,
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -764,25 +896,27 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                 ),
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Generate PDF Button
             ElevatedButton.icon(
               onPressed: _generatePDF,
               icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
               label: const Text(
                 'Generate PDF Loadsheet',
-                style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF87CEEB),
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
                 elevation: 3,
               ),
             ),
-            
+
             const SizedBox(height: 40),
           ],
         ),

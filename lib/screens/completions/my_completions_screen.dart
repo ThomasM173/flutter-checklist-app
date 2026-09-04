@@ -103,7 +103,8 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('My Checklists', style: TextStyle(color: Colors.black)),
+        title:
+            const Text('My Checklists', style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -160,7 +161,8 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
               labelText: 'Type',
               filled: true,
               fillColor: Colors.white,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+              border:
+                  OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
             ),
             items: _typeOptions
                 .map((t) => DropdownMenuItem(value: t, child: Text(t)))
@@ -208,7 +210,8 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
         ),
         title: Text(
           c.checklistName,
-          style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+          style:
+              const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4),
@@ -221,7 +224,9 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
         isThreeLine: true,
         trailing: opening
             ? const SizedBox(
-                width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2))
             : const Icon(Icons.open_in_new, color: Color(0xFF3A7CA5)),
         onTap: opening ? null : () => _open(c),
       ),
@@ -246,7 +251,9 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
               title,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.black),
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 8),

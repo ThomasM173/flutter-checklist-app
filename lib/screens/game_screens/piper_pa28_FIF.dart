@@ -10,39 +10,61 @@ class PiperPA28FIF extends StatefulWidget {
 
 class _PiperPA28FIF extends State<PiperPA28FIF> {
   final List<Map<String, dynamic>> allQuestions = [
-  {
-    "question": "First action for engine fire in flight:",
-    "correct": "Mixture – CUT OFF",
-    "options": ["Mixture – CUT OFF", "Airspeed – 85 KTS", "Cabin Heat & Air – OFF"]
-  },
-  {
-    "question": "Second action for engine fire in flight:",
-    "correct": "Fuel Shutoff Valve – OFF",
-    "options": ["Fuel Shutoff Valve – OFF", "Mixture – CUT OFF", "Master Switch – OFF"]
-  },
-  {
-    "question": "Third action for engine fire in flight:",
-    "correct": "Master Switch – OFF",
-    "options": ["Master Switch – OFF", "Cabin Heat & Air – OFF", "Fuel Shutoff Valve – OFF"]
-  },
-  {
-    "question": "Fourth action for engine fire in flight:",
-    "correct": "Cabin Heat & Air – OFF",
-    "options": ["Cabin Heat & Air – OFF", "Airspeed – 85 KTS", "Master Switch – OFF"]
-  },
-  {
-    "question": "Fifth action for engine fire in flight:",
-    "correct": "Airspeed – 85 KTS",
-    "options": ["Airspeed – 85 KTS", "Fuel Shutoff Valve – OFF", "Cabin Heat & Air – OFF"]
-  },
-  {
-    "question": "Final action for engine fire in flight:",
-    "correct": "EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
-    "options": ["EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER", "Mixture – CUT OFF", "Airspeed – 85 KTS"]
-  }
-];
-
-
+    {
+      "question": "First action for engine fire in flight:",
+      "correct": "Mixture – CUT OFF",
+      "options": [
+        "Mixture – CUT OFF",
+        "Airspeed – 85 KTS",
+        "Cabin Heat & Air – OFF"
+      ]
+    },
+    {
+      "question": "Second action for engine fire in flight:",
+      "correct": "Fuel Shutoff Valve – OFF",
+      "options": [
+        "Fuel Shutoff Valve – OFF",
+        "Mixture – CUT OFF",
+        "Master Switch – OFF"
+      ]
+    },
+    {
+      "question": "Third action for engine fire in flight:",
+      "correct": "Master Switch – OFF",
+      "options": [
+        "Master Switch – OFF",
+        "Cabin Heat & Air – OFF",
+        "Fuel Shutoff Valve – OFF"
+      ]
+    },
+    {
+      "question": "Fourth action for engine fire in flight:",
+      "correct": "Cabin Heat & Air – OFF",
+      "options": [
+        "Cabin Heat & Air – OFF",
+        "Airspeed – 85 KTS",
+        "Master Switch – OFF"
+      ]
+    },
+    {
+      "question": "Fifth action for engine fire in flight:",
+      "correct": "Airspeed – 85 KTS",
+      "options": [
+        "Airspeed – 85 KTS",
+        "Fuel Shutoff Valve – OFF",
+        "Cabin Heat & Air – OFF"
+      ]
+    },
+    {
+      "question": "Final action for engine fire in flight:",
+      "correct": "EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
+      "options": [
+        "EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
+        "Mixture – CUT OFF",
+        "Airspeed – 85 KTS"
+      ]
+    }
+  ];
 
   late List<Map<String, dynamic>> questions;
   int currentIndex = 0;
@@ -75,7 +97,8 @@ class _PiperPA28FIF extends State<PiperPA28FIF> {
       } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
-            builder: (_) => GameOverScreen(score: score, total: questions.length),
+            builder: (_) =>
+                GameOverScreen(score: score, total: questions.length),
           ),
         );
       }
@@ -114,14 +137,18 @@ class _PiperPA28FIF extends State<PiperPA28FIF> {
               if (answered) {
                 if (isSelected && isCorrect) {
                   tileColor = Colors.green;
-                } else if (isSelected && !isCorrect) tileColor = Colors.red;
-                else if (!isSelected && isCorrect) tileColor = Colors.green.withOpacity(0.5);
+                } else if (isSelected && !isCorrect)
+                  tileColor = Colors.red;
+                else if (!isSelected && isCorrect)
+                  tileColor = Colors.green.withOpacity(0.5);
               }
               return Card(
                 color: tileColor,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 16.0),
                   title: Text(option, style: TextStyle(color: Colors.black)),
                   onTap: () => answered ? null : checkAnswer(option),
                 ),
@@ -171,7 +198,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).pop();
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                child: Text("🔁 PLAY AGAIN", style: TextStyle(color: Colors.black)),
+                child: Text("🔁 PLAY AGAIN",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -179,7 +207,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to HOME", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to HOME",
+                    style: TextStyle(color: Colors.black)),
               ),
               SizedBox(height: 10),
               ElevatedButton(
@@ -187,7 +216,8 @@ class GameOverScreen extends StatelessWidget {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 },
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                child: Text("🏠 Back to GAME SCREEN", style: TextStyle(color: Colors.black)),
+                child: Text("🏠 Back to GAME SCREEN",
+                    style: TextStyle(color: Colors.black)),
               ),
             ],
           ),
@@ -196,4 +226,3 @@ class GameOverScreen extends StatelessWidget {
     );
   }
 }
-

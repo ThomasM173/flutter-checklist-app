@@ -110,7 +110,8 @@ class _FlightSchoolMembershipScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_friendlyError(e)), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text(_friendlyError(e)), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -154,7 +155,8 @@ class _FlightSchoolMembershipScreenState
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_friendlyError(e)), backgroundColor: Colors.red),
+          SnackBar(
+              content: Text(_friendlyError(e)), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -167,7 +169,8 @@ class _FlightSchoolMembershipScreenState
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('Flight School', style: TextStyle(color: Colors.black)),
+        title:
+            const Text('Flight School', style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -202,7 +205,8 @@ class _FlightSchoolMembershipScreenState
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.school, color: Color(0xFF3A7CA5)),
+                              const Icon(Icons.school,
+                                  color: Color(0xFF3A7CA5)),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Column(
@@ -246,13 +250,17 @@ class _FlightSchoolMembershipScreenState
                     const Text(
                       'Join a different flight school',
                       style: TextStyle(
-                          fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                   ] else ...[
                     const Text(
                       'Join a flight school',
                       style: TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black),
                     ),
                     const SizedBox(height: 8),
                     const Text(
@@ -268,7 +276,8 @@ class _FlightSchoolMembershipScreenState
                     textCapitalization: TextCapitalization.characters,
                     decoration: InputDecoration(
                       labelText: 'Invite code',
-                      prefixIcon: const Icon(Icons.confirmation_number_outlined),
+                      prefixIcon:
+                          const Icon(Icons.confirmation_number_outlined),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),

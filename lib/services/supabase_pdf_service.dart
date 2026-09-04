@@ -41,7 +41,8 @@ class SupabasePdfService {
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) {
-      debugPrint('SupabasePdfService: not signed in — completion not recorded.');
+      debugPrint(
+          'SupabasePdfService: not signed in — completion not recorded.');
       return null;
     }
 
@@ -99,10 +100,8 @@ class SupabasePdfService {
   }) async {
     final user = _client.auth.currentUser;
     if (user == null) return [];
-    var query = _client
-        .from('checklist_completions')
-        .select()
-        .eq('user_id', user.id);
+    var query =
+        _client.from('checklist_completions').select().eq('user_id', user.id);
     if (completionType != null && completionType.isNotEmpty) {
       query = query.eq('completion_type', completionType);
     }

@@ -93,7 +93,8 @@ class SupabaseAuthService {
           : Profile.fromMap(row, email: user.email ?? '', isPremium: premium);
     } catch (e) {
       debugPrint('SupabaseAuthService: profile load failed: $e');
-      _profile = Profile(id: user.id, email: user.email ?? '', isPremium: premium);
+      _profile =
+          Profile(id: user.id, email: user.email ?? '', isPremium: premium);
     }
     _controller.add(_profile);
     return _profile;

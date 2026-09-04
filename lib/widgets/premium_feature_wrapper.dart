@@ -4,7 +4,7 @@ import 'package:clearedtogo/services/entitlement_service.dart';
 import 'package:clearedtogo/screens/paywall_screen.dart';
 
 /// A widget wrapper that conditionally shows premium content or a paywall
-/// 
+///
 /// Usage:
 /// ```dart
 /// PremiumFeatureWrapper(
@@ -171,13 +171,14 @@ class InlinePremiumBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap ?? () {
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (_) => const PaywallScreen(),
-          ),
-        );
-      },
+      onTap: onTap ??
+          () {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const PaywallScreen(),
+              ),
+            );
+          },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         decoration: BoxDecoration(

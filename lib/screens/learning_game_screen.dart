@@ -22,7 +22,10 @@ class LearningGameScreen extends StatelessWidget {
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue to sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -30,7 +33,8 @@ class LearningGameScreen extends StatelessWidget {
           ),
           backgroundColor: Colors.transparent,
           elevation: 4,
-          iconTheme: const IconThemeData(color: Colors.black), // Burger icon black
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Burger icon black
         ),
       ),
       drawer: const AppDrawer(currentIndex: 2),
@@ -45,17 +49,24 @@ class LearningGameScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, color: Colors.black),
             ),
             const SizedBox(height: 25),
-            _buildGameButton(context, "Cessna 152", const Cessna152EmergencyGame()),
-            _buildGameButton(context, "Cessna 172", const Cessna172EmergencyGame()),
-            _buildGameButton(context, "Piper PA-28", const PiperPA28EmergencyGame()),
+            _buildGameButton(
+                context, "Cessna 152", const Cessna152EmergencyGame()),
+            _buildGameButton(
+                context, "Cessna 172", const Cessna172EmergencyGame()),
+            _buildGameButton(
+                context, "Piper PA-28", const PiperPA28EmergencyGame()),
             const SizedBox(height: 20),
             const Text(
               "More games are on the way, they will arrive with updates!!",
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
+              style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.black),
             ),
             const SizedBox(height: 10),
-            Image.asset('assets/images/NewLogo.png', height: 200, fit: BoxFit.contain),
+            Image.asset('assets/images/NewLogo.png',
+                height: 200, fit: BoxFit.contain),
             const Spacer(),
           ],
         ),

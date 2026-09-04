@@ -59,5 +59,6 @@ class ChecklistCompletion {
     'pave_assessment': 'PAVE Assessment',
   };
 
-  String get completionTypeLabel => typeLabels[completionType] ?? completionType;
+  String get completionTypeLabel =>
+      typeLabels[completionType] ?? completionType;
 }

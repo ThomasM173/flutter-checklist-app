@@ -59,7 +59,6 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📸 Cockpit Layout"),
               Container(
                 height: 200,
@@ -72,7 +71,6 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                 ),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📊 Specifications"),
               GridView.count(
                 physics: const NeverScrollableScrollPhysics(),
@@ -91,15 +89,13 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                   _buildSpecCard(
                     icon: Icons.speed,
                     title: "Performance",
-                    content:
-                        "Max Speed: 123 kt\nCruise: 115 kt\nRange: 515 NM",
+                    content: "Max Speed: 123 kt\nCruise: 115 kt\nRange: 515 NM",
                     isLarger: true,
                   ),
                   _buildSpecCard(
                     icon: Icons.settings_input_composite,
                     title: "Engine",
-                    content:
-                        "Lycoming O-320\n150-180 HP\nFuel Burn: ~9 GPH",
+                    content: "Lycoming O-320\n150-180 HP\nFuel Burn: ~9 GPH",
                   ),
                   _buildSpecCard(
                     icon: Icons.local_gas_station,
@@ -109,33 +105,30 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                 ],
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("✅ Strengths"),
               const Text(
                 "• Low wing design offers smooth ride\n• Comfortable cabin and seating\n• Robust airframe\n• Good cross-country capability",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("⚠️ Limitations"),
               const Text(
                 "• Slightly heavier controls than Cessna trainers\n• Lower visibility compared to high-wing aircraft\n• Higher stall speed than some competitors",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📘 Use Cases"),
               const Text(
                 "Flight training, personal travel, touring, aerial photography, light utility work.",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle_outline, color: Colors.black),
+                      icon: const Icon(Icons.check_circle_outline,
+                          color: Colors.black),
                       label: const Text(
                         "Pre-Flight",
                         style: TextStyle(color: Colors.black),
@@ -154,7 +147,8 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.report_problem, color: Colors.black),
+                      icon:
+                          const Icon(Icons.report_problem, color: Colors.black),
                       label: const Text(
                         "Emergency",
                         style: TextStyle(color: Colors.black),
@@ -168,8 +162,8 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                         ),
                         elevation: 2,
                       ),
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/piper_pa28_emergency_screen'),
+                      onPressed: () => Navigator.pushNamed(
+                          context, '/piper_pa28_emergency_screen'),
                     ),
                   ),
                 ],
@@ -190,12 +184,11 @@ class _PiperPA28ScreenState extends State<PiperPA28Screen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/piper_pa28_emergency_game'),
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/piper_pa28_emergency_game'),
                 ),
               ),
               const SizedBox(height: 24),
-
               Center(
                 child: OutlinedButton.icon(
                   onPressed: _launchMoreInfo,

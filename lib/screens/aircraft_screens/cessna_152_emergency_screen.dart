@@ -15,95 +15,96 @@ class Cessna152EmergencyScreen extends StatefulWidget {
   const Cessna152EmergencyScreen({super.key});
 
   @override
-  State<Cessna152EmergencyScreen> createState() => _Cessna152EmergencyScreenState();
+  State<Cessna152EmergencyScreen> createState() =>
+      _Cessna152EmergencyScreenState();
 }
 
 class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
   late Map<String, Map<String, bool>> checklistSections;
   static const Map<String, List<String>> emergencyProcedures = {
-  "ENGINE POWER LOSS IN FLIGHT": [
-  "Carburetor Heat            – ON",
-  "Primer                     – IN & LOCKED",
-  "Fuel Shutoff Valve         – BOTH",
-  "Mixture                    – RICH",
-  "Ignition Switch            – BOTH (ON START IF PROPELLER STOPPED)",
-  "IF NO RESPONSE PROCEED WITH POWER OFF LANDING",
-  ],
-  "ENGINE FAILURE AFTER TAKE-OFF (RWY Available)": [
-    "Land on remaining runway",
-    "Mixture                    – CUT OFF",
-    "Ignition Switch            – OFF",
-    "Master Switch              – OFF",
-    "Fuel Shutoff Valve         – OFF",
-  ],
-  "ENGINE FAILURE AFTER TAKE-OFF (RWY NOT Available)": [
-    "Airspeed                   – SET",
-    "Best Field                 – 30° OFF NOSE",
-    "Throttle                   – IDLE",
-    "Mixture                    – CUT OFF",
-    "Fuel Shutoff Valve         – OFF",
-    "Ignition Switch            – OFF",
-    "Master Switch              – OFF",
-  ],
-  "POWER OFF LANDING (RESTART)": [
-    "Airspeed                   – SET",
-    "Best Field                 – LOCATE",
-    "Pattern                    – ESTABLISH",
-    "Fuel Shutoff Valve         – ON - BOTH",
-    "Mixture                    – RICH",
-    "Carburetor Heat            – ON",
-    "Primer                     – IN & LOCKED",
-    "Ignition Switch            – BOTH / START",
-  ],
-  "IF RESTART UNSUCCESSFUL": [
-    "MAYDAY CALL & TRANSPONDER  – TRANSMIT & 7700",
-    "Throttle                   – IDLE",
-    "Mixture                    – CUT OFF",
-    "Fuel Shutoff Valve         – OFF",
-    "Ignition Switch            – OFF",
-    "Flaps                      – AS REQUIRED",
-    "Harness                    – TIGHT",
-    "Doors                      – UNLATCH",
-  ],
-  "ELECTRICAL FAILURE": [
-    "If Ammeter Shows Discharge:",
-    "  Alternator              – OFF",
-    "  Nonessential Electrical – OFF",
-    "  ⚠️ LAND ASAP",
-    "If Low Voltage Light illuminates:",
-    "  Master                  – OFF THEN ON",
-    "If Light Remains:",
-    "  Alternator              – OFF",
-    "  Nonessential Electrical – OFF",
-    "  ⚠️ LAND ASAP",
-  ],
-  "ENGINE FIRE DURING START": [
-    "Starter                    – CONTINUE TO CRANK",
-    "If Engine Starts: Power    – 1700 RPM FOR FEW MINUTES",
-    "Mixture                    – IDLE CUT OFF",
-    "If Engine doesn't Start: Throttle – FULL OPEN",
-    "Starter                    – CONTINUE TO CRANK",
-    "Mixture                    – IDLE CUT OFF",
-    "Master Switch              – OFF",
-    "Ignition Switch            – OFF",
-    "Fuel Selector              – OFF",
-    "Fire Extinguisher          – OBTAIN",
-    "Fire                       – EXTINGUISH",
-  ],
-  "ENGINE FIRE IN FLIGHT": [
-    "Mixture                    – IDLE CUT OFF",
-    "Fuel Selector              – OFF",
-    "Master Switch              – OFF",
-    "Cabin Heat & Air           – OFF",
-    "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
-  ],
-  "CABIN | ELECTRICAL FIRE OR SMOKE": [
-    "Master Switch              – OFF",
-    "Cabin Air/Heat             – CLOSED",
-    "Vents & Cabin Windows       – OPEN",
-    "LAND AS SOON AS PRACTICAL",
-  ],
-};
+    "ENGINE POWER LOSS IN FLIGHT": [
+      "Carburetor Heat            – ON",
+      "Primer                     – IN & LOCKED",
+      "Fuel Shutoff Valve         – BOTH",
+      "Mixture                    – RICH",
+      "Ignition Switch            – BOTH (ON START IF PROPELLER STOPPED)",
+      "IF NO RESPONSE PROCEED WITH POWER OFF LANDING",
+    ],
+    "ENGINE FAILURE AFTER TAKE-OFF (RWY Available)": [
+      "Land on remaining runway",
+      "Mixture                    – CUT OFF",
+      "Ignition Switch            – OFF",
+      "Master Switch              – OFF",
+      "Fuel Shutoff Valve         – OFF",
+    ],
+    "ENGINE FAILURE AFTER TAKE-OFF (RWY NOT Available)": [
+      "Airspeed                   – SET",
+      "Best Field                 – 30° OFF NOSE",
+      "Throttle                   – IDLE",
+      "Mixture                    – CUT OFF",
+      "Fuel Shutoff Valve         – OFF",
+      "Ignition Switch            – OFF",
+      "Master Switch              – OFF",
+    ],
+    "POWER OFF LANDING (RESTART)": [
+      "Airspeed                   – SET",
+      "Best Field                 – LOCATE",
+      "Pattern                    – ESTABLISH",
+      "Fuel Shutoff Valve         – ON - BOTH",
+      "Mixture                    – RICH",
+      "Carburetor Heat            – ON",
+      "Primer                     – IN & LOCKED",
+      "Ignition Switch            – BOTH / START",
+    ],
+    "IF RESTART UNSUCCESSFUL": [
+      "MAYDAY CALL & TRANSPONDER  – TRANSMIT & 7700",
+      "Throttle                   – IDLE",
+      "Mixture                    – CUT OFF",
+      "Fuel Shutoff Valve         – OFF",
+      "Ignition Switch            – OFF",
+      "Flaps                      – AS REQUIRED",
+      "Harness                    – TIGHT",
+      "Doors                      – UNLATCH",
+    ],
+    "ELECTRICAL FAILURE": [
+      "If Ammeter Shows Discharge:",
+      "  Alternator              – OFF",
+      "  Nonessential Electrical – OFF",
+      "  ⚠️ LAND ASAP",
+      "If Low Voltage Light illuminates:",
+      "  Master                  – OFF THEN ON",
+      "If Light Remains:",
+      "  Alternator              – OFF",
+      "  Nonessential Electrical – OFF",
+      "  ⚠️ LAND ASAP",
+    ],
+    "ENGINE FIRE DURING START": [
+      "Starter                    – CONTINUE TO CRANK",
+      "If Engine Starts: Power    – 1700 RPM FOR FEW MINUTES",
+      "Mixture                    – IDLE CUT OFF",
+      "If Engine doesn't Start: Throttle – FULL OPEN",
+      "Starter                    – CONTINUE TO CRANK",
+      "Mixture                    – IDLE CUT OFF",
+      "Master Switch              – OFF",
+      "Ignition Switch            – OFF",
+      "Fuel Selector              – OFF",
+      "Fire Extinguisher          – OBTAIN",
+      "Fire                       – EXTINGUISH",
+    ],
+    "ENGINE FIRE IN FLIGHT": [
+      "Mixture                    – IDLE CUT OFF",
+      "Fuel Selector              – OFF",
+      "Master Switch              – OFF",
+      "Cabin Heat & Air           – OFF",
+      "⚠️ EXECUTE EMERGENCY LANDING WITHOUT ENGINE POWER",
+    ],
+    "CABIN | ELECTRICAL FIRE OR SMOKE": [
+      "Master Switch              – OFF",
+      "Cabin Air/Heat             – CLOSED",
+      "Vents & Cabin Windows       – OPEN",
+      "LAND AS SOON AS PRACTICAL",
+    ],
+  };
 
   Map<String, Set<int>> _checkedItems = {};
 
@@ -168,17 +169,20 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
             if (user?.fullName != null)
               pdfWidgets.Text(
                 "Pilot: ${user!.fullName}",
-                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                style: pdfWidgets.TextStyle(
+                    fontSize: 12, color: PdfColors.grey800),
               ),
             if (user?.licenseNumber != null)
               pdfWidgets.Text(
                 "License: ${user!.licenseNumber}",
-                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                style: pdfWidgets.TextStyle(
+                    fontSize: 12, color: PdfColors.grey800),
               ),
             if (user?.homeBase != null)
               pdfWidgets.Text(
                 "Home Base: ${user!.homeBase}",
-                style: pdfWidgets.TextStyle(fontSize: 12, color: PdfColors.grey800),
+                style: pdfWidgets.TextStyle(
+                    fontSize: 12, color: PdfColors.grey800),
               ),
             pdfWidgets.SizedBox(height: 10),
             ...checklistSections.entries.map((entry) => pdfWidgets.Column(
@@ -199,33 +203,32 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
         ),
       );
 
-    final output = await getTemporaryDirectory();
-    final file = File("${output.path}/Cessna_152_Emergency_Procedures.pdf");
-    final pdfBytes = await pdf.save();
-    await file.writeAsBytes(pdfBytes);
-    
-    // Record the completion (non-blocking)
-    try {
-      await SupabasePdfService().recordCompletion(
-        pdfBytes: pdfBytes,
-        aircraftType: 'Cessna 152',
-        checklistName: 'Emergency Procedures',
-        completionType: 'emergency_procedures',
-      );
-    } catch (e) {
-      debugPrint('Failed to record emergency procedures completion: $e');
-    }
-    
-    OpenFile.open(file.path);
-  } catch (_) {
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("PDF error occurred.")),
-      );
+      final output = await getTemporaryDirectory();
+      final file = File("${output.path}/Cessna_152_Emergency_Procedures.pdf");
+      final pdfBytes = await pdf.save();
+      await file.writeAsBytes(pdfBytes);
+
+      // Record the completion (non-blocking)
+      try {
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: 'Cessna 152',
+          checklistName: 'Emergency Procedures',
+          completionType: 'emergency_procedures',
+        );
+      } catch (e) {
+        debugPrint('Failed to record emergency procedures completion: $e');
+      }
+
+      OpenFile.open(file.path);
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("PDF error occurred.")),
+        );
+      }
     }
   }
-}
-
 
   void _toggleItem(String section, int index, bool? value) {
     setState(() {
@@ -239,33 +242,33 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     _saveChecklistState();
   }
 
-Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPressed) {
-  return Expanded(
-    child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: ElevatedButton.icon(
-        icon: Icon(icon, color: Colors.white),
-        label: Text(
-          label,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+  Widget _iconButton(
+      IconData icon, String label, Color color, VoidCallback onPressed) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: ElevatedButton.icon(
+          icon: Icon(icon, color: Colors.white),
+          label: Text(
+            label,
+            style: const TextStyle(
+              fontSize: 16,
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          minimumSize: const Size.fromHeight(60),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: color,
+            minimumSize: const Size.fromHeight(60),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+            ),
           ),
+          onPressed: onPressed,
         ),
-        onPressed: onPressed,
       ),
-    ),
-  );
-}
-
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -301,8 +304,8 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.orange[400],
               minimumSize: const Size.fromHeight(60), // height 60
-              shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
             ),
             onPressed: () {
               Navigator.push(
@@ -337,7 +340,8 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                 elevation: 3,
                 shadowColor: Colors.white,
                 child: Theme(
-                  data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+                  data: Theme.of(context)
+                      .copyWith(dividerColor: Colors.transparent),
                   child: ExpansionTile(
                     iconColor: Colors.black,
                     collapsedIconColor: Colors.black,
@@ -367,12 +371,12 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                       final index = entryMap.key;
                       final stepText = entryMap.value;
                       final isChecked = checkedIndices.contains(index);
-                      
+
                       // Parse item name and action
                       final parts = stepText.split('–');
                       final itemName = parts[0].trim();
                       final action = parts.length > 1 ? parts[1].trim() : '';
-                      
+
                       // Check if it's a warning or special text
                       final bool isWarning = stepText.contains("⚠️");
 
@@ -380,18 +384,22 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                         child: InkWell(
                           onTap: () => _toggleItem(title, index, !isChecked),
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 8.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 8.0),
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 // Custom checkbox
                                 GestureDetector(
-                                  onTap: () => _toggleItem(title, index, !isChecked),
+                                  onTap: () =>
+                                      _toggleItem(title, index, !isChecked),
                                   child: Container(
                                     width: 24,
                                     height: 24,
                                     decoration: BoxDecoration(
-                                      color: isChecked ? Colors.green : Colors.white,
+                                      color: isChecked
+                                          ? Colors.green
+                                          : Colors.white,
                                       border: Border.all(
                                         color: Colors.black,
                                         width: 2,
@@ -407,9 +415,12 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                                   child: Text(
                                     itemName,
                                     style: TextStyle(
-                                      color: isWarning ? Colors.red : Colors.black,
+                                      color:
+                                          isWarning ? Colors.red : Colors.black,
                                       fontSize: 14,
-                                      fontWeight: isWarning ? FontWeight.bold : FontWeight.normal,
+                                      fontWeight: isWarning
+                                          ? FontWeight.bold
+                                          : FontWeight.normal,
                                     ),
                                   ),
                                 ),
@@ -422,7 +433,9 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
                                       action,
                                       textAlign: TextAlign.right,
                                       style: TextStyle(
-                                        color: isWarning ? Colors.red : Colors.black,
+                                        color: isWarning
+                                            ? Colors.red
+                                            : Colors.black,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
@@ -445,14 +458,16 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
           Row(
             children: [
               _iconButton(Icons.refresh, 'Reset', Colors.red, _resetChecklist),
-              _iconButton(Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+              _iconButton(
+                  Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
               _iconButton(
                 Icons.info_outline,
                 'Details',
                 Colors.orange,
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const Cessna152EmergencyDetailsScreen()),
+                  MaterialPageRoute(
+                      builder: (_) => const Cessna152EmergencyDetailsScreen()),
                 ),
               ),
             ],
@@ -462,5 +477,4 @@ Widget _iconButton(IconData icon, String label, Color color, VoidCallback onPres
       ),
     );
   }
-
 }

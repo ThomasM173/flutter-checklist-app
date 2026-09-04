@@ -23,7 +23,10 @@ v1.0.0 –Initial Release
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue → sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue → sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -31,7 +34,8 @@ v1.0.0 –Initial Release
           ),
           backgroundColor: Colors.transparent,
           elevation: 0,
-          iconTheme: const IconThemeData(color: Colors.black), // Black burger icon
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Black burger icon
         ),
       ),
       drawer: const AppDrawer(currentIndex: 0),

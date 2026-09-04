@@ -13,12 +13,13 @@ class DepartureBriefingScreen extends StatefulWidget {
   const DepartureBriefingScreen({super.key});
 
   @override
-  State<DepartureBriefingScreen> createState() => _DepartureBriefingScreenState();
+  State<DepartureBriefingScreen> createState() =>
+      _DepartureBriefingScreenState();
 }
 
 class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
   final _formKey = GlobalKey<FormState>();
-  
+
   final _aircraftRegistrationController = TextEditingController();
   final _dateController = TextEditingController();
   final _pilotNameController = TextEditingController();
@@ -29,12 +30,12 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
   final _windController = TextEditingController();
   final _abortPointController = TextEditingController();
   final _engineFailureActionController = TextEditingController();
-  
+
   // TEM (Threat and Error Management)
   final List<String> _threats = [];
   final List<String> _errors = [];
   final List<String> _mitigations = [];
-  
+
   @override
   void initState() {
     super.initState();
@@ -46,14 +47,16 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _pilotNameController.text = prefs.getString('brief_pilotName') ?? '';
-      _aircraftRegistrationController.text = prefs.getString('brief_registration') ?? '';
+      _aircraftRegistrationController.text =
+          prefs.getString('brief_registration') ?? '';
     });
   }
 
   Future<void> _saveEntry() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('brief_pilotName', _pilotNameController.text);
-    await prefs.setString('brief_registration', _aircraftRegistrationController.text);
+    await prefs.setString(
+        'brief_registration', _aircraftRegistrationController.text);
   }
 
   Future<void> _generatePDF() async {
@@ -67,7 +70,8 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('PDF generation only works on Android/iOS')),
+          const SnackBar(
+              content: Text('PDF generation only works on Android/iOS')),
         );
       }
       return;
@@ -75,9 +79,10 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
 
     try {
       final pdf = pw.Document();
-      final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
+      final fontData =
+          await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
-      
+
       final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
@@ -89,16 +94,21 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
           header: (context) => pw.Column(
             crossAxisAlignment: pw.CrossAxisAlignment.start,
             children: [
-              pw.Text("DEPARTURE BRIEFING / TEM", style: pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold)),
+              pw.Text("DEPARTURE BRIEFING / TEM",
+                  style: pw.TextStyle(
+                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
               pw.Divider(thickness: 2),
               pw.SizedBox(height: 5),
             ],
           ),
           build: (context) => [
-            if (user?.fullName != null) pw.Text("Pilot: ${user!.fullName}", style: pw.TextStyle(fontSize: 11)),
-            if (user?.licenseNumber != null) pw.Text("License: ${user!.licenseNumber}", style: pw.TextStyle(fontSize: 11)),
+            if (user?.fullName != null)
+              pw.Text("Pilot: ${user!.fullName}",
+                  style: pw.TextStyle(fontSize: 11)),
+            if (user?.licenseNumber != null)
+              pw.Text("License: ${user!.licenseNumber}",
+                  style: pw.TextStyle(fontSize: 11)),
             pw.SizedBox(height: 10),
-            
             _pdfRow("Aircraft:", _aircraftRegistrationController.text),
             _pdfRow("Date:", _dateController.text),
             _pdfRow("Departure:", _departureAirportController.text),
@@ -106,33 +116,51 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
             _pdfRow("Runway:", _runwayController.text),
             _pdfRow("Runway Length:", "${_runwayLengthController.text}m"),
             _pdfRow("Wind:", _windController.text),
-            
             pw.SizedBox(height: 15),
-            
             _pdfSection("DEPARTURE BRIEF", [
               _pdfRow("Abort Point:", _abortPointController.text),
-              _pdfRow("Engine Failure Action:", _engineFailureActionController.text),
+              _pdfRow("Engine Failure Action:",
+                  _engineFailureActionController.text),
             ]),
-            
-            if (_threats.isNotEmpty) _pdfSection("THREATS IDENTIFIED", _threats.map((t) => pw.Text("• $t", style: pw.TextStyle(fontSize: 11))).toList()),
-            if (_errors.isNotEmpty) _pdfSection("POTENTIAL ERRORS", _errors.map((e) => pw.Text("• $e", style: pw.TextStyle(fontSize: 11))).toList()),
-            if (_mitigations.isNotEmpty) _pdfSection("MITIGATIONS", _mitigations.map((m) => pw.Text("• $m", style: pw.TextStyle(fontSize: 11))).toList()),
-            
+            if (_threats.isNotEmpty)
+              _pdfSection(
+                  "THREATS IDENTIFIED",
+                  _threats
+                      .map((t) =>
+                          pw.Text("• $t", style: pw.TextStyle(fontSize: 11)))
+                      .toList()),
+            if (_errors.isNotEmpty)
+              _pdfSection(
+                  "POTENTIAL ERRORS",
+                  _errors
+                      .map((e) =>
+                          pw.Text("• $e", style: pw.TextStyle(fontSize: 11)))
+                      .toList()),
+            if (_mitigations.isNotEmpty)
+              _pdfSection(
+                  "MITIGATIONS",
+                  _mitigations
+                      .map((m) =>
+                          pw.Text("• $m", style: pw.TextStyle(fontSize: 11)))
+                      .toList()),
             pw.Spacer(),
-            
             pw.Row(
               mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
               children: [
                 pw.Column(
                   crossAxisAlignment: pw.CrossAxisAlignment.start,
                   children: [
-                    pw.Text("Pilot Signature:", style: pw.TextStyle(fontSize: 10)),
+                    pw.Text("Pilot Signature:",
+                        style: pw.TextStyle(fontSize: 10)),
                     pw.SizedBox(height: 5),
                     pw.Container(
                       width: 200,
                       padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_pilotNameController.text, style: pw.TextStyle(fontSize: 12, fontStyle: pw.FontStyle.italic)),
+                      decoration: pw.BoxDecoration(
+                          border: pw.Border(bottom: pw.BorderSide())),
+                      child: pw.Text(_pilotNameController.text,
+                          style: pw.TextStyle(
+                              fontSize: 12, fontStyle: pw.FontStyle.italic)),
                     ),
                   ],
                 ),
@@ -144,8 +172,10 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
                     pw.Container(
                       width: 120,
                       padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_dateController.text, style: pw.TextStyle(fontSize: 12)),
+                      decoration: pw.BoxDecoration(
+                          border: pw.Border(bottom: pw.BorderSide())),
+                      child: pw.Text(_dateController.text,
+                          style: pw.TextStyle(fontSize: 12)),
                     ),
                   ],
                 ),
@@ -162,7 +192,7 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
       final file = File("${output.path}/$fileName");
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-      
+
       try {
         await SupabasePdfService().recordCompletion(
           pdfBytes: pdfBytes,
@@ -175,13 +205,15 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
       } catch (e) {
         debugPrint('Failed to record departure briefing completion: $e');
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Departure Briefing PDF generated!'), backgroundColor: Colors.green),
+          const SnackBar(
+              content: Text('Departure Briefing PDF generated!'),
+              backgroundColor: Colors.green),
         );
       }
-      
+
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -201,8 +233,14 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
           pw.Container(
             width: double.infinity,
             padding: pw.EdgeInsets.symmetric(vertical: 6, horizontal: 10),
-            decoration: pw.BoxDecoration(color: PdfColors.blue900, borderRadius: pw.BorderRadius.circular(4)),
-            child: pw.Text(title, style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: PdfColors.white)),
+            decoration: pw.BoxDecoration(
+                color: PdfColors.blue900,
+                borderRadius: pw.BorderRadius.circular(4)),
+            child: pw.Text(title,
+                style: pw.TextStyle(
+                    fontSize: 12,
+                    fontWeight: pw.FontWeight.bold,
+                    color: PdfColors.white)),
           ),
           pw.SizedBox(height: 6),
           ...children,
@@ -218,7 +256,9 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
         children: [
           pw.Container(
             width: 140,
-            child: pw.Text(label, style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
+            child: pw.Text(label,
+                style:
+                    pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
           ),
           pw.Text(value, style: pw.TextStyle(fontSize: 11)),
         ],
@@ -231,12 +271,16 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text("Departure Briefing / TEM", style: TextStyle(color: Colors.black)),
+        title: const Text("Departure Briefing / TEM",
+            style: TextStyle(color: Colors.black)),
         centerTitle: true,
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
-            gradient: LinearGradient(colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)], begin: Alignment.topLeft, end: Alignment.bottomRight),
+            gradient: LinearGradient(
+                colors: [Color(0xFFADD8E6), Color(0xFF87CEEB)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight),
           ),
         ),
         backgroundColor: Colors.transparent,
@@ -252,51 +296,69 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
               child: ExpansionTile(
                 initiallyExpanded: false,
                 leading: const Icon(Icons.flight_takeoff, color: Colors.blue),
-                title: const Text('Flight Details', style: TextStyle(fontWeight: FontWeight.bold)),
+                title: const Text('Flight Details',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_aircraftRegistrationController, 'Aircraft *', Icons.local_airport, required: true),
-                        _buildTextField(_pilotNameController, 'Pilot Name *', Icons.person, required: true),
-                        _buildTextField(_dateController, 'Date *', Icons.calendar_today, required: true),
-                        _buildTextField(_departureAirportController, 'Departure *', Icons.flight_takeoff, required: true),
-                        _buildTextField(_destinationAirportController, 'Destination *', Icons.flight_land, required: true),
+                        _buildTextField(_aircraftRegistrationController,
+                            'Aircraft *', Icons.local_airport,
+                            required: true),
+                        _buildTextField(
+                            _pilotNameController, 'Pilot Name *', Icons.person,
+                            required: true),
+                        _buildTextField(
+                            _dateController, 'Date *', Icons.calendar_today,
+                            required: true),
+                        _buildTextField(_departureAirportController,
+                            'Departure *', Icons.flight_takeoff,
+                            required: true),
+                        _buildTextField(_destinationAirportController,
+                            'Destination *', Icons.flight_land,
+                            required: true),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            
             const SizedBox(height: 16),
-            
             Card(
               elevation: 2,
               child: ExpansionTile(
                 initiallyExpanded: false,
-                leading: const Icon(Icons.airport_shuttle, color: Colors.orange),
-                title: const Text('Runway & Performance', style: TextStyle(fontWeight: FontWeight.bold)),
+                leading:
+                    const Icon(Icons.airport_shuttle, color: Colors.orange),
+                title: const Text('Runway & Performance',
+                    style: TextStyle(fontWeight: FontWeight.bold)),
                 children: [
                   Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       children: [
-                        _buildTextField(_runwayController, 'Runway *', Icons.route, required: true),
-                        _buildTextField(_runwayLengthController, 'Length (m) *', Icons.straighten, required: true, keyboardType: TextInputType.number),
-                        _buildTextField(_windController, 'Wind *', Icons.air, required: true),
-                        _buildTextField(_abortPointController, 'Abort Point *', Icons.stop_circle, required: true),
-                        _buildTextField(_engineFailureActionController, 'Engine Failure Action *', Icons.build, required: true, maxLines: 2),
+                        _buildTextField(
+                            _runwayController, 'Runway *', Icons.route,
+                            required: true),
+                        _buildTextField(_runwayLengthController, 'Length (m) *',
+                            Icons.straighten,
+                            required: true, keyboardType: TextInputType.number),
+                        _buildTextField(_windController, 'Wind *', Icons.air,
+                            required: true),
+                        _buildTextField(_abortPointController, 'Abort Point *',
+                            Icons.stop_circle,
+                            required: true),
+                        _buildTextField(_engineFailureActionController,
+                            'Engine Failure Action *', Icons.build,
+                            required: true, maxLines: 2),
                       ],
                     ),
                   ),
                 ],
               ),
             ),
-            
             const SizedBox(height: 16),
-            
             Card(
               elevation: 3,
               child: Padding(
@@ -304,32 +366,35 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('TEM - Threat & Error Management', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text('TEM - Threat & Error Management',
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
                     _buildListSection('Threats', _threats, Colors.red),
                     const SizedBox(height: 12),
                     _buildListSection('Errors', _errors, Colors.orange),
                     const SizedBox(height: 12),
-                    _buildListSection('Mitigations', _mitigations, Colors.green),
+                    _buildListSection(
+                        'Mitigations', _mitigations, Colors.green),
                   ],
                 ),
               ),
             ),
-            
             const SizedBox(height: 24),
-            
             ElevatedButton.icon(
               onPressed: _generatePDF,
               icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
-              label: const Text('Generate Briefing PDF', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+              label: const Text('Generate Briefing PDF',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFF87CEEB),
                 padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
                 elevation: 3,
               ),
             ),
-            
             const SizedBox(height: 40),
           ],
         ),
@@ -345,22 +410,24 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
           children: [
             Icon(Icons.label, color: color, size: 20),
             const SizedBox(width: 8),
-            Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            Text(title,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
         const SizedBox(height: 8),
         ...items.map((item) => Padding(
-          padding: const EdgeInsets.only(left: 28, bottom: 4),
-          child: Row(
-            children: [
-              Expanded(child: Text('• $item')),
-              IconButton(
-                icon: const Icon(Icons.delete, size: 20),
-                onPressed: () => setState(() => items.remove(item)),
+              padding: const EdgeInsets.only(left: 28, bottom: 4),
+              child: Row(
+                children: [
+                  Expanded(child: Text('• $item')),
+                  IconButton(
+                    icon: const Icon(Icons.delete, size: 20),
+                    onPressed: () => setState(() => items.remove(item)),
+                  ),
+                ],
               ),
-            ],
-          ),
-        )),
+            )),
         TextButton.icon(
           onPressed: () async {
             final controller = TextEditingController();
@@ -368,10 +435,15 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
               context: context,
               builder: (context) => AlertDialog(
                 title: Text('Add $title'),
-                content: TextField(controller: controller, autofocus: true, maxLines: 2),
+                content: TextField(
+                    controller: controller, autofocus: true, maxLines: 2),
                 actions: [
-                  TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-                  TextButton(onPressed: () => Navigator.pop(context, controller.text), child: const Text('Add')),
+                  TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Cancel')),
+                  TextButton(
+                      onPressed: () => Navigator.pop(context, controller.text),
+                      child: const Text('Add')),
                 ],
               ),
             );
@@ -407,7 +479,9 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
           filled: true,
           fillColor: Colors.white,
         ),
-        validator: required ? (val) => val == null || val.isEmpty ? 'Required' : null : null,
+        validator: required
+            ? (val) => val == null || val.isEmpty ? 'Required' : null
+            : null,
       ),
     );
   }

@@ -148,7 +148,8 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
     if (!_iap.isAvailable) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('The App Store is not available right now.')),
+        const SnackBar(
+            content: Text('The App Store is not available right now.')),
       );
       return;
     }
@@ -327,9 +328,11 @@ class _PaywallScreenState extends State<PaywallScreen> {
             backgroundColor: const Color(0xFF87CEEB),
             foregroundColor: Colors.black,
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          child: const Text('Got it', style: TextStyle(fontWeight: FontWeight.bold)),
+          child: const Text('Got it',
+              style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 12),
         Wrap(
@@ -357,128 +360,121 @@ class _PaywallScreenState extends State<PaywallScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Center(
-                    child: Container(
-                      width: 88,
-                      height: 88,
-                      decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
-                        ),
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(Icons.workspace_premium,
-                          size: 52, color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Unlock ClearedToGo Premium',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Weather-integrated checklists, PAVE history, PDF records '
-                    'saved to your account and shared with your flight school.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey[700]),
-                  ),
-                  const SizedBox(height: 24),
+          child: Container(
+            width: 88,
+            height: 88,
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFFFFD700), Color(0xFFFFA500)],
+              ),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.workspace_premium,
+                size: 52, color: Colors.white),
+          ),
+        ),
+        const SizedBox(height: 20),
+        const Text(
+          'Unlock ClearedToGo Premium',
+          textAlign: TextAlign.center,
+          style: TextStyle(
+              fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Weather-integrated checklists, PAVE history, PDF records '
+          'saved to your account and shared with your flight school.',
+          textAlign: TextAlign.center,
+          style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+        ),
+        const SizedBox(height: 24),
 
-                  // --- Subscription options (title / length / price) ---
-                  _PlanCard(
-                    title: _titleFor(kYearlySubscriptionId, 'Premium — Yearly'),
-                    length:
-                        kIapProductLength[kYearlySubscriptionId] ?? '1 year',
-                    price: _priceFor(kYearlySubscriptionId, kYearlyPrice),
-                    highlighted: true,
-                    badge: 'BEST VALUE',
-                    busy: _busy && _pendingProductId == kYearlySubscriptionId,
-                    onTap: () => _buy(kYearlySubscriptionId),
-                  ),
-                  const SizedBox(height: 12),
-                  _PlanCard(
-                    title:
-                        _titleFor(kMonthlySubscriptionId, 'Premium — Monthly'),
-                    length:
-                        kIapProductLength[kMonthlySubscriptionId] ?? '1 month',
-                    price: _priceFor(kMonthlySubscriptionId, kMonthlyPrice),
-                    busy: _busy && _pendingProductId == kMonthlySubscriptionId,
-                    onTap: () => _buy(kMonthlySubscriptionId),
-                  ),
+        // --- Subscription options (title / length / price) ---
+        _PlanCard(
+          title: _titleFor(kYearlySubscriptionId, 'Premium — Yearly'),
+          length: kIapProductLength[kYearlySubscriptionId] ?? '1 year',
+          price: _priceFor(kYearlySubscriptionId, kYearlyPrice),
+          highlighted: true,
+          badge: 'BEST VALUE',
+          busy: _busy && _pendingProductId == kYearlySubscriptionId,
+          onTap: () => _buy(kYearlySubscriptionId),
+        ),
+        const SizedBox(height: 12),
+        _PlanCard(
+          title: _titleFor(kMonthlySubscriptionId, 'Premium — Monthly'),
+          length: kIapProductLength[kMonthlySubscriptionId] ?? '1 month',
+          price: _priceFor(kMonthlySubscriptionId, kMonthlyPrice),
+          busy: _busy && _pendingProductId == kMonthlySubscriptionId,
+          onTap: () => _buy(kMonthlySubscriptionId),
+        ),
 
-                  if (_storeMessage != null) ...[
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(_storeMessage!,
-                            style: TextStyle(color: Colors.grey[700])),
-                      ],
-                    ),
-                  ],
+        if (_storeMessage != null) ...[
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const SizedBox(
+                width: 16,
+                height: 16,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              const SizedBox(width: 8),
+              Text(_storeMessage!, style: TextStyle(color: Colors.grey[700])),
+            ],
+          ),
+        ],
 
-                  const SizedBox(height: 20),
-                  TextButton(
-                    onPressed: _busy ? null : _restore,
-                    child: const Text('Restore Purchases'),
-                  ),
+        const SizedBox(height: 20),
+        TextButton(
+          onPressed: _busy ? null : _restore,
+          child: const Text('Restore Purchases'),
+        ),
 
-                  const SizedBox(height: 8),
-                  // --- Guideline 3.1.2(c) disclosure ---
-                  Text(
-                    'Payment is charged to your Apple Account at confirmation. '
-                    'The subscription renews automatically for the same period '
-                    'and price unless cancelled at least 24 hours before the '
-                    'end of the current period. Manage or cancel any time in '
-                    'your Apple Account settings.',
-                    style: TextStyle(fontSize: 11, color: Colors.grey[600]),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 16,
-                    children: [
-                      TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => const PrivacyPolicyScreen(),
-                          ),
-                        ),
-                        child: const Text('Privacy Policy'),
-                      ),
-                      TextButton(
-                        onPressed: () => _openUrl(kTermsOfUseUrl),
-                        child: const Text('Terms of Use (EULA)'),
-                      ),
-                    ],
-                  ),
+        const SizedBox(height: 8),
+        // --- Guideline 3.1.2(c) disclosure ---
+        Text(
+          'Payment is charged to your Apple Account at confirmation. '
+          'The subscription renews automatically for the same period '
+          'and price unless cancelled at least 24 hours before the '
+          'end of the current period. Manage or cancel any time in '
+          'your Apple Account settings.',
+          style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 16,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const PrivacyPolicyScreen(),
+                ),
+              ),
+              child: const Text('Privacy Policy'),
+            ),
+            TextButton(
+              onPressed: () => _openUrl(kTermsOfUseUrl),
+              child: const Text('Terms of Use (EULA)'),
+            ),
+          ],
+        ),
 
-                  if (kDisablePaywallForDev)
-                    Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.amber[100],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.amber),
-                      ),
-                      child: Text(
-                        'Dev Mode: tapping a plan grants Premium immediately, '
-                        'with no App Store charge.',
-                        style:
-                            TextStyle(fontSize: 11, color: Colors.amber[900]),
-                      ),
-                    ),
+        if (kDisablePaywallForDev)
+          Container(
+            margin: const EdgeInsets.only(top: 8),
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.amber[100],
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.amber),
+            ),
+            child: Text(
+              'Dev Mode: tapping a plan grants Premium immediately, '
+              'with no App Store charge.',
+              style: TextStyle(fontSize: 11, color: Colors.amber[900]),
+            ),
+          ),
       ],
     );
   }
@@ -555,8 +551,7 @@ class _PlanCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text('Auto-renewing subscription · $length',
-                      style:
-                          TextStyle(fontSize: 12, color: Colors.grey[600])),
+                      style: TextStyle(fontSize: 12, color: Colors.grey[600])),
                 ],
               ),
             ),

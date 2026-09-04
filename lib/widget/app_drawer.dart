@@ -63,22 +63,26 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.map, color: Colors.black),
-            title: const Text('Contact Us', style: TextStyle(color: Colors.black)),
+            title:
+                const Text('Contact Us', style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const ContactUs()),
           ),
           ListTile(
             leading: const Icon(Icons.info, color: Colors.black),
-            title: const Text('About Us', style: TextStyle(color: Colors.black)),
+            title:
+                const Text('About Us', style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const AboutUsScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip, color: Colors.black),
-            title: const Text('Privacy Policy', style: TextStyle(color: Colors.black)),
+            title: const Text('Privacy Policy',
+                style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const PrivacyPolicyScreen()),
           ),
           ListTile(
             leading: const Icon(Icons.gavel, color: Colors.black),
-            title: const Text('CAA Compliance', style: TextStyle(color: Colors.black)),
+            title: const Text('CAA Compliance',
+                style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const CAAComplianceScreen()),
           ),
           ListTile(
@@ -88,7 +92,8 @@ class AppDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.update, color: Colors.black),
-            title: const Text('Recent Updates', style: TextStyle(color: Colors.black)),
+            title: const Text('Recent Updates',
+                style: TextStyle(color: Colors.black)),
             onTap: () => _navigate(context, const RecentUpdatesScreen()),
           ),
           const Divider(color: Colors.black),
@@ -115,8 +120,9 @@ class AppDrawer extends StatelessWidget {
                     color: Colors.black,
                   ),
                 ),
-                trailing: isPremium 
-                    ? const Icon(Icons.check_circle, color: Colors.green, size: 20)
+                trailing: isPremium
+                    ? const Icon(Icons.check_circle,
+                        color: Colors.green, size: 20)
                     : null,
                 onTap: () {
                   _navigate(context, const PremiumPricingScreen());
@@ -150,19 +156,24 @@ class AppDrawer extends StatelessWidget {
                 children: [
                   ListTile(
                     leading: const Icon(Icons.person, color: Colors.black),
-                    title: const Text('Account Details', style: TextStyle(color: Colors.black)),
-                    onTap: () => _navigate(context, const AccountDetailsScreen()),
+                    title: const Text('Account Details',
+                        style: TextStyle(color: Colors.black)),
+                    onTap: () =>
+                        _navigate(context, const AccountDetailsScreen()),
                   ),
                   ListTile(
                     leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    title: const Text('Logout',
+                        style: TextStyle(
+                            color: Colors.red, fontWeight: FontWeight.bold)),
                     onTap: () async {
                       // Show confirmation dialog
                       final confirmed = await showDialog<bool>(
                         context: context,
                         builder: (context) => AlertDialog(
                           title: const Text('Logout'),
-                          content: const Text('Are you sure you want to logout?'),
+                          content:
+                              const Text('Are you sure you want to logout?'),
                           actions: [
                             TextButton(
                               onPressed: () => Navigator.pop(context, false),
@@ -170,7 +181,8 @@ class AppDrawer extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () => Navigator.pop(context, true),
-                              style: TextButton.styleFrom(foregroundColor: Colors.red),
+                              style: TextButton.styleFrom(
+                                  foregroundColor: Colors.red),
                               child: const Text('Logout'),
                             ),
                           ],
@@ -181,7 +193,8 @@ class AppDrawer extends StatelessWidget {
                         await SupabaseAuthService().logout();
                         if (context.mounted) {
                           Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(builder: (_) => const HomeScreen()),
+                            MaterialPageRoute(
+                                builder: (_) => const HomeScreen()),
                             (route) => false,
                           );
                         }
@@ -195,7 +208,8 @@ class AppDrawer extends StatelessWidget {
           const Divider(color: Colors.black),
           ListTile(
             leading: const Icon(Icons.close, color: Colors.black),
-            title: const Text('Close Menu', style: TextStyle(color: Colors.black)),
+            title:
+                const Text('Close Menu', style: TextStyle(color: Colors.black)),
             onTap: () => Navigator.pop(context),
           ),
         ],

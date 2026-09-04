@@ -101,7 +101,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
+
                 // Subscription costs
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -176,7 +176,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Error message
                 if (_errorMessage != null)
                   Container(
@@ -200,7 +200,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       ],
                     ),
                   ),
-                
+
                 // Full name field (optional)
                 TextFormField(
                   controller: _fullNameController,
@@ -241,7 +241,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Password field
                 TextFormField(
                   controller: _passwordController,
@@ -266,7 +266,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Confirm password field
                 TextFormField(
                   controller: _confirmPasswordController,
@@ -291,7 +291,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   },
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Terms & Conditions
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -359,7 +359,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
                   ),
                 ),
                 const SizedBox(height: 16),
-                
+
                 // Terms checkbox
                 CheckboxListTile(
                   value: _acceptedTerms,
@@ -377,13 +377,14 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
                   activeColor: const Color(0xFF87CEEB),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Sign up button
                 SizedBox(
                   width: double.infinity,
                   height: 50,
                   child: ElevatedButton(
-                    onPressed: (_isLoading || !_acceptedTerms) ? null : _handleSignup,
+                    onPressed:
+                        (_isLoading || !_acceptedTerms) ? null : _handleSignup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF87CEEB),
                       foregroundColor: Colors.black,
@@ -404,7 +405,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
                   ),
                 ),
                 const SizedBox(height: 24),
-                
+
                 // Login link
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

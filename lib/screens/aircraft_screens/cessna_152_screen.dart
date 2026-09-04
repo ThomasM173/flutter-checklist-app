@@ -59,7 +59,6 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📸 Cockpit Layout"),
               Container(
                 height: 200,
@@ -72,7 +71,6 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                 ),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📊 Specifications"),
               GridView.count(
                 physics: const NeverScrollableScrollPhysics(),
@@ -91,8 +89,7 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                   _buildSpecCard(
                     icon: Icons.speed,
                     title: "Performance",
-                    content:
-                        "Max Speed: 126 kt\nCruise: 107 kt\nRange: 415 NM",
+                    content: "Max Speed: 126 kt\nCruise: 107 kt\nRange: 415 NM",
                     isLarger: true,
                   ),
                   _buildSpecCard(
@@ -109,33 +106,30 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                 ],
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("✅ Strengths"),
               const Text(
                 "• Ideal for beginner pilots\n• Low operating costs\n• Excellent visibility\n• Reliable and easy to fly\n• Parts availability worldwide",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("⚠️ Limitations"),
               const Text(
                 "• Limited useful load (~500 lbs with full fuel)\n• Slower cruise speed than modern trainers\n• No modern avionics in most models",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 16),
-
               _sectionTitle("📘 Use Cases"),
               const Text(
                 "Primary flight training, local sightseeing, time-building for aspiring commercial pilots, occasional solo trips.",
                 style: TextStyle(fontSize: 16, color: Colors.black),
               ),
               const SizedBox(height: 24),
-
               Row(
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.check_circle_outline, color: Colors.black),
+                      icon: const Icon(Icons.check_circle_outline,
+                          color: Colors.black),
                       label: const Text(
                         "Pre-Flight",
                         style: TextStyle(color: Colors.black),
@@ -154,7 +148,8 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      icon: const Icon(Icons.report_problem, color: Colors.black),
+                      icon:
+                          const Icon(Icons.report_problem, color: Colors.black),
                       label: const Text(
                         "Emergency",
                         style: TextStyle(color: Colors.black),
@@ -168,8 +163,8 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                         ),
                         elevation: 2,
                       ),
-                      onPressed: () =>
-                          Navigator.pushNamed(context, '/cessna_152_emergency_screen'),
+                      onPressed: () => Navigator.pushNamed(
+                          context, '/cessna_152_emergency_screen'),
                     ),
                   ),
                 ],
@@ -190,12 +185,11 @@ class _Cessna152ScreenState extends State<Cessna152Screen> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () =>
-                      Navigator.pushNamed(context, '/cessna_152_emergency_game'),
+                  onPressed: () => Navigator.pushNamed(
+                      context, '/cessna_152_emergency_game'),
                 ),
               ),
               const SizedBox(height: 24),
-
               Center(
                 child: OutlinedButton.icon(
                   onPressed: _launchMoreInfo,

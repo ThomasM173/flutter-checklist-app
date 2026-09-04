@@ -22,14 +22,13 @@ import 'screens/completions/my_completions_screen.dart';
 import 'screens/completions/school_completions_screen.dart';
 import 'screens/auth/login_screen.dart';
 
-
 final Map<String, WidgetBuilder> appRoutes = {
   '/': (context) => const AuthGate(),
   '/login': (context) => const LoginScreen(),
   '/home': (context) => const HomeScreen(),
   '/map': (context) => const ContactUs(),
   '/flight_conditions': (context) => const FlightConditionsScreen(),
-  '/learning_game': (context) => const LearningGameScreen(), 
+  '/learning_game': (context) => const LearningGameScreen(),
   '/cessna_172': (context) => const Cessna172Screen(),
   '/cessna_152': (context) => const Cessna152Screen(),
   '/piper_pa28': (context) => const PiperPA28Screen(),
@@ -48,4 +47,3 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/flight-school/completions': (context) => const SchoolCompletionsScreen(),
   '/flight-school/checklists': (context) => const ChecklistEditorScreen(),
 };
-

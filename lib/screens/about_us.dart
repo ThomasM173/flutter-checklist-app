@@ -35,7 +35,10 @@ Thanks for using the app — and fly safe!
           flexibleSpace: Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors:  [Color(0xFFADD8E6), Color(0xFF87CEEB)], // Light blue to sky blue
+                colors: [
+                  Color(0xFFADD8E6),
+                  Color(0xFF87CEEB)
+                ], // Light blue to sky blue
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -43,7 +46,8 @@ Thanks for using the app — and fly safe!
           ),
           backgroundColor: Colors.transparent,
           elevation: 1,
-          iconTheme: const IconThemeData(color: Colors.black), // Burger icon black
+          iconTheme:
+              const IconThemeData(color: Colors.black), // Burger icon black
         ),
       ),
       drawer: const AppDrawer(currentIndex: 0),
