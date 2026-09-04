@@ -8,8 +8,8 @@ import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 
 class PiperPA28EmergencyScreen extends StatefulWidget {
   const PiperPA28EmergencyScreen({super.key});
@@ -158,7 +158,7 @@ class _PiperPA28EmergencyScreenState extends State<PiperPA28EmergencyScreen> {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -208,16 +208,16 @@ class _PiperPA28EmergencyScreenState extends State<PiperPA28EmergencyScreen> {
     final pdfBytes = await pdf.save();
     await file.writeAsBytes(pdfBytes);
     
-    // Upload PDF to backend
+    // Record the completion (non-blocking)
     try {
-      await PdfUploadService().uploadPdf(
-        pdfBytes,
-        title: 'Piper PA28 Emergency Procedures - ${DateTime.now().toString().split(' ')[0]}',
-        aircraftId: 'G-PA28',
-        type: 'piper_pa28_emergency',
+      await SupabasePdfService().recordCompletion(
+        pdfBytes: pdfBytes,
+        aircraftType: 'Piper PA-28',
+        checklistName: 'Emergency Procedures',
+        completionType: 'emergency_procedures',
       );
     } catch (e) {
-      debugPrint('Failed to upload PDF to backend: $e');
+      debugPrint('Failed to record emergency procedures completion: $e');
     }
     
     OpenFile.open(file.path);

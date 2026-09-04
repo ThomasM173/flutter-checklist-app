@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
-import '../../services/auth_service_manager.dart';
+import '../../services/supabase_auth_service.dart';
 import '../../repositories/local_checklist_repository.dart';
 import '../../models/checklist_models.dart';
 
 /// Checklist Editor screen for flight school admins
 class ChecklistEditorScreen extends StatefulWidget {
-  const ChecklistEditorScreen({Key? key}) : super(key: key);
+  const ChecklistEditorScreen({super.key});
 
   @override
   State<ChecklistEditorScreen> createState() => _ChecklistEditorScreenState();
 }
 
 class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
-  final _authService = AuthServiceManager();
+  final _authService = SupabaseAuthService();
   final _checklistRepo = LocalChecklistRepository();
   final _uuid = const Uuid();
   
@@ -191,7 +191,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
             padding: const EdgeInsets.all(16),
             color: Colors.grey[100],
             child: DropdownButtonFormField<String>(
-              value: _selectedAircraftType,
+              initialValue: _selectedAircraftType,
               decoration: InputDecoration(
                 labelText: 'Select Aircraft Type',
                 border: OutlineInputBorder(

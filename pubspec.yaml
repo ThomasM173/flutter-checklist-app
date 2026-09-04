@@ -32,8 +32,12 @@ dependencies:
   pdf: ^3.11.2
   path_provider: ^2.1.5
   open_file: ^3.5.10
-  amplify_flutter: ^2.0.0
-  amplify_auth_cognito: ^2.0.0
+  # Backend: Supabase (replaces AWS Amplify / Cognito).
+  supabase_flutter: ^2.8.0
+  flutter_dotenv: ^5.1.0
+  # In-app purchases (Phase 4 — StoreKit 2 on iOS).
+  in_app_purchase: ^3.2.0
+  in_app_purchase_storekit: ^0.3.19
   uuid: ^4.5.1
   intl: ^0.19.0
 
@@ -48,6 +52,16 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.3
+
+# Config for the flutter_launcher_icons generator (dev_dependency above).
+# Run `flutter pub run flutter_launcher_icons` after placing a 1024x1024,
+# no-alpha, non-rounded source icon at assets/icon/app_icon.png.
+flutter_launcher_icons:
+  image_path: "assets/icon/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -61,6 +75,9 @@ flutter:
   assets:
     - assets/fonts/NotoSans-Regular.ttf
     - assets/images/
+    # Client environment (gitignored; see .env.example). Bundled so
+    # flutter_dotenv can read it at runtime.
+    - .env
 
 
   # To add assets to your application, add an assets section, like this:

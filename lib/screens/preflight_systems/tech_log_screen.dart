@@ -6,8 +6,8 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'dart:convert';
 
 class TechLogScreen extends StatefulWidget {
@@ -98,7 +98,7 @@ class _TechLogScreenState extends State<TechLogScreen> {
       final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
       
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -263,14 +263,16 @@ class _TechLogScreenState extends State<TechLogScreen> {
       await file.writeAsBytes(pdfBytes);
       
       try {
-        await PdfUploadService().uploadPdf(
-          pdfBytes,
-          title: 'Tech Log - ${_aircraftRegistrationController.text} - ${_dateController.text}',
-          aircraftId: _aircraftRegistrationController.text,
-          type: 'tech_log',
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: _aircraftRegistrationController.text.isNotEmpty
+              ? _aircraftRegistrationController.text
+              : 'UNKNOWN',
+          checklistName: 'Tech Log',
+          completionType: 'tech_log',
         );
       } catch (e) {
-        debugPrint('Failed to upload PDF: $e');
+        debugPrint('Failed to record tech log completion: $e');
       }
       
       if (mounted) {
@@ -535,7 +537,7 @@ class DefectCard extends StatelessWidget {
             const SizedBox(height: 8),
             
             DropdownButtonFormField<String>(
-              value: defect.system,
+              initialValue: defect.system,
               decoration: const InputDecoration(
                 labelText: 'System',
                 border: OutlineInputBorder(),
@@ -586,7 +588,7 @@ class DefectCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: defect.status,
+                    initialValue: defect.status,
                     decoration: const InputDecoration(
                       labelText: 'Status',
                       border: OutlineInputBorder(),

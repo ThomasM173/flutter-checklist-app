@@ -1,13 +1,15 @@
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/config/config.dart';
 
 /// Service to manage user entitlements and premium features
 ///
 /// This service determines whether a user has access to premium features.
-/// In development, it uses kDisablePaywallForDev to bypass checks.
-/// In production, it will integrate with Google Play Billing.
+/// In development, it uses kDisablePaywallForDev to bypass checks. In
+/// production, `Profile.isPremium` is the real result of the has_premium_access()
+/// Supabase function — true for an active trial, a comped flight school, or
+/// (once the kIapEnabled launch flag flips on) a live StoreKit subscription.
 class EntitlementService {
-  final AuthService _authService;
+  final SupabaseAuthService _authService;
 
   EntitlementService(this._authService);
 
@@ -15,7 +17,8 @@ class EntitlementService {
   ///
   /// Returns true if:
   /// - Dev bypass is enabled (kDisablePaywallForDev = true), OR
-  /// - User is logged in and has isPremium = true
+  /// - The user's real entitlement (trial / comped school / paid
+  ///   subscription — see has_premium_access()) is true
   bool get userHasPremium {
     // Dev bypass - allows testing premium features without payment
     if (kDisablePaywallForDev) {

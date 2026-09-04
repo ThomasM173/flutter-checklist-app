@@ -1,10 +1,39 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../utils/weather_boundaries.dart';
 
+/// Weather data. The AVWX API key is NOT in the client any more — every
+/// request goes through the `get-weather` Supabase Edge Function, which calls
+/// AVWX server-side with a secret token and returns AVWX's body unchanged.
+/// All the parsing below is untouched from the old direct-to-AVWX version.
 class WeatherService {
-  static const String _token = 'dev-PdSRG3eHIS_NXKZD5jHtvACnHsmN_Y1W4aLnhNY';
-  static const String _baseUrl = 'https://avwx.rest/api';
+  /// Calls the `get-weather` Edge Function and returns AVWX's decoded body.
+  ///
+  /// [endpoint] is one of: metar, taf, station, pirep, airsigmet.
+  /// Provide [icao] for the first four, [coords] ("lat,lon") for airsigmet.
+  static Future<dynamic> _invoke(
+    String endpoint, {
+    String? icao,
+    String? coords,
+    String? options,
+  }) async {
+    final res = await Supabase.instance.client.functions.invoke(
+      'get-weather',
+      body: {
+        'endpoint': endpoint,
+        if (icao != null) 'icao': icao,
+        if (coords != null) 'coords': coords,
+        if (options != null) 'options': options,
+      },
+    );
+    if (res.status != 200) {
+      final data = res.data;
+      final detail = data is Map ? (data['error'] ?? data) : data;
+      throw Exception('Weather ($endpoint) error ${res.status}: $detail');
+    }
+    final data = res.data;
+    return data is String ? jsonDecode(data) : data;
+  }
 
   static dynamic _extractValue(dynamic obj) {
     if (obj is Map<String, dynamic>) {
@@ -88,7 +117,7 @@ class WeatherService {
 
     final oat = double.tryParse(temp);
     final dew = double.tryParse(dewpoint);
-    final humidityPercent = humidityVal != null ? humidityVal : null;
+    final humidityPercent = humidityVal;
     final windSpeedVal = windSpeedValue;
     final windGustsVal = windGustsValue;
     final visibilityKm = visibilityUnit == 'm' ? (double.tryParse(visibilityVal) ?? 0) / 1000 : double.tryParse(visibilityVal) ?? 0;
@@ -177,28 +206,14 @@ class WeatherService {
   }
 
   static Future<Map<String, dynamic>> getDecodedMETAR(String icao) async {
-    final uri = Uri.parse('$_baseUrl/metar/$icao?options=info,translate');
-    final resp = await http.get(uri, headers: {
-      'Authorization': 'Token $_token',
-    });
-
-    if (resp.statusCode != 200) {
-      throw Exception('METAR error: ${resp.statusCode}');
-    }
-
-    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+    final body = await _invoke('metar', icao: icao, options: 'info,translate')
+        as Map<String, dynamic>;
     return parseMETARBody(body);
   }
 
   static Future<List<Map<String, String>>> getForecast(String icao) async {
-    final uri = Uri.parse('$_baseUrl/taf/$icao?options=translate');
-    final resp = await http.get(uri, headers: {'Authorization': 'Token $_token'});
-
-    if (resp.statusCode != 200) {
-      throw Exception('TAF error: ${resp.statusCode}');
-    }
-
-    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+    final body =
+        await _invoke('taf', icao: icao, options: 'translate') as Map<String, dynamic>;
     final periods = (body['forecast'] as List<dynamic>? ?? []).take(6);
 
     return periods.map((item) {
@@ -223,19 +238,15 @@ class WeatherService {
     // First, get the station coordinates to use for AIR/SIGMET lookup
     double latitude = 51.5074; // Default to London
     double longitude = -0.1278; // Defult to London
-    
+
     try {
       // Get station info to get accurate coordinates
-      final stationInfoUri = Uri.parse('$_baseUrl/station/$icao');
-      final stationResp = await http.get(stationInfoUri, headers: {'Authorization': 'Token $_token'});
-      
-      if (stationResp.statusCode == 200) {
-        final stationData = jsonDecode(stationResp.body) as Map<String, dynamic>;
-        final coords = stationData['location'] as List?;
-        if (coords != null && coords.length >= 2) {
-          latitude = coords[1]?.toDouble() ?? 51.5074;
-          longitude = coords[0]?.toDouble() ?? -0.1278;
-        }
+      final stationData =
+          await _invoke('station', icao: icao) as Map<String, dynamic>;
+      final coords = stationData['location'] as List?;
+      if (coords != null && coords.length >= 2) {
+        latitude = coords[1]?.toDouble() ?? 51.5074;
+        longitude = coords[0]?.toDouble() ?? -0.1278;
       }
     } catch (e) {
       // Error fetching station coordinates
@@ -243,30 +254,26 @@ class WeatherService {
 
     // Fetch PIREPs
     try {
-      final pirepUri = Uri.parse('$_baseUrl/pirep/$icao');
-      final pirepResp = await http.get(pirepUri, headers: {'Authorization': 'Token $_token'});
-      if (pirepResp.statusCode == 200) {
-        final data = jsonDecode(pirepResp.body);
-        if (data is List) {
-          for (final entry in data) {
-            final aircraft = (entry['aircraft'] is Map) ? entry['aircraft']['type']?.toString() ?? 'Unknown' : 'Unknown';
-            final altitude = (entry['altitude'] is Map) ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
-            final icing = (entry['icing'] is Map) ? entry['icing']['severity']?.toString() ?? 'None' : 'None';
-            final turbulence = (entry['turbulence'] is Map) ? entry['turbulence']['severity']?.toString() ?? 'None' : 'None';
-            final wxCodes = (entry['wx_codes'] is List) ? (entry['wx_codes'] as List).where((w) => w != null).map((w) => _extractValue(w)?.toString() ?? '').where((w) => w.isNotEmpty).join(', ') : 'None';
-            
-            hazards.add({
-              'type': 'PIREP',
-              'raw': entry['raw']?.toString() ?? 'Unknown',
-              'station': entry['station']?.toString() ?? 'N/A',
-              'time': entry['time']?['dt']?.toString() ?? 'N/A',
-              'aircraft': aircraft,
-              'altitude': altitude,
-              'severity': icing != 'None' ? icing : turbulence != 'None' ? turbulence : 'None',
-              'conditions': wxCodes,
-              'phenomenon': icing != 'None' ? 'ICING' : turbulence != 'None' ? 'TURBULENCE' : 'None',
-            });
-          }
+      final data = await _invoke('pirep', icao: icao);
+      if (data is List) {
+        for (final entry in data) {
+          final aircraft = (entry['aircraft'] is Map) ? entry['aircraft']['type']?.toString() ?? 'Unknown' : 'Unknown';
+          final altitude = (entry['altitude'] is Map) ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
+          final icing = (entry['icing'] is Map) ? entry['icing']['severity']?.toString() ?? 'None' : 'None';
+          final turbulence = (entry['turbulence'] is Map) ? entry['turbulence']['severity']?.toString() ?? 'None' : 'None';
+          final wxCodes = (entry['wx_codes'] is List) ? (entry['wx_codes'] as List).where((w) => w != null).map((w) => _extractValue(w)?.toString() ?? '').where((w) => w.isNotEmpty).join(', ') : 'None';
+
+          hazards.add({
+            'type': 'PIREP',
+            'raw': entry['raw']?.toString() ?? 'Unknown',
+            'station': entry['station']?.toString() ?? 'N/A',
+            'time': entry['time']?['dt']?.toString() ?? 'N/A',
+            'aircraft': aircraft,
+            'altitude': altitude,
+            'severity': icing != 'None' ? icing : turbulence != 'None' ? turbulence : 'None',
+            'conditions': wxCodes,
+            'phenomenon': icing != 'None' ? 'ICING' : turbulence != 'None' ? 'TURBULENCE' : 'None',
+          });
         }
       }
     } catch (e) {
@@ -275,38 +282,33 @@ class WeatherService {
 
     // Fetch combined AIRMET/SIGMET data using the actual airport coordinates
     try {
-      final airSigmetUri = Uri.parse('$_baseUrl/airsigmet/$latitude,$longitude');
-      final airSigmetResp = await http.get(airSigmetUri, headers: {'Authorization': 'Token $_token'});
+      final data = await _invoke('airsigmet', coords: '$latitude,$longitude');
 
-      if (airSigmetResp.statusCode == 200) {
-        final data = jsonDecode(airSigmetResp.body);
+      // The API returns a Map with 'reports' key containing the actual data
+      if (data is Map && data.containsKey('reports')) {
+        final reports = data['reports'];
+        if (reports is List) {
+          for (final entry in reports) {
+            final startTime = entry['start_time']?['dt']?.toString() ?? '';
+            final endTime = entry['end_time']?['dt']?.toString() ?? '';
+            final altitude = entry['altitude'] is Map ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
+            final phenomenon = entry['phenomenon']?.toString() ?? 'Unknown';
+            final severity = entry['severity']?.toString() ?? 'Moderate';
+            final bulletin = entry['bulletin']?.toString() ?? '';
 
-        // The API returns a Map with 'reports' key containing the actual data
-        if (data is Map && data.containsKey('reports')) {
-          final reports = data['reports'];
-          if (reports is List) {
-            for (final entry in reports) {
-              final startTime = entry['start_time']?['dt']?.toString() ?? '';
-              final endTime = entry['end_time']?['dt']?.toString() ?? '';
-              final altitude = entry['altitude'] is Map ? entry['altitude']['repr']?.toString() ?? 'N/A' : 'N/A';
-              final phenomenon = entry['phenomenon']?.toString() ?? 'Unknown';
-              final severity = entry['severity']?.toString() ?? 'Moderate';
-              final bulletin = entry['bulletin']?.toString() ?? '';
-              
-              // Determine if this is AIRMET or SIGMET based on bulletin or other criteria
-              final type = bulletin.contains('SIGMET') ? 'SIGMET' : 'AIRMET';
-              
-              hazards.add({
-                'type': type,
-                'raw': entry['raw']?.toString() ?? 'Unknown',
-                'station': entry['station']?.toString() ?? 'N/A',
-                'time': startTime.isNotEmpty && endTime.isNotEmpty ? '$startTime → $endTime' : 'N/A',
-                'altitude': altitude,
-                'phenomenon': phenomenon,
-                'severity': severity,
-                'conditions': phenomenon,
-              });
-            }
+            // Determine if this is AIRMET or SIGMET based on bulletin or other criteria
+            final type = bulletin.contains('SIGMET') ? 'SIGMET' : 'AIRMET';
+
+            hazards.add({
+              'type': type,
+              'raw': entry['raw']?.toString() ?? 'Unknown',
+              'station': entry['station']?.toString() ?? 'N/A',
+              'time': startTime.isNotEmpty && endTime.isNotEmpty ? '$startTime → $endTime' : 'N/A',
+              'altitude': altitude,
+              'phenomenon': phenomenon,
+              'severity': severity,
+              'conditions': phenomenon,
+            });
           }
         }
       }
@@ -320,14 +322,7 @@ class WeatherService {
   }
 
   static Future<Map<String, dynamic>> getStationInfo(String icao) async {
-    final uri = Uri.parse('$_baseUrl/station/$icao');
-    final resp = await http.get(uri, headers: {'Authorization': 'Token $_token'});
-
-    if (resp.statusCode != 200) {
-      throw Exception('Station info error: ${resp.statusCode}');
-    }
-
-    final body = jsonDecode(resp.body) as Map<String, dynamic>;
+    final body = await _invoke('station', icao: icao) as Map<String, dynamic>;
 
     final runways = (body['runways'] as List?)
         ?.map((r) => r['ident1']?.toString() ?? '')

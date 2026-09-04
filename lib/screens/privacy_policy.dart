@@ -71,10 +71,10 @@ class PrivacyPolicyScreen extends StatelessWidget {
               title: 'How We Use Your Data',
               icon: Icons.settings_outlined,
               content: [
-                'Your generated PDF checklists are securely stored and can be accessed by you and your flight school',
-                'Personal information (pilot name, license number, home base) is stored locally on your device only',
-                'This personal information is only visible to your flight school when included in PDF checklists',
-                'We use secure AWS Amplify authentication to protect your account',
+                'Your generated PDF checklists are stored in a private Supabase Storage bucket, accessible to you and your flight school',
+                'Personal information (pilot name, license number, home base) is stored in your Supabase profile record',
+                'This personal information is only visible to your flight school when included in PDF checklists or when you have joined that school',
+                'We use Supabase Auth to protect your account',
               ],
             ),
             
@@ -82,9 +82,9 @@ class PrivacyPolicyScreen extends StatelessWidget {
               title: 'Data Storage',
               icon: Icons.storage_outlined,
               content: [
-                'Generated PDFs: Stored securely in the cloud and accessible to you and your flight school',
-                'Personal pilot details: Stored locally on your device using secure storage',
-                'Account credentials: Handled securely through AWS Cognito authentication',
+                'Generated checklist PDFs: Stored in a private Supabase Storage bucket, accessible only to you and your flight school',
+                'Profile details (name, licence, home base): Stored in your Supabase profile record',
+                'Account credentials: Handled securely by Supabase Auth',
               ],
             ),
             

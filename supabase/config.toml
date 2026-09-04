@@ -1,0 +1,67 @@
+# ClearedToGo — Supabase CLI project config.
+# Docs: https://supabase.com/docs/guides/local-development/cli/config
+#
+# `project_id` is the local project ref used by `supabase start`. Link to the
+# hosted project separately with:  supabase link --project-ref <your-ref>
+
+project_id = "clearedtogo"
+
+[api]
+enabled = true
+port = 54321
+schemas = ["public", "storage", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+enabled = true
+port = 54323
+
+[storage]
+enabled = true
+file_size_limit = "50MiB"
+
+[storage.buckets.checklist-pdfs]
+public = false
+file_size_limit = "10MiB"
+allowed_mime_types = ["application/pdf"]
+
+[auth]
+enabled = true
+# Base URL of the app for magic-link / recovery redirects. For a mobile-only
+# app this is mostly a placeholder; set to your deployed site if you add one.
+site_url = "http://localhost:3000"
+additional_redirect_urls = ["io.supabase.clearedtogo://login-callback"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+refresh_token_reuse_interval = 10
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+# No production users and sign-in is optional in-app, so we don't gate first
+# use on an email round-trip. Flip this to true (and re-introduce a
+# verification screen in Flutter — see docs/supabase_migration.md) if you
+# later want confirmed emails.
+enable_confirmations = false
+double_confirm_changes = true
+secure_password_change = false
+
+[auth.email.smtp]
+# Configure real SMTP in the hosted dashboard (Auth -> Email) before enabling
+# confirmations / password resets in production.
+
+# --- Edge Functions -------------------------------------------------------
+[functions.delete-account]
+verify_jwt = true
+
+[functions.get-weather]
+# Called by unauthenticated (guest) users too — weather works without an
+# account — so JWT verification is disabled and the function itself is the
+# trust boundary (it only ever talks to AVWX with a server-side token).
+verify_jwt = false

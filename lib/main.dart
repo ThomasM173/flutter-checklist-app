@@ -1,54 +1,40 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
-import 'amplifyconfiguration.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'config/env.dart';
+import 'services/supabase_auth_service.dart';
 import 'routes.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Set up global error handlers
+
+  // Global error handlers (kept from the pre-Supabase setup).
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
-    safePrint('Flutter Error: ${details.exception}');
-    safePrint('Stack: ${details.stack}');
+    debugPrint('Flutter Error: ${details.exception}');
   };
-  
   PlatformDispatcher.instance.onError = (Object error, StackTrace stack) {
-    safePrint('Platform Error: $error');
-    safePrint('Stack: $stack');
+    debugPrint('Platform Error: $error');
     return true;
   };
-  
-  // Configure Amplify but don't let it crash or hang the app
-  try {
-    await _configureAmplify()
-        .timeout(const Duration(seconds: 5));
-  } catch (e) {
-    safePrint('Failed to configure Amplify, continuing anyway: $e');
-  }
-  
-  runApp(const MyApp());
-}
 
-Future<void> _configureAmplify() async {
-  try {
-    // Check if Amplify is already configured
-    if (Amplify.isConfigured) {
-      safePrint('Amplify already configured');
-      return;
-    }
-    
-    final auth = AmplifyAuthCognito();
-    await Amplify.addPlugin(auth);
-    await Amplify.configure(amplifyconfig);
-    safePrint('Amplify configured successfully');
-  } on Exception catch (e) {
-    safePrint('Error configuring Amplify: $e');
-    // Don't rethrow - let the app continue without Amplify if needed
-  }
+  // Client env (gitignored .env, bundled as an asset). See .env.example.
+  await dotenv.load(fileName: '.env');
+
+  // Initialise Supabase (replaces Amplify.configure). Deliberately not
+  // wrapped in a swallow-all try/catch: a missing/invalid URL or key is a
+  // build-config error we want to see immediately, not a silent degrade.
+  await Supabase.initialize(
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseAnonKey,
+    debug: false,
+  );
+
+  await SupabaseAuthService.instance.init();
+
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -107,4 +93,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

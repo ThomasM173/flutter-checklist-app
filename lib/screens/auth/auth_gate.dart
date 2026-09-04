@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:clearedtogo/services/auth_service.dart';
-import 'package:clearedtogo/services/auth_service_manager.dart';
-import 'package:clearedtogo/screens/auth/login_screen.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
-import 'package:clearedtogo/models/user_role.dart';
 
+/// Decides the first screen. Sign-in is OPTIONAL — checklists, weather and the
+/// training game work without an account — so a guest goes straight to
+/// [HomeScreen]. Only a signed-in flight school admin is routed to their
+/// dedicated dashboard.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -14,11 +16,8 @@ class AuthGate extends StatefulWidget {
 }
 
 class _AuthGateState extends State<AuthGate> {
-  final _authService = AuthService();
-  final _authServiceManager = AuthServiceManager();
-  bool _isInitialized = false;
-  bool _isLoggedIn = false;
-  UserRole? _userRole;
+  final _auth = SupabaseAuthService();
+  bool _ready = false;
 
   @override
   void initState() {
@@ -27,54 +26,23 @@ class _AuthGateState extends State<AuthGate> {
   }
 
   Future<void> _initialize() async {
-    // Initialize both auth services
-    await _authService.init();
-    await _authServiceManager.init();
-    
-    // Check for new repository-based auth first
-    final newAuthUser = _authServiceManager.currentUser;
-    if (newAuthUser != null) {
-      setState(() {
-        _isInitialized = true;
-        _isLoggedIn = true;
-        _userRole = newAuthUser.role;
-      });
-      return;
-    }
-    
-    // Fall back to old Cognito auth check
-    final loggedIn = await _authService.isLoggedIn();
-    
-    if (mounted) {
-      setState(() {
-        _isInitialized = true;
-        _isLoggedIn = loggedIn;
-        _userRole = UserRole.pilot; // Legacy users are pilots
-      });
-    }
+    await _auth.init();
+    if (mounted) setState(() => _ready = true);
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_isInitialized) {
+    if (!_ready) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(
-          child: CircularProgressIndicator(color: Colors.red),
-        ),
+        body: Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }
 
-    if (!_isLoggedIn) {
-      return const LoginScreen();
-    }
-    
-    // Route based on user role
-    if (_userRole == UserRole.flightSchoolAdmin) {
+    final profile = _auth.currentUser;
+    if (profile != null && profile.role == UserRole.flightSchoolAdmin) {
       return const FlightSchoolDashboard();
-    } else {
-      return const HomeScreen();
     }
+    return const HomeScreen();
   }
 }
-

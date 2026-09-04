@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:clearedtogo/screens/aircraft_screens/cessna_172_emergency_game.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -9,8 +8,8 @@ import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 
 class Cessna172EmergencyScreen extends StatefulWidget {
   const Cessna172EmergencyScreen({super.key});
@@ -156,7 +155,7 @@ class _Cessna172EmergencyScreenState extends State<Cessna172EmergencyScreen> {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -206,16 +205,16 @@ class _Cessna172EmergencyScreenState extends State<Cessna172EmergencyScreen> {
     final pdfBytes = await pdf.save();
     await file.writeAsBytes(pdfBytes);
     
-    // Upload to backend (non-blocking)
+    // Record the completion (non-blocking)
     try {
-      await PdfUploadService().uploadPdf(
-        pdfBytes,
-        title: 'Cessna 172 Emergency Procedures - ${DateTime.now().toString().split(' ')[0]}',
-        aircraftId: 'G-172',
-        type: 'cessna_172_emergency',
+      await SupabasePdfService().recordCompletion(
+        pdfBytes: pdfBytes,
+        aircraftType: 'Cessna 172',
+        checklistName: 'Emergency Procedures',
+        completionType: 'emergency_procedures',
       );
     } catch (e) {
-      debugPrint('Failed to upload PDF to backend: $e');
+      debugPrint('Failed to record emergency procedures completion: $e');
     }
     
     OpenFile.open(file.path);

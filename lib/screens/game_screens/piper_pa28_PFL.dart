@@ -144,7 +144,7 @@ class _PiperPA28PFL extends State<PiperPA28PFL> {
           children: [
             Text(
               "Question ${currentIndex + 1} of ${questions.length}",
-              style: TextStyle(color: Colors.grey[500], fontSize: 16),
+              style: TextStyle(color: Colors.grey[700], fontSize: 16),
             ),
             SizedBox(height: 10),
             Text(

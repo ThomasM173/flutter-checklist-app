@@ -6,8 +6,8 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clearedtogo/services/auth_service.dart';
-import 'package:clearedtogo/services/pdf_storage_helper.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
 
 class WeightBalanceScreen extends StatefulWidget {
   const WeightBalanceScreen({super.key});
@@ -218,7 +218,7 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
       final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
       
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -376,42 +376,30 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
 
       final pdfBytes = await pdf.save();
       
-      // Save PDF using new storage helper (uploads to repository & cloud)
+      final output = await getTemporaryDirectory();
+      final fileName = "W&B_${_selectedAircraft.replaceAll(' ', '_')}_${_dateController.text}.pdf";
+      final file = File("${output.path}/$fileName");
+      await file.writeAsBytes(pdfBytes);
+
+      // Record the completion (non-blocking)
       try {
-        final filePath = await PdfStorageHelper().savePdf(
+        await SupabasePdfService().recordCompletion(
           pdfBytes: pdfBytes,
-          title: 'Weight & Balance - ${_selectedAircraft} - ${_dateController.text}',
-          pdfType: 'weight_balance',
           aircraftType: _selectedAircraft,
-          aircraftRegistration: _aircraftRegistrationController.text.isNotEmpty 
-              ? _aircraftRegistrationController.text 
-              : null,
+          checklistName: 'Weight & Balance Loadsheet',
+          completionType: 'weight_balance',
         );
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('PDF generated and saved successfully!'), backgroundColor: Colors.green),
-          );
-        }
-        
-        OpenFile.open(filePath);
       } catch (e) {
-        debugPrint('Failed to save PDF: $e');
-        
-        // Fallback: save to temp and open
-        final output = await getTemporaryDirectory();
-        final fileName = "W&B_${_selectedAircraft.replaceAll(' ', '_')}_${_dateController.text}.pdf";
-        final file = File("${output.path}/$fileName");
-        await file.writeAsBytes(pdfBytes);
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('PDF generated (not uploaded)'), backgroundColor: Colors.orange),
-          );
-        }
-        
-        OpenFile.open(file.path);
+        debugPrint('Failed to record weight & balance completion: $e');
       }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('PDF generated and saved successfully!'), backgroundColor: Colors.green),
+        );
+      }
+
+      OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -529,7 +517,7 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _selectedAircraft,
+                      initialValue: _selectedAircraft,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,

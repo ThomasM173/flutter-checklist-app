@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
-import 'package:clearedtogo/screens/auth/email_verification_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,7 +14,8 @@ class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  final _authService = AuthService();
+  final _fullNameController = TextEditingController();
+  final _auth = SupabaseAuthService();
   bool _isLoading = false;
   bool _acceptedTerms = false;
   String? _errorMessage;
@@ -38,38 +38,25 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      await _authService.signUpWithCognito(
+      await _auth.signUp(
         _emailController.text.trim(),
         _passwordController.text,
-        _acceptedTerms,
+        fullName: _fullNameController.text.trim().isEmpty
+            ? null
+            : _fullNameController.text.trim(),
+        acceptedTerms: _acceptedTerms,
       );
 
-      // If we get here, signup succeeded and auto-login worked
+      // Email confirmation is disabled, so signUp returns an active session.
       if (mounted) {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {
-      final errorMessage = e.toString();
-      
-      // Check if this is a verification required error
-      if (errorMessage.contains('verification code') || errorMessage.contains('verify your email')) {
-        // Navigate to verification screen
-        if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-              builder: (_) => EmailVerificationScreen(
-                email: _emailController.text.trim(),
-              ),
-            ),
-          );
-        }
-      } else {
-        setState(() {
-          _errorMessage = errorMessage.replaceAll('Exception: ', '');
-        });
-      }
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      });
     } finally {
       if (mounted) {
         setState(() {
@@ -214,6 +201,22 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                 
+                // Full name field (optional)
+                TextFormField(
+                  controller: _fullNameController,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    labelText: 'Full Name (optional)',
+                    prefixIcon: const Icon(Icons.person),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // Email field
                 TextFormField(
                   controller: _emailController,
@@ -438,6 +441,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _fullNameController.dispose();
     super.dispose();
   }
 }

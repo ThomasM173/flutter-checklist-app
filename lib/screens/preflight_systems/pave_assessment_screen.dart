@@ -6,7 +6,7 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/services.dart' show rootBundle;
-import 'package:clearedtogo/services/pdf_upload_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'dart:convert';
 
 class PaveAssessmentScreen extends StatefulWidget {
@@ -353,19 +353,18 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
 
-      // Upload to backend (non-blocking)
+      // Record the completion (non-blocking)
       try {
-        await PdfUploadService().uploadPdf(
-          pdfBytes,
-          title:
-              'PAVE Assessment - ${_pilotNameController.text} - ${_dateController.text}',
-          aircraftId: _aircraftRegistrationController.text.isNotEmpty
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: _aircraftRegistrationController.text.isNotEmpty
               ? _aircraftRegistrationController.text
               : 'UNKNOWN',
-          type: 'pave_assessment',
+          checklistName: 'PAVE Assessment',
+          completionType: 'pave_assessment',
         );
       } catch (e) {
-        debugPrint('Failed to upload PDF to backend: $e');
+        debugPrint('Failed to record PAVE assessment completion: $e');
       }
 
       OpenFile.open(file.path);
@@ -684,7 +683,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _overallRiskLevel,
+                      initialValue: _overallRiskLevel,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,

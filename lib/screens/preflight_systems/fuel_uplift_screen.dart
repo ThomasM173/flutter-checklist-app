@@ -6,8 +6,8 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 
 class FuelUpliftScreen extends StatefulWidget {
   const FuelUpliftScreen({super.key});
@@ -90,7 +90,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
       final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
       
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -323,14 +323,16 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
       await file.writeAsBytes(pdfBytes);
       
       try {
-        await PdfUploadService().uploadPdf(
-          pdfBytes,
-          title: 'Fuel Uplift - ${_aircraftRegistrationController.text} - ${_dateController.text}',
-          aircraftId: _aircraftRegistrationController.text,
-          type: 'fuel_uplift',
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: _aircraftRegistrationController.text.isNotEmpty
+              ? _aircraftRegistrationController.text
+              : 'UNKNOWN',
+          checklistName: 'Fuel Uplift',
+          completionType: 'fuel_uplift',
         );
       } catch (e) {
-        debugPrint('Failed to upload PDF: $e');
+        debugPrint('Failed to record fuel uplift completion: $e');
       }
       
       if (mounted) {
@@ -473,7 +475,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
                             required: true, keyboardType: TextInputType.number, onChanged: () => setState(() {})),
                         _buildTextField(_fuelGradeController, 'Fuel Grade *', Icons.local_fire_department, required: true),
                         DropdownButtonFormField<String>(
-                          value: _fuelSupplier,
+                          initialValue: _fuelSupplier,
                           decoration: const InputDecoration(
                             labelText: 'Fuel Supplier',
                             prefixIcon: Icon(Icons.store),
@@ -523,7 +525,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
                           : 'Do NOT use this fuel source!'),
                       value: _bowserWaterCheckPassed,
                       onChanged: (val) => setState(() => _bowserWaterCheckPassed = val),
-                      activeColor: Colors.green,
+                      activeThumbColor: Colors.green,
                     ),
                   ],
                 ),

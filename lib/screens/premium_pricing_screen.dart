@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
 import 'package:clearedtogo/config/config.dart';
+import 'package:clearedtogo/screens/paywall_screen.dart';
 import '../widget/app_drawer.dart';
 
 class PremiumPricingScreen extends StatefulWidget {
@@ -12,7 +13,7 @@ class PremiumPricingScreen extends StatefulWidget {
 }
 
 class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
-  final _authService = AuthService();
+  final _authService = SupabaseAuthService();
   late final _entitlementService = EntitlementService(_authService);
   bool _isProcessing = false;
   bool _isPremium = false;
@@ -31,15 +32,16 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
     });
   }
 
+  // Only reachable when kIapEnabled is true (see _buildPricingView) — while
+  // it's false the button is replaced by a "free during launch" banner, so
+  // this never needs a "not available yet" fallback.
   Future<void> _handleUpgrade() async {
-    setState(() {
-      _isProcessing = true;
-    });
-
-    try {
-      if (kDisablePaywallForDev) {
+    // Dev bypass: no store round-trip, just grant + refresh, regardless of
+    // kIapEnabled (useful for testing the paid path locally before launch).
+    if (kDisablePaywallForDev && _authService.currentUser != null) {
+      setState(() => _isProcessing = true);
+      try {
         await _entitlementService.grantPremium();
-        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -47,35 +49,18 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          
           await _checkPremiumStatus();
         }
-      } else {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Billing not yet implemented. Coming soon!'),
-              backgroundColor: Colors.orange,
-            ),
-          );
-        }
+      } finally {
+        if (mounted) setState(() => _isProcessing = false);
       }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Upgrade failed: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isProcessing = false;
-        });
-      }
+      return;
     }
+
+    final result = await Navigator.of(context).push<bool>(
+      MaterialPageRoute(builder: (_) => const PaywallScreen()),
+    );
+    if (result == true) await _checkPremiumStatus();
   }
 
   @override
@@ -293,37 +278,64 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
               ),
             ),
             const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _isProcessing ? null : _handleUpgrade,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFF87CEEB),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+            if (kIapEnabled)
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isProcessing ? null : _handleUpgrade,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF87CEEB),
+                    foregroundColor: Colors.black,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
                   ),
-                  elevation: 4,
-                ),
-                child: _isProcessing
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                  child: _isProcessing
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
+                          ),
+                        )
+                      : const Text(
+                          'Subscribe Now',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                      )
-                    : const Text(
-                        'Subscribe Now',
+                ),
+              )
+            else
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green[50],
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.green),
+                ),
+                child: const Row(
+                  children: [
+                    Icon(Icons.celebration, color: Colors.green),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        'Premium features are free during our launch period '
+                        '— no purchase needed.',
                         style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
+                    ),
+                  ],
+                ),
               ),
-            ),
             const SizedBox(height: 16),
             Text(
               'Cancel anytime • Secure payment',

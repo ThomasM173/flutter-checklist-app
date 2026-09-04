@@ -17,8 +17,9 @@ import 'screens/checklist_screens/piper_pa28_checklist.dart';
 import 'screens/checklist_screens/cessna_172_checklist.dart';
 import 'screens/checklist_screens/cessna_152_checklist.dart';
 import 'screens/flight_school/flight_school_dashboard.dart';
-import 'screens/flight_school/pdf_library_screen.dart';
 import 'screens/flight_school/checklist_editor_screen.dart';
+import 'screens/completions/my_completions_screen.dart';
+import 'screens/completions/school_completions_screen.dart';
 import 'screens/auth/login_screen.dart';
 
 
@@ -41,9 +42,10 @@ final Map<String, WidgetBuilder> appRoutes = {
   '/cessna_172_emergency_game': (context) => const Cessna172EmergencyGame(),
   '/piper_pa28_emergency_screen': (context) => const PiperPA28EmergencyScreen(),
   '/piper_pa28_emergency_game': (context) => const PiperPA28EmergencyGame(),
+  '/my-checklists': (context) => const MyCompletionsScreen(),
   // Flight School Admin routes
   '/flight-school/dashboard': (context) => const FlightSchoolDashboard(),
-  '/flight-school/pdfs': (context) => const PdfLibraryScreen(),
+  '/flight-school/completions': (context) => const SchoolCompletionsScreen(),
   '/flight-school/checklists': (context) => const ChecklistEditorScreen(),
 };
 

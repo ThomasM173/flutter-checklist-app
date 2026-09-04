@@ -7,10 +7,9 @@ import 'package:clearedtogo/screens/faq_screen.dart';
 import 'package:clearedtogo/screens/recent_updates_screen.dart';
 import 'package:clearedtogo/screens/auth/account_details_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
-import 'package:clearedtogo/screens/paywall_screen.dart';
 import 'package:clearedtogo/screens/premium_pricing_screen.dart';
-import 'package:clearedtogo/screens/pdf/pdf_list_screen.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/screens/completions/my_completions_screen.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
 import '../screens/home_screen.dart';
 
@@ -95,8 +94,11 @@ class AppDrawer extends StatelessWidget {
           const Divider(color: Colors.black),
           ListTile(
             leading: const Icon(Icons.picture_as_pdf, color: Colors.black),
-            title: const Text('My PDFs', style: TextStyle(color: Colors.black)),
-            onTap: () => _navigate(context, const PdfListScreen()),
+            title: const Text('My Checklists',
+                style: TextStyle(color: Colors.black)),
+            subtitle: const Text('Completed checklist PDFs',
+                style: TextStyle(color: Colors.black54, fontSize: 12)),
+            onTap: () => _navigate(context, const MyCompletionsScreen()),
           ),
           FutureBuilder<bool>(
             future: _checkPremiumStatus(),
@@ -122,44 +124,72 @@ class AppDrawer extends StatelessWidget {
               );
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.person, color: Colors.black),
-            title: const Text('Account Details', style: TextStyle(color: Colors.black)),
-            onTap: () => _navigate(context, const AccountDetailsScreen()),
-          ),
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
-            onTap: () async {
-              // Show confirmation dialog
-              final confirmed = await showDialog<bool>(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, true),
-                      style: TextButton.styleFrom(foregroundColor: Colors.red),
-                      child: const Text('Logout'),
-                    ),
-                  ],
-                ),
-              );
+          FutureBuilder<bool>(
+            future: _checkSignedIn(),
+            builder: (context, snapshot) {
+              final signedIn = snapshot.data ?? false;
 
-              if (confirmed == true && context.mounted) {
-                await AuthService().logout();
-                if (context.mounted) {
-                  Navigator.of(context).pushAndRemoveUntil(
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                    (route) => false,
-                  );
-                }
+              // Sign-in is optional. Everything else in this drawer works
+              // without an account, so guests just get a way to sign in;
+              // only signed-in users see account management / logout.
+              if (!signedIn) {
+                return ListTile(
+                  leading: const Icon(Icons.login, color: Colors.black),
+                  title: const Text('Login / Sign Up',
+                      style: TextStyle(color: Colors.black)),
+                  subtitle: const Text(
+                    'Optional — for saved history & premium',
+                    style: TextStyle(color: Colors.black54, fontSize: 12),
+                  ),
+                  onTap: () => _navigate(context, const LoginScreen()),
+                );
               }
+
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.person, color: Colors.black),
+                    title: const Text('Account Details', style: TextStyle(color: Colors.black)),
+                    onTap: () => _navigate(context, const AccountDetailsScreen()),
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    title: const Text('Logout', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold)),
+                    onTap: () async {
+                      // Show confirmation dialog
+                      final confirmed = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Logout'),
+                          content: const Text('Are you sure you want to logout?'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: TextButton.styleFrom(foregroundColor: Colors.red),
+                              child: const Text('Logout'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirmed == true && context.mounted) {
+                        await SupabaseAuthService().logout();
+                        if (context.mounted) {
+                          Navigator.of(context).pushAndRemoveUntil(
+                            MaterialPageRoute(builder: (_) => const HomeScreen()),
+                            (route) => false,
+                          );
+                        }
+                      }
+                    },
+                  ),
+                ],
+              );
             },
           ),
           const Divider(color: Colors.black),
@@ -174,9 +204,15 @@ class AppDrawer extends StatelessWidget {
   }
 
   Future<bool> _checkPremiumStatus() async {
-    final authService = AuthService();
+    final authService = SupabaseAuthService();
     await authService.init();
     final entitlementService = EntitlementService(authService);
     return entitlementService.userHasPremium;
+  }
+
+  Future<bool> _checkSignedIn() async {
+    final authService = SupabaseAuthService();
+    await authService.init();
+    return authService.isSignedIn;
   }
 }

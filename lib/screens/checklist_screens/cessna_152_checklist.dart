@@ -8,8 +8,8 @@ import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import '../aircraft_screens/cessna_152_emergency_screen.dart';
 import '../aircraft_screens/cessna_152_screen.dart';
 import 'package:clearedtogo/utils/weather_service.dart';
@@ -734,7 +734,7 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
           margin: pdfWidgets.EdgeInsets.all(40),
           theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
           header: (context) {
-            final authService = AuthService();
+            final authService = SupabaseAuthService();
             final user = authService.currentUser;
 
             return pdfWidgets.Column(
@@ -877,18 +877,16 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
 
-      // Upload to backend (non-blocking)
+      // Record the completion + upload its PDF to Supabase. Best-effort:
+      // silently skipped for guests, never blocks opening the local file.
       try {
-        await PdfUploadService().uploadPdf(
-          pdfBytes,
-          title:
-              'Cessna 152 Checklist - ${DateTime.now().toString().split(' ')[0]}',
-          aircraftId: 'G-152', // Replace with actual registration if available
-          type: 'cessna_152_checklist',
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: 'Cessna 152',
+          checklistName: 'Pre-boarding Checklist',
         );
       } catch (e) {
-        debugPrint('Failed to upload PDF to backend: $e');
-        // Continue with local file opening even if upload fails
+        debugPrint('Failed to record checklist completion: $e');
       }
 
       OpenFile.open(file.path);
@@ -1117,7 +1115,7 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
               ),
               SizedBox(height: 10),
             ],
-            Container(
+            SizedBox(
               height: 100,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

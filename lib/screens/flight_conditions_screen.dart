@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../utils/weather_service.dart';
-import '../utils/weather_boundaries.dart';
 import '../widget/bottom_nav_bar.dart';
 import '../widget/app_drawer.dart';
 
@@ -150,7 +149,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                         'Get real-time weather and flight conditions',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.black38,
+                          color: Colors.black54,
                         ),
                       ),
                     ],

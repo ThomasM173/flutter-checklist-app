@@ -8,8 +8,8 @@ import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 
 class Cessna152EmergencyScreen extends StatefulWidget {
   const Cessna152EmergencyScreen({super.key});
@@ -154,7 +154,7 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -204,16 +204,16 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     final pdfBytes = await pdf.save();
     await file.writeAsBytes(pdfBytes);
     
-    // Upload to backend (non-blocking)
+    // Record the completion (non-blocking)
     try {
-      await PdfUploadService().uploadPdf(
-        pdfBytes,
-        title: 'Cessna 152 Emergency Procedures - ${DateTime.now().toString().split(' ')[0]}',
-        aircraftId: 'G-152',
-        type: 'cessna_152_emergency',
+      await SupabasePdfService().recordCompletion(
+        pdfBytes: pdfBytes,
+        aircraftType: 'Cessna 152',
+        checklistName: 'Emergency Procedures',
+        completionType: 'emergency_procedures',
       );
     } catch (e) {
-      debugPrint('Failed to upload PDF to backend: $e');
+      debugPrint('Failed to record emergency procedures completion: $e');
     }
     
     OpenFile.open(file.path);

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:clearedtogo/services/auth_service.dart';
-import 'package:clearedtogo/services/auth_service_manager.dart';
-import 'package:clearedtogo/models/user_role.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/auth/signup_screen.dart';
-import 'package:clearedtogo/screens/auth/email_verification_screen.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
 
@@ -18,8 +16,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
-  final _authService = AuthService();
-  final _authServiceManager = AuthServiceManager();
+  final _auth = SupabaseAuthService();
   bool _isLoading = false;
   String? _errorMessage;
 
@@ -34,59 +31,23 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
-      // Try new local auth first (for flight school admins and demo accounts)
-      try {
-        final user = await _authServiceManager.signIn(
-          _usernameController.text.trim(),
-          _passwordController.text,
-        );
-        
-        if (mounted) {
-          // Navigate based on role
-          if (user.role == UserRole.flightSchoolAdmin) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const FlightSchoolDashboard()),
-            );
-          } else {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-          }
-        }
-        return;
-      } catch (e) {
-        // If local auth fails, try Cognito (for backward compatibility)
-        final success = await _authService.loginWithCognito(
-          _usernameController.text.trim(),
-          _passwordController.text,
-        );
+      final profile = await _auth.signIn(
+        _usernameController.text.trim(),
+        _passwordController.text,
+      );
 
-        if (success) {
-          if (mounted) {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
-            );
-          }
-        } else {
-          setState(() {
-            _errorMessage = 'Invalid username or password';
-          });
-        }
-      }
+      if (!mounted) return;
+      final bool isAdmin = profile.role == UserRole.flightSchoolAdmin;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(
+          builder: (_) =>
+              isAdmin ? const FlightSchoolDashboard() : const HomeScreen(),
+        ),
+      );
     } catch (e) {
-      final errorMessage = e.toString();
-      
-      // Check if this is a verification required error
-      if (errorMessage.contains('verify your email') || errorMessage.contains('verification')) {
-        setState(() {
-          _errorMessage = errorMessage.replaceAll('Exception: ', '');
-        });
-        // Show verification button
-      } else {
-        setState(() {
-          _errorMessage = errorMessage.replaceAll('Exception: ', '');
-        });
-      }
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      });
     } finally {
       if (mounted) {
         setState(() {
@@ -96,26 +57,28 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
-  void _navigateToVerification() {
-    final email = _usernameController.text.trim();
-    if (email.isEmpty) {
-      setState(() {
-        _errorMessage = 'Please enter your email address';
-      });
-      return;
-    }
-    
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) => EmailVerificationScreen(email: email),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        iconTheme: const IconThemeData(color: Colors.black),
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          tooltip: 'Continue without an account',
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              );
+            }
+          },
+        ),
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -265,19 +228,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  
-                  // Verify email link
-                  TextButton(
-                    onPressed: _navigateToVerification,
-                    child: const Text(
-                      'Need to verify your email?',
-                      style: TextStyle(
-                        color: Color(0xFF87CEEB),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
                   
                   // Sign up link
                   Row(

@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
-import '../../services/auth_service_manager.dart';
-import '../../repositories/local_pdf_repository.dart';
+import 'package:flutter/services.dart' show Clipboard, ClipboardData;
+import '../../models/flight_school.dart';
+import '../../services/supabase_auth_service.dart';
+import '../../services/supabase_pdf_service.dart';
 import '../../repositories/local_checklist_repository.dart';
+import '../completions/school_completions_screen.dart';
 
 /// Flight School Admin Dashboard - landing screen for admins
 class FlightSchoolDashboard extends StatefulWidget {
-  const FlightSchoolDashboard({Key? key}) : super(key: key);
+  const FlightSchoolDashboard({super.key});
 
   @override
   State<FlightSchoolDashboard> createState() => _FlightSchoolDashboardState();
 }
 
 class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
-  final _authService = AuthServiceManager();
-  final _pdfRepo = LocalPdfRepository();
+  final _authService = SupabaseAuthService();
+  final _pdfService = SupabasePdfService();
   final _checklistRepo = LocalChecklistRepository();
-  
-  int _totalPdfs = 0;
+
+  int _totalCompletions = 0;
   int _customChecklists = 0;
+  FlightSchool? _school;
   bool _loading = true;
+  bool _rotatingCode = false;
 
   @override
   void initState() {
@@ -28,26 +33,73 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
 
   Future<void> _loadDashboardData() async {
     setState(() => _loading = true);
-    
+
     try {
-      await _pdfRepo.init();
       await _checklistRepo.init();
-      
+
       final flightSchoolId = _authService.flightSchoolId;
+      final school = await _authService.currentFlightSchool();
       if (flightSchoolId != null) {
-        final pdfs = await _pdfRepo.getPdfsByFlightSchool(flightSchoolId);
-        final checklists = await _checklistRepo.getCustomChecklistsBySchool(flightSchoolId);
-        
+        final completions = await _pdfService.listSchoolCompletions();
+        final checklists =
+            await _checklistRepo.getCustomChecklistsBySchool(flightSchoolId);
+
         setState(() {
-          _totalPdfs = pdfs.length;
+          _totalCompletions = completions.length;
           _customChecklists = checklists.length;
+          _school = school;
         });
       }
     } catch (e) {
-      print('Error loading dashboard data: $e');
+      debugPrint('Error loading dashboard data: $e');
     } finally {
       setState(() => _loading = false);
     }
+  }
+
+  Future<void> _rotateInviteCode() async {
+    setState(() => _rotatingCode = true);
+    try {
+      final code = await _authService.rotateInviteCode();
+      if (mounted) {
+        setState(() {
+          _school = _school == null
+              ? null
+              : FlightSchool(
+                  id: _school!.id,
+                  name: _school!.name,
+                  address: _school!.address,
+                  phone: _school!.phone,
+                  email: _school!.email,
+                  inviteCode: code,
+                  createdAt: _school!.createdAt,
+                );
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('New invite code issued'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to rotate code: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _rotatingCode = false);
+    }
+  }
+
+  void _copyInviteCode() {
+    final code = _school?.inviteCode;
+    if (code == null || code.isEmpty) return;
+    Clipboard.setData(ClipboardData(text: code));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invite code copied')),
+    );
   }
 
   @override
@@ -105,10 +157,10 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                     children: [
                       Expanded(
                         child: _buildStatCard(
-                          'Total PDFs',
-                          _totalPdfs.toString(),
-                          Icons.picture_as_pdf,
-                          Colors.red,
+                          'Completions',
+                          _totalCompletions.toString(),
+                          Icons.checklist_rtl,
+                          Colors.green,
                         ),
                       ),
                       const SizedBox(width: 16),
@@ -122,9 +174,94 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                       ),
                     ],
                   ),
-                  
+
+                  const SizedBox(height: 24),
+
+                  // Invite code card
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.black, width: 2),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade300,
+                          blurRadius: 6,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.confirmation_number_outlined,
+                                color: Color(0xFF3A7CA5)),
+                            const SizedBox(width: 8),
+                            const Text(
+                              'Pilot Invite Code',
+                              style: TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          'Share this code with pilots so they can join your school.',
+                          style: TextStyle(fontSize: 12, color: Colors.black54),
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[100],
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: Colors.grey[300]!),
+                                ),
+                                child: Text(
+                                  _school?.inviteCode ?? '—',
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 2,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: _school?.inviteCode == null
+                                  ? null
+                                  : _copyInviteCode,
+                              icon: const Icon(Icons.copy),
+                              tooltip: 'Copy code',
+                            ),
+                            IconButton(
+                              onPressed: _rotatingCode ? null : _rotateInviteCode,
+                              icon: _rotatingCode
+                                  ? const SizedBox(
+                                      width: 18,
+                                      height: 18,
+                                      child:
+                                          CircularProgressIndicator(strokeWidth: 2),
+                                    )
+                                  : const Icon(Icons.refresh),
+                              tooltip: 'Rotate code',
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+
                   const SizedBox(height: 32),
-                  
+
                   // Quick actions
                   const Text(
                     'Quick Actions',
@@ -137,14 +274,19 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
                   const SizedBox(height: 16),
                   
                   _buildActionButton(
-                    'View PDF Library',
-                    'Browse and manage all submitted PDFs',
-                    Icons.folder_open,
-                    Colors.red,
-                    () => Navigator.pushNamed(context, '/flight-school/pdfs'),
+                    'Checklist Completions',
+                    'Every pre-boarding checklist your pilots completed',
+                    Icons.checklist_rtl,
+                    Colors.green,
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SchoolCompletionsScreen(),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  
+
                   _buildActionButton(
                     'Edit Checklists',
                     'Customize checklists for your aircraft',
@@ -313,9 +455,9 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
           ),
           _buildDrawerItem(
             context,
-            'PDF Library',
-            Icons.folder_open,
-            '/flight-school/pdfs',
+            'Checklist Completions',
+            Icons.checklist_rtl,
+            '/flight-school/completions',
           ),
           _buildDrawerItem(
             context,

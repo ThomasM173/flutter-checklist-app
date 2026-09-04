@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
 import 'package:clearedtogo/screens/paywall_screen.dart';
 
@@ -26,7 +26,7 @@ class PremiumFeatureWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authService = AuthService();
+    final authService = SupabaseAuthService();
     final entitlementService = EntitlementService(authService);
 
     return FutureBuilder<void>(
@@ -212,7 +212,7 @@ class InlinePremiumBadge extends StatelessWidget {
 
 /// Helper function to check premium access and show paywall if needed
 Future<bool> checkPremiumAccess(BuildContext context) async {
-  final authService = AuthService();
+  final authService = SupabaseAuthService();
   await authService.init();
   final entitlementService = EntitlementService(authService);
 

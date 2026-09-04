@@ -6,8 +6,8 @@ import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clearedtogo/services/pdf_upload_service.dart';
-import 'package:clearedtogo/services/auth_service.dart';
+import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
 
 class PassengerBriefScreen extends StatefulWidget {
   const PassengerBriefScreen({super.key});
@@ -80,7 +80,7 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
       final fontData = await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
       
-      final authService = AuthService();
+      final authService = SupabaseAuthService();
       final user = authService.currentUser;
 
       pdf.addPage(
@@ -202,14 +202,16 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
       await file.writeAsBytes(pdfBytes);
       
       try {
-        await PdfUploadService().uploadPdf(
-          pdfBytes,
-          title: 'Passenger Brief - ${_dateController.text}',
-          aircraftId: _aircraftRegistrationController.text,
-          type: 'passenger_brief',
+        await SupabasePdfService().recordCompletion(
+          pdfBytes: pdfBytes,
+          aircraftType: _aircraftRegistrationController.text.isNotEmpty
+              ? _aircraftRegistrationController.text
+              : 'UNKNOWN',
+          checklistName: 'Passenger Brief',
+          completionType: 'passenger_brief',
         );
       } catch (e) {
-        debugPrint('Failed to upload PDF: $e');
+        debugPrint('Failed to record passenger brief completion: $e');
       }
       
       if (mounted) {

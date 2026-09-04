@@ -49,3 +49,17 @@ key.properties
 *.keystore
 *.jks
 upload-keystore.jks
+
+# Secrets / environment - NEVER commit these!
+.env
+.env.*
+!.env.example
+scripts/.env
+scripts/node_modules/
+scripts/package-lock.json
+
+# Supabase CLI local state
+supabase/.branches/
+supabase/.temp/
+supabase/.env
+

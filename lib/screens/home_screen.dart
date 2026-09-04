@@ -72,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> {
           textAlign: TextAlign.center,
           maxLines: 2,
           overflow: TextOverflow.visible,
-          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -382,9 +382,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     "This checklist is for reference only and must not be considered authoritative.\nAlways use it in conjunction with the Pilot's Operating Handbook and comply with all applicable regulations.",
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: 10,
+                                      fontSize: 12,
                                       fontWeight: FontWeight.normal,
-                                      color: Colors.black45,
+                                      color: Colors.black54,
                                     ),
                                   ),
                                 ],
