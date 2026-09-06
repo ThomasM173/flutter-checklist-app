@@ -8,7 +8,7 @@ import 'package:intl/intl.dart';
 
 /// PDF Library screen for flight school admins
 class PdfLibraryScreen extends StatefulWidget {
-  const PdfLibraryScreen({Key? key}) : super(key: key);
+  const PdfLibraryScreen({super.key});
 
   @override
   State<PdfLibraryScreen> createState() => _PdfLibraryScreenState();
@@ -158,7 +158,7 @@ class _PdfLibraryScreenState extends State<PdfLibraryScreen> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  value: _selectedPdfType,
+                  initialValue: _selectedPdfType,
                   decoration: InputDecoration(
                     labelText: 'Filter by Type',
                     border: OutlineInputBorder(

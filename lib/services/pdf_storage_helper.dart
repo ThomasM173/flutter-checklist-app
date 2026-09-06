@@ -41,7 +41,7 @@ class PdfStorageHelper {
     // Save PDF to temporary location first
     final tempDir = await getTemporaryDirectory();
     final timestamp = DateTime.now().millisecondsSinceEpoch;
-    final tempPath = '${tempDir.path}/$timestamp\_$pdfType.pdf';
+    final tempPath = '${tempDir.path}/${timestamp}_$pdfType.pdf';
     final tempFile = File(tempPath);
     await tempFile.writeAsBytes(pdfBytes);
     

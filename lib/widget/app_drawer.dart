@@ -7,7 +7,6 @@ import 'package:clearedtogo/screens/faq_screen.dart';
 import 'package:clearedtogo/screens/recent_updates_screen.dart';
 import 'package:clearedtogo/screens/auth/account_details_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
-import 'package:clearedtogo/screens/paywall_screen.dart';
 import 'package:clearedtogo/screens/premium_pricing_screen.dart';
 import 'package:clearedtogo/screens/pdf/pdf_list_screen.dart';
 import 'package:clearedtogo/services/auth_service.dart';

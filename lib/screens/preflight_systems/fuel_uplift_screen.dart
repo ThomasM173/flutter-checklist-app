@@ -473,7 +473,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
                             required: true, keyboardType: TextInputType.number, onChanged: () => setState(() {})),
                         _buildTextField(_fuelGradeController, 'Fuel Grade *', Icons.local_fire_department, required: true),
                         DropdownButtonFormField<String>(
-                          value: _fuelSupplier,
+                          initialValue: _fuelSupplier,
                           decoration: const InputDecoration(
                             labelText: 'Fuel Supplier',
                             prefixIcon: Icon(Icons.store),
@@ -523,7 +523,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
                           : 'Do NOT use this fuel source!'),
                       value: _bowserWaterCheckPassed,
                       onChanged: (val) => setState(() => _bowserWaterCheckPassed = val),
-                      activeColor: Colors.green,
+                      activeThumbColor: Colors.green,
                     ),
                   ],
                 ),

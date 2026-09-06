@@ -5,7 +5,7 @@ import '../../repositories/local_checklist_repository.dart';
 
 /// Flight School Admin Dashboard - landing screen for admins
 class FlightSchoolDashboard extends StatefulWidget {
-  const FlightSchoolDashboard({Key? key}) : super(key: key);
+  const FlightSchoolDashboard({super.key});
 
   @override
   State<FlightSchoolDashboard> createState() => _FlightSchoolDashboardState();

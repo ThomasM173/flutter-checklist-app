@@ -32,7 +32,7 @@ android {
     defaultConfig {
         applicationId = "com.clearedtogo.app"
         minSdk = 24  // Android 7.0 - good baseline for modern apps
-        targetSdk = 35  // Android 15 - required by Google Play
+        targetSdk = 36  // Android 16 - required by Google Play
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }

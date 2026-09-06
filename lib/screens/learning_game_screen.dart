@@ -35,31 +35,34 @@ class LearningGameScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(currentIndex: 2),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            const Text(
-              "Select an aircraft to start the emergency procedures game",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18, color: Colors.black),
-            ),
-            const SizedBox(height: 25),
-            _buildGameButton(context, "Cessna 152", const Cessna152EmergencyGame()),
-            _buildGameButton(context, "Cessna 172", const Cessna172EmergencyGame()),
-            _buildGameButton(context, "Piper PA-28", const PiperPA28EmergencyGame()),
-            const SizedBox(height: 20),
-            const Text(
-              "More games are on the way, they will arrive with updates!!",
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
-            ),
-            const SizedBox(height: 10),
-            Image.asset('assets/images/NewLogo.png', height: 200, fit: BoxFit.contain),
-            const Spacer(),
-          ],
+            body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              const Text(
+                "Select an aircraft to start the emergency procedures game",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, color: Colors.black),
+              ),
+              const SizedBox(height: 25),
+              _buildGameButton(context, "Cessna 152", const Cessna152EmergencyGame()),
+              _buildGameButton(context, "Cessna 172", const Cessna172EmergencyGame()),
+              _buildGameButton(context, "Piper PA-28", const PiperPA28EmergencyGame()),
+              const SizedBox(height: 20),
+              const Text(
+                "More games are on the way, they will arrive with updates!!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
+              ),
+              const SizedBox(height: 10),
+              Image.asset('assets/images/NewLogo.png', height: 200, fit: BoxFit.contain),
+              const Spacer(),
+            ],
+          ),
         ),
       ),
+
       bottomNavigationBar: const BottomNavBar(currentIndex: 2),
     );
   }

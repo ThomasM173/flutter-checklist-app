@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:clearedtogo/screens/aircraft_screens/cessna_172_emergency_game.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';

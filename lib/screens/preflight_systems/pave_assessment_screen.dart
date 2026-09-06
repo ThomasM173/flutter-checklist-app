@@ -684,7 +684,7 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _overallRiskLevel,
+                      initialValue: _overallRiskLevel,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,

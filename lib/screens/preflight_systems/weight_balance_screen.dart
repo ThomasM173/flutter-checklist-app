@@ -380,7 +380,7 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
       try {
         final filePath = await PdfStorageHelper().savePdf(
           pdfBytes: pdfBytes,
-          title: 'Weight & Balance - ${_selectedAircraft} - ${_dateController.text}',
+          title: 'Weight & Balance - $_selectedAircraft - ${_dateController.text}',
           pdfType: 'weight_balance',
           aircraftType: _selectedAircraft,
           aircraftRegistration: _aircraftRegistrationController.text.isNotEmpty 
@@ -529,7 +529,7 @@ class _WeightBalanceScreenState extends State<WeightBalanceScreen> {
                     ),
                     const SizedBox(height: 12),
                     DropdownButtonFormField<String>(
-                      value: _selectedAircraft,
+                      initialValue: _selectedAircraft,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
                         filled: true,

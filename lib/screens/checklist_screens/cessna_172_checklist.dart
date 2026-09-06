@@ -1081,7 +1081,7 @@ class _Cessna172ChecklistScreenState extends State<Cessna172ChecklistScreen> {
               ),
               SizedBox(height: 10),
             ],
-            Container(
+            SizedBox(
               height: 100,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

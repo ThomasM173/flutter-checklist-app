@@ -535,7 +535,7 @@ class DefectCard extends StatelessWidget {
             const SizedBox(height: 8),
             
             DropdownButtonFormField<String>(
-              value: defect.system,
+              initialValue: defect.system,
               decoration: const InputDecoration(
                 labelText: 'System',
                 border: OutlineInputBorder(),
@@ -586,7 +586,7 @@ class DefectCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
-                    value: defect.status,
+                    initialValue: defect.status,
                     decoration: const InputDecoration(
                       labelText: 'Status',
                       border: OutlineInputBorder(),

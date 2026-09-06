@@ -88,7 +88,7 @@ class WeatherService {
 
     final oat = double.tryParse(temp);
     final dew = double.tryParse(dewpoint);
-    final humidityPercent = humidityVal != null ? humidityVal : null;
+    final humidityPercent = humidityVal;
     final windSpeedVal = windSpeedValue;
     final windGustsVal = windGustsValue;
     final visibilityKm = visibilityUnit == 'm' ? (double.tryParse(visibilityVal) ?? 0) / 1000 : double.tryParse(visibilityVal) ?? 0;

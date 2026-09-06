@@ -6,7 +6,7 @@ import '../../models/checklist_models.dart';
 
 /// Checklist Editor screen for flight school admins
 class ChecklistEditorScreen extends StatefulWidget {
-  const ChecklistEditorScreen({Key? key}) : super(key: key);
+  const ChecklistEditorScreen({super.key});
 
   @override
   State<ChecklistEditorScreen> createState() => _ChecklistEditorScreenState();
@@ -191,7 +191,7 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
             padding: const EdgeInsets.all(16),
             color: Colors.grey[100],
             child: DropdownButtonFormField<String>(
-              value: _selectedAircraftType,
+              initialValue: _selectedAircraftType,
               decoration: InputDecoration(
                 labelText: 'Select Aircraft Type',
                 border: OutlineInputBorder(

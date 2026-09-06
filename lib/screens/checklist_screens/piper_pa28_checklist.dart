@@ -804,7 +804,7 @@ class _PiperPA28ChecklistScreenState extends State<PiperPA28ChecklistScreen> {
               ),
               SizedBox(height: 10),
             ],
-            Container(
+            SizedBox(
               height: 100,
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

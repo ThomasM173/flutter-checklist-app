@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../utils/weather_service.dart';
-import '../utils/weather_boundaries.dart';
 import '../widget/bottom_nav_bar.dart';
 import '../widget/app_drawer.dart';
 
@@ -75,91 +74,94 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
             style: TextStyle(color: Colors.black)),
       ),
       bottomNavigationBar: const BottomNavBar(currentIndex: 1),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _icaoController,
-                    style: const TextStyle(color: Colors.black),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.grey[200],
-                      hintText: 'ICAO (e.g. EGLL)',
-                      hintStyle: const TextStyle(color: Colors.black54),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide.none,
+            body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _icaoController,
+                      style: const TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey[200],
+                        hintText: 'ICAO (e.g. EGLL)',
+                        hintStyle: const TextStyle(color: Colors.black54),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide.none,
+                        ),
                       ),
+                      onSubmitted: (v) => _fetch(v.trim()),
                     ),
-                    onSubmitted: (v) => _fetch(v.trim()),
                   ),
-                ),
-                const SizedBox(width: 8),
-                ElevatedButton(
-                  onPressed: () => _fetch(_icaoController.text.trim()),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF87CEEB),
-                    padding: const EdgeInsets.all(14),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () => _fetch(_icaoController.text.trim()),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF87CEEB),
+                      padding: const EdgeInsets.all(14),
+                    ),
+                    child: const Icon(Icons.search, color: Colors.black),
                   ),
-                  child: const Icon(Icons.search, color: Colors.black),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            if (_metar != null) ...[
-              _buildWeatherRiskSummary(),
-              const SizedBox(height: 16),
-            ],
-            if (_loading)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
-            else if (_error != null)
-              Expanded(
-                child: Center(
-                  child: Text(_error!,
-                      style: const TextStyle(color: Colors.red, fontSize: 16)),
-                ),
-              )
-            else if (_metar != null)
-              Expanded(child: _buildData())
-            else
-              Expanded(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: const [
-                      Icon(
-                        Icons.cloud_queue,
-                        size: 80,
-                        color: Color(0xFF87CEEB),
-                      ),
-                      SizedBox(height: 20),
-                      Text(
-                        'Enter an ICAO code above',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: Colors.black54,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'Get real-time weather and flight conditions',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black38,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                ],
               ),
-          ],
+              const SizedBox(height: 20),
+              if (_metar != null) ...[
+                _buildWeatherRiskSummary(),
+                const SizedBox(height: 16),
+              ],
+              if (_loading)
+                const Expanded(child: Center(child: CircularProgressIndicator()))
+              else if (_error != null)
+                Expanded(
+                  child: Center(
+                    child: Text(_error!,
+                        style: const TextStyle(color: Colors.red, fontSize: 16)),
+                  ),
+                )
+              else if (_metar != null)
+                Expanded(child: _buildData())
+              else
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.cloud_queue,
+                          size: 80,
+                          color: Color(0xFF87CEEB),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          'Enter an ICAO code above',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.black54,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 8),
+                        Text(
+                          'Get real-time weather and flight conditions',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.black38,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
+
     );
   }
 
