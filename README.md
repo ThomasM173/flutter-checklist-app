@@ -11,7 +11,7 @@ Aviation checklist and flight planning app for pilots.
 - Weather briefings
 - Technical log
 - PDF export functionality
-- User authentication with AWS Cognito
+- User authentication with Supabase
 
 ---
 
