@@ -2,23 +2,46 @@
 
 This guide shows how to integrate the paywall system into your features.
 
+> Rewritten 10 Sept 2026 to match the current Supabase-backed entitlement
+> system. The previous version of this doc predated the AWS Amplify ->
+> Supabase migration and described a SharedPreferences-based `AuthService`
+> that no longer exists — if you're reading an old copy, everything below
+> supersedes it.
+
 ## Configuration
 
-The paywall system is controlled by the `kDisablePaywallForDev` flag in `lib/config/config.dart`:
+Two separate flags in `lib/config/config.dart` control premium access — they
+answer different questions, and both matter:
 
 ```dart
-const bool kDisablePaywallForDev = true;  // Dev bypass enabled
+/// Dev-only bypass. Grants premium locally without touching Supabase at all.
+const bool kDisablePaywallForDev = true;
+
+/// Launch flag. Controls whether the real StoreKit purchase flow is reachable.
+const bool kIapEnabled = false;
 ```
 
-- Set to `true` for development - all users get premium access automatically
-- Set to `false` for production - only users with `isPremium = true` get access
+- **`kDisablePaywallForDev`** — local developer convenience. When `true`,
+  `EntitlementService.userHasPremium` always returns `true`, no Supabase call
+  involved. Set `false` to test against your real entitlement state.
+- **`kIapEnabled`** — the production launch flag. It does **not** control dev
+  access; it controls whether `PaywallScreen` and `PremiumPricingScreen` show
+  real purchase buttons. Right now it's `false`: those screens instead show a
+  "Premium features are free during our launch period" message, because
+  entitlement is currently granted via a free trial (and comped flight
+  schools) rather than payment. Flipping it to `true` re-enables the already-
+  built StoreKit purchase flow with no other code changes required — see
+  Architecture below for why.
+
+Neither flag is what actually decides if a given user has premium — that's
+always resolved server-side. See Architecture.
 
 ## Usage Examples
 
 ### 1. Wrapping an Entire Screen
 
 ```dart
-import 'package:flutter_application_1/widgets/premium_feature_wrapper.dart';
+import 'package:clearedtogo/widgets/premium_feature_wrapper.dart';
 
 class AdvancedChecklistScreen extends StatelessWidget {
   @override
@@ -35,12 +58,17 @@ class AdvancedChecklistScreen extends StatelessWidget {
 }
 ```
 
+> **Note:** `PremiumFeatureWrapper` is fully implemented and functional, but
+> as of this rewrite it isn't actually used by any screen in the app yet
+> (checked: no `PremiumFeatureWrapper(` call sites outside its own definition
+> file). It's ready to wrap a real feature whenever one needs gating.
+
 ### 2. Conditional Feature within a Screen
 
 ```dart
-import 'package:flutter_application_1/services/auth_service.dart';
-import 'package:flutter_application_1/services/entitlement_service.dart';
-import 'package:flutter_application_1/widgets/premium_feature_wrapper.dart';
+import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/services/entitlement_service.dart';
+import 'package:clearedtogo/widgets/premium_feature_wrapper.dart';
 
 class MyScreen extends StatefulWidget {
   @override
@@ -48,7 +76,7 @@ class MyScreen extends StatefulWidget {
 }
 
 class _MyScreenState extends State<MyScreen> {
-  final _authService = AuthService();
+  final _authService = SupabaseAuthService();
   late final _entitlementService = EntitlementService(_authService);
 
   @override
@@ -65,7 +93,7 @@ class _MyScreenState extends State<MyScreen> {
           // Free content available to everyone
           Text('Basic Features'),
           BasicFeatureWidget(),
-          
+
           // Premium content
           if (_entitlementService.userHasPremium)
             PremiumFeatureWidget()
@@ -81,7 +109,7 @@ class _MyScreenState extends State<MyScreen> {
 ### 3. Check Access Before Navigation
 
 ```dart
-import 'package:flutter_application_1/widgets/premium_feature_wrapper.dart';
+import 'package:clearedtogo/widgets/premium_feature_wrapper.dart';
 
 onTap: () async {
   final hasAccess = await checkPremiumAccess(context);
@@ -93,14 +121,15 @@ onTap: () async {
       ),
     );
   }
-  // If no access, paywall is automatically shown
+  // If no access, the paywall is shown automatically and this becomes true
+  // once the user closes it having gained access (trial/comped/purchase).
 },
 ```
 
 ### 4. Inline Premium Badge
 
 ```dart
-import 'package:flutter_application_1/widgets/premium_feature_wrapper.dart';
+import 'package:clearedtogo/widgets/premium_feature_wrapper.dart';
 
 ListTile(
   title: Text('Advanced Analytics'),
@@ -118,6 +147,9 @@ ListTile(
 ```
 
 ## Examples in Current App
+
+These are illustrative — none of this is live code today, just showing how
+you'd apply the pattern above to an existing screen if you wanted to gate it.
 
 ### Example 1: PDF Export (Already Free, Could Be Premium)
 
@@ -208,62 +240,84 @@ if (_entitlementService.userHasPremium) {
 
 ## Testing
 
-### During Development (kDisablePaywallForDev = true)
-- All users automatically have premium access
-- Paywall screen can still be accessed via menu
-- Upgrade button in paywall will grant premium in local storage
+### Local development (`kDisablePaywallForDev = true`, the default)
+- Every user automatically has premium access — `EntitlementService.userHasPremium`
+  short-circuits to `true` before any Supabase call.
+- `PaywallScreen` is still reachable via the menu; tapping a plan grants
+  premium immediately with no store round-trip (see the amber "Dev Mode"
+  banner it shows in this state).
 
-### For Production Testing (kDisablePaywallForDev = false)
-1. Create a new account via signup
-2. User will have `isPremium = false` by default
-3. Navigate to a premium feature - should see paywall
-4. Tap "Upgrade to Premium" (will show "not yet implemented" message)
-5. Manually set premium via Account Details screen (in dev)
+### Testing real entitlement (`kDisablePaywallForDev = false`)
+1. Create a new account via signup — it gets a 90-day free trial
+   automatically (`profiles.trial_ends_at`), so it will show as premium
+   immediately. This is expected, not a bug.
+2. To test the *no-access* path, either wait out the trial or (for manual
+   testing) set `trial_ends_at` to a past timestamp directly on that row via
+   the Supabase dashboard — there's no in-app control for this, by design.
+3. With `kIapEnabled = false` (current default): premium/paywall screens show
+   the "free during launch" message, no purchase attempted.
+4. With `kIapEnabled = true`: tapping upgrade opens the real StoreKit
+   purchase sheet (requires the real product IDs to exist and be approved in
+   App Store Connect — see Architecture).
 
-## Future Integration: Google Play Billing
+## Architecture
 
-When ready to integrate real billing:
+- **`has_premium_access(p_user_id)`** (Supabase Postgres function, see
+  `supabase/migrations/20260904100000_entitlement.sql`) — the single source
+  of truth for entitlement. Returns `true` if ANY of: the user's free trial
+  is still active, their flight school is comped, or they have a live paid
+  subscription (`subscription_status = 'premium'` and
+  `subscription_expires_at` in the future). All three paths resolve through
+  this one function — there's no separate code path for paying users.
+- **`SupabaseAuthService`** — replaces the old `AuthService`. Calls
+  `has_premium_access()` via RPC every time the user's profile is (re)loaded
+  and caches the result as `Profile.isPremium`. This is a real, live
+  entitlement value, not a locally-stored flag — despite `Profile` also
+  carrying the raw `subscriptionStatus` field for display purposes, nothing
+  should compare that string directly; always read `.isPremium`.
+- **`EntitlementService`** — thin wrapper: applies the `kDisablePaywallForDev`
+  bypass, otherwise reads `Profile.isPremium`. `grantPremium()` /
+  `revokePremium()` write directly to `profiles.subscription_status` (dev/
+  testing convenience — the real path is `IapService` below).
+- **`IapService`** — StoreKit 2 purchase flow (`in_app_purchase` +
+  `in_app_purchase_storekit`), fully built and functional, currently dormant
+  behind `kIapEnabled`. On a verified purchase it calls
+  `SupabaseAuthService.setSubscription(...)`, which writes
+  `subscription_status`/`subscription_expires_at` — the exact columns
+  `has_premium_access()` already reads for path (c). Turning on `kIapEnabled`
+  needs no code changes, only real product IDs approved in App Store Connect
+  (`kMonthlySubscriptionId`/`kYearlySubscriptionId` in `config.dart` are
+  still `TODO_REPLACE_...` placeholders).
+  - **Android / Google Play Billing: not implemented.** The `in_app_purchase`
+    plugin is nominally cross-platform, but `IapService._verify()` decodes
+    Apple's StoreKit 2 JWS transaction format specifically — Google Play's
+    receipt format is different and untested here. There's no Play
+    Console product configuration, no Android-specific verification path,
+    and nothing in this codebase has been run against Play Billing. Treat
+    this as unbuilt, not "coming soon" — it would need its own verification
+    branch in `_verify()` before it could work, not just a config flip.
+  - Documented limitation either way: purchase verification is client-side
+    only (no cryptographic signature check, no server-side renewal/refund
+    tracking). Production hardening needs App Store Server Notifications V2
+    -> an Edge Function that updates `profiles` — see `docs/supabase_migration.md`.
+- **`PaywallScreen`** — full-screen upgrade UI. Branches on `kIapEnabled`:
+  shows the real StoreKit plan cards when `true`, or a "free during launch"
+  card when `false` (see `lib/screens/paywall_screen.dart`).
+- **`PremiumPricingScreen`** — a second, separate premium-marketing screen
+  reachable from the app drawer. Not StoreKit-integrated directly; when
+  `kIapEnabled` is `true` its upgrade button navigates to the real
+  `PaywallScreen` instead. Two screens exist for historical reasons — this
+  doc isn't taking a position on consolidating them, just describing what's
+  there.
+- **`PremiumFeatureWrapper` / `InlinePremiumBadge` / `checkPremiumAccess()`**
+  (`lib/widgets/premium_feature_wrapper.dart`) — reusable gating widgets, all
+  reading `EntitlementService.userHasPremium`. Currently unused by any real
+  feature (see the note under Usage Example 1).
+- **`config.dart`** — `kDisablePaywallForDev` (dev bypass) and `kIapEnabled`
+  (launch flag), plus the StoreKit product ID / pricing constants.
 
-1. Add dependency in `pubspec.yaml`:
-```yaml
-dependencies:
-  in_app_purchase: ^3.1.0
-```
-
-2. Replace TODOs in `PaywallScreen._handleUpgrade()`:
-```dart
-// Initialize billing
-final InAppPurchase inAppPurchase = InAppPurchase.instance;
-
-// Query products
-final ProductDetailsResponse response = await inAppPurchase.queryProductDetails(
-  {kMonthlySubscriptionId, kYearlySubscriptionId}
-);
-
-// Launch purchase flow
-final PurchaseParam purchaseParam = PurchaseParam(
-  productDetails: selectedProduct,
-);
-await inAppPurchase.buyNonConsumable(purchaseParam: purchaseParam);
-
-// Listen to purchase stream and verify
-```
-
-3. Replace TODOs in `EntitlementService.grantPremium()`:
-```dart
-// Verify purchase with Google
-// Send purchase token to your backend
-// Backend verifies with Google Play Developer API
-// Backend updates user premium status
-// Update local state
-```
-
-## Architecture Notes
-
-- **EntitlementService**: Central service for premium checks
-- **AuthService**: Stores user premium status (`isPremium` field)
-- **PaywallScreen**: Full-screen upgrade UI
-- **PremiumFeatureWrapper**: Reusable widget for gating features
-- **config.dart**: Dev bypass flag
-
-All premium state is stored locally in SharedPreferences for now. In production, you'll want to verify this with your backend on each app launch.
+All premium state lives in Supabase (`profiles.trial_ends_at`,
+`profiles.subscription_status`/`subscription_expires_at`,
+`flight_schools.plan_type`), resolved server-side by `has_premium_access()`
+on every profile load. Nothing is stored in `SharedPreferences` — if you find
+code that says otherwise, it predates this rewrite and is wrong.
