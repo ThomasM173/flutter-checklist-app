@@ -5,7 +5,7 @@ publish_to: 'none' # Private app - do not publish to pub.dev
 # Version format: MAJOR.MINOR.PATCH+BUILD_NUMBER
 # - versionName (Android) = 1.0.1
 # - versionCode (Android) = 8
-version: 1.0.1+8
+version: 1.0.1+9
 
 environment:
   sdk: ^3.6.1
@@ -35,9 +35,12 @@ dependencies:
   # Backend: Supabase (replaces AWS Amplify / Cognito).
   supabase_flutter: ^2.8.0
   flutter_dotenv: ^5.1.0
-  # In-app purchases (Phase 4 — StoreKit 2 on iOS).
-  in_app_purchase: ^3.2.0
-  in_app_purchase_storekit: ^0.3.19
+  # In-app purchases (Phase 4 — StoreKit 2 on iOS). in_app_purchase >=3.3.0
+  # pulls in in_app_purchase_android >=0.5.0, which bundles Google Play
+  # Billing Library 8.0.0 (Play Console requires >=8.0.0; our code doesn't
+  # use queryPurchaseHistory, the one API that version removed).
+  in_app_purchase: ^3.3.0
+  in_app_purchase_storekit: ^0.4.13
   uuid: ^4.5.1
   intl: ^0.19.0
 

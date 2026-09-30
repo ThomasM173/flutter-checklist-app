@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 import '../config/config.dart';
 import 'supabase_auth_service.dart';
@@ -54,15 +52,10 @@ class IapService {
     if (_initialized) return;
     _initialized = true;
 
-    // Opt into StoreKit 2 on iOS so verificationData carries a signed JWS
-    // transaction rather than a legacy receipt blob.
-    if (!kIsWeb && Platform.isIOS) {
-      try {
-        await InAppPurchaseStoreKitPlatform.enableStoreKit2();
-      } catch (e) {
-        debugPrint('IapService: enableStoreKit2 failed (continuing): $e');
-      }
-    }
+    // in_app_purchase_storekit >=0.4.0 makes StoreKit 2 the default on every
+    // device that supports it (enableStoreKit2() is now a deprecated no-op),
+    // so verificationData already carries a signed JWS transaction without
+    // an explicit opt-in call.
 
     _available = await _iap.isAvailable();
     _sub = _iap.purchaseStream.listen(
