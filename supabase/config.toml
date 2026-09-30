@@ -52,9 +52,12 @@ enable_confirmations = false
 double_confirm_changes = true
 secure_password_change = false
 
-[auth.email.smtp]
-# Configure real SMTP in the hosted dashboard (Auth -> Email) before enabling
-# confirmations / password resets in production.
+# SMTP is intentionally left unconfigured here (enable_confirmations is
+# false, so no confirmation/reset emails are sent). Configure real SMTP in
+# the hosted dashboard (Auth -> Email) before enabling confirmations in
+# production — a bare [auth.email.smtp] section with no host fails CLI
+# config validation even when unused, so it's omitted entirely rather than
+# left as a dangling header.
 
 # --- Edge Functions -------------------------------------------------------
 [functions.delete-account]
