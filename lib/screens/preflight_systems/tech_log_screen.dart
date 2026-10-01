@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 import 'dart:convert';
 
 class TechLogScreen extends StatefulWidget {
@@ -78,14 +78,80 @@ class _TechLogScreenState extends State<TechLogScreen> {
     });
   }
 
-  Future<void> _generatePDF() async {
+  /// Structured snapshot shared by [_finishChecklist] and [_viewAsPdf].
+  Map<String, dynamic> _buildCompletionData() {
+    final hobbsStart = double.tryParse(_hobbsStartController.text);
+    final hobbsEnd = double.tryParse(_hobbsEndController.text);
+    return {
+      'Aircraft Registration': _aircraftRegistrationController.text,
+      'Date': _dateController.text,
+      'Pilot Name': _pilotNameController.text,
+      if (_flightNumberController.text.isNotEmpty)
+        'Flight Number': _flightNumberController.text,
+      if (_hobbsStartController.text.isNotEmpty)
+        'Hobbs Start': _hobbsStartController.text,
+      if (_hobbsEndController.text.isNotEmpty)
+        'Hobbs End': _hobbsEndController.text,
+      if (hobbsStart != null && hobbsEnd != null)
+        'Flight Time (hrs)': (hobbsEnd - hobbsStart).toStringAsFixed(1),
+      'Defects': _defects.isEmpty
+          ? ['None reported - aircraft serviceable']
+          : [
+              for (final d in _defects)
+                '${d.system}: ${d.description} [${d.status}]'
+                    '${d.actionTaken.isNotEmpty ? " - Action: ${d.actionTaken}" : ""}'
+                    ' - reported by ${d.reportedBy}',
+            ],
+    };
+  }
+
+  /// Writes straight to checklist_completions - no PDF generated or
+  /// uploaded. A PDF (see [_viewAsPdf]) is always available on demand
+  /// afterwards, built fresh from this same stored data.
+  Future<void> _finishChecklist() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
+    try {
+      await _saveEntry();
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        checklistName: 'Tech Log',
+        completionType: 'tech_log',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Tech log saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save tech log completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save tech log.')),
+        );
+      }
+    }
+  }
 
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer - not saved anywhere, just opened locally.
+  Future<void> _viewAsPdf() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -95,233 +161,30 @@ class _TechLogScreenState extends State<TechLogScreen> {
       }
       return;
     }
-
     try {
-      final pdf = pw.Document();
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
+      final user = SupabaseAuthService().currentUser;
 
-      final authService = SupabaseAuthService();
-      final user = authService.currentUser;
-
-      pdf.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(30),
-          theme: pw.ThemeData.withFont(base: pdfFont),
-          header: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                "AIRCRAFT TECHNICAL LOG",
-                style:
-                    pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold),
-              ),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(height: 5),
-            ],
-          ),
-          footer: (context) => pw.Column(
-            children: [
-              pw.Divider(),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Text(
-                      "Generated: ${DateTime.now().toString().split('.')[0]}",
-                      style:
-                          pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
-                  pw.Text("Page ${context.pageNumber}/${context.pagesCount}",
-                      style:
-                          pw.TextStyle(fontSize: 8, color: PdfColors.grey700)),
-                ],
-              ),
-            ],
-          ),
-          build: (context) => [
-            if (user?.fullName != null)
-              pw.Text("Pilot: ${user!.fullName}",
-                  style: pw.TextStyle(fontSize: 11)),
-            if (user?.licenseNumber != null)
-              pw.Text("License: ${user!.licenseNumber}",
-                  style: pw.TextStyle(fontSize: 11)),
-            pw.SizedBox(height: 10),
-            _pdfRow(
-                "Aircraft Registration:", _aircraftRegistrationController.text),
-            _pdfRow("Date:", _dateController.text),
-            _pdfRow("Pilot Name:", _pilotNameController.text),
-            _pdfRow("Flight Number:", _flightNumberController.text),
-            _pdfRow("Hobbs Start:", _hobbsStartController.text),
-            _pdfRow("Hobbs End:", _hobbsEndController.text),
-            if (_hobbsStartController.text.isNotEmpty &&
-                _hobbsEndController.text.isNotEmpty)
-              _pdfRow("Flight Time:",
-                  "${(double.tryParse(_hobbsEndController.text) ?? 0.0) - (double.tryParse(_hobbsStartController.text) ?? 0.0)} hours"),
-            pw.SizedBox(height: 20),
-            pw.Text(
-              "DEFECTS & SNAGS (${_defects.length})",
-              style: pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold),
-            ),
-            pw.SizedBox(height: 10),
-            if (_defects.isEmpty)
-              pw.Container(
-                padding: pw.EdgeInsets.all(16),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.green50,
-                  border: pw.Border.all(color: PdfColors.green),
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Text(
-                  "✅ NO DEFECTS REPORTED - AIRCRAFT SERVICEABLE",
-                  style: pw.TextStyle(
-                      fontSize: 12,
-                      fontWeight: pw.FontWeight.bold,
-                      color: PdfColors.green900),
-                ),
-              )
-            else
-              ...List.generate(_defects.length, (index) {
-                final defect = _defects[index];
-                return pw.Container(
-                  margin: pw.EdgeInsets.only(bottom: 12),
-                  padding: pw.EdgeInsets.all(12),
-                  decoration: pw.BoxDecoration(
-                    color: defect.status == 'Unserviceable'
-                        ? PdfColors.red50
-                        : PdfColors.orange50,
-                    border: pw.Border.all(
-                      color: defect.status == 'Unserviceable'
-                          ? PdfColors.red
-                          : PdfColors.orange,
-                    ),
-                    borderRadius: pw.BorderRadius.circular(4),
-                  ),
-                  child: pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text("Defect #${index + 1}",
-                              style:
-                                  pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-                          pw.Container(
-                            padding: pw.EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 4),
-                            decoration: pw.BoxDecoration(
-                              color: defect.status == 'Unserviceable'
-                                  ? PdfColors.red
-                                  : PdfColors.orange,
-                              borderRadius: pw.BorderRadius.circular(4),
-                            ),
-                            child: pw.Text(
-                              defect.status,
-                              style: pw.TextStyle(
-                                  fontSize: 10,
-                                  color: PdfColors.white,
-                                  fontWeight: pw.FontWeight.bold),
-                            ),
-                          ),
-                        ],
-                      ),
-                      pw.SizedBox(height: 6),
-                      pw.Text("System: ${defect.system}",
-                          style: pw.TextStyle(fontSize: 11)),
-                      pw.SizedBox(height: 4),
-                      pw.Text("Description:",
-                          style: pw.TextStyle(
-                              fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                      pw.Text(defect.description,
-                          style: pw.TextStyle(fontSize: 10)),
-                      if (defect.actionTaken.isNotEmpty) ...[
-                        pw.SizedBox(height: 4),
-                        pw.Text("Action Taken:",
-                            style: pw.TextStyle(
-                                fontSize: 10, fontWeight: pw.FontWeight.bold)),
-                        pw.Text(defect.actionTaken,
-                            style: pw.TextStyle(fontSize: 10)),
-                      ],
-                      pw.SizedBox(height: 4),
-                      pw.Text("Reported by: ${defect.reportedBy}",
-                          style: pw.TextStyle(
-                              fontSize: 9, fontStyle: pw.FontStyle.italic)),
-                    ],
-                  ),
-                );
-              }),
-            pw.SizedBox(height: 30),
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Pilot Signature:",
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 200,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                          border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_pilotNameController.text,
-                          style: pw.TextStyle(
-                              fontSize: 12, fontStyle: pw.FontStyle.italic)),
-                    ),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Date:", style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 120,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                          border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_dateController.text,
-                          style: pw.TextStyle(fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'Aircraft Technical Log',
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        completedAt: DateTime.now(),
+        pilotName: user?.fullName,
+        licenseNumber: user?.licenseNumber,
+        homeBase: user?.homeBase,
+        data: _buildCompletionData(),
       );
-
-      await _saveEntry();
 
       final output = await getTemporaryDirectory();
       final fileName =
           "TechLog_${_aircraftRegistrationController.text}_${_dateController.text}.pdf";
       final file = File("${output.path}/$fileName");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: _aircraftRegistrationController.text.isNotEmpty
-              ? _aircraftRegistrationController.text
-              : 'UNKNOWN',
-          checklistName: 'Tech Log',
-          completionType: 'tech_log',
-        );
-      } catch (e) {
-        debugPrint('Failed to record tech log completion: $e');
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Tech Log PDF generated!'),
-              backgroundColor: Colors.green),
-        );
-      }
-
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -330,23 +193,6 @@ class _TechLogScreenState extends State<TechLogScreen> {
         );
       }
     }
-  }
-
-  pw.Widget _pdfRow(String label, String value) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.only(bottom: 4),
-      child: pw.Row(
-        children: [
-          pw.Container(
-            width: 140,
-            child: pw.Text(label,
-                style:
-                    pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-          ),
-          pw.Text(value, style: pw.TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
   }
 
   @override
@@ -501,17 +347,31 @@ class _TechLogScreenState extends State<TechLogScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: _generatePDF,
-              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
-              label: const Text('Generate Tech Log PDF',
+              onPressed: _finishChecklist,
+              icon: const Icon(Icons.check_circle, color: Colors.white),
+              label: const Text('Finish',
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
+                      color: Colors.white, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF87CEEB),
+                backgroundColor: Colors.green[700],
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 elevation: 3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _viewAsPdf,
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              label: const Text('View as PDF',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                side: const BorderSide(color: Color(0xFF87CEEB)),
               ),
             ),
             const SizedBox(height: 40),
