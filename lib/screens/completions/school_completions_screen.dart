@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
 
 import '../../models/checklist_completion.dart';
 import '../../services/supabase_auth_service.dart';
 import '../../services/supabase_pdf_service.dart';
+import 'completion_detail_screen.dart';
 
 /// Flight-school-admin view of every checklist completion for their school.
 /// RLS scopes the rows; this screen adds a pilot-name search + aircraft filter.
@@ -25,7 +25,6 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
   bool _loading = true;
   bool _authorised = false;
   String? _error;
-  String? _openingId;
   String _aircraftFilter = 'All aircraft';
   String _typeFilter = 'All types';
   List<ChecklistCompletion> _all = [];
@@ -95,30 +94,15 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
   }
 
   Future<void> _open(ChecklistCompletion c) async {
-    if (!c.hasPdf) {
+    if (!c.hasStructuredData && !c.hasPdf) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No PDF was stored for this completion.')),
+        const SnackBar(content: Text('No data was stored for this completion.')),
       );
       return;
     }
-    setState(() => _openingId = c.id);
-    try {
-      final path = await _pdf.downloadPdfToTemp(c);
-      final res = await OpenFile.open(path);
-      if (res.type != ResultType.done && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open PDF: ${res.message}')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to open PDF: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _openingId = null);
-    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CompletionDetailScreen(completion: c)),
+    );
   }
 
   @override
@@ -288,7 +272,6 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
   }
 
   Widget _card(ChecklistCompletion c) {
-    final opening = _openingId == c.id;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -313,18 +296,13 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
           child: Text(
             '${c.completionTypeLabel} · ${c.checklistName} · ${c.aircraftType}\n'
             '${_dateFmt.format(c.completedAt)}'
-            '${c.hasPdf ? '' : '  ·  (no PDF)'}',
+            '${!c.hasStructuredData && !c.hasPdf ? '  ·  (no data)' : ''}',
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
         ),
         isThreeLine: true,
-        trailing: opening
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2))
-            : const Icon(Icons.open_in_new, color: Color(0xFF3A7CA5)),
-        onTap: opening ? null : () => _open(c),
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFF3A7CA5)),
+        onTap: () => _open(c),
       ),
     );
   }
