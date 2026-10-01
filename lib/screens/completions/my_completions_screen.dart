@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
 
 import '../../models/checklist_completion.dart';
 import '../../services/supabase_auth_service.dart';
 import '../../services/supabase_pdf_service.dart';
 import '../auth/login_screen.dart';
+import 'completion_detail_screen.dart';
 
 /// A pilot's own checklist-completion history (Supabase-backed).
 /// Replaces the old local-only, fake "My PDFs" screen.
@@ -24,7 +24,6 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
   bool _loading = true;
   bool _signedIn = false;
   String? _error;
-  String? _openingId;
   String _typeFilter = 'All types';
   List<ChecklistCompletion> _items = [];
 
@@ -72,30 +71,15 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
   }
 
   Future<void> _open(ChecklistCompletion c) async {
-    if (!c.hasPdf) {
+    if (!c.hasStructuredData && !c.hasPdf) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No PDF was stored for this completion.')),
+        const SnackBar(content: Text('No data was stored for this completion.')),
       );
       return;
     }
-    setState(() => _openingId = c.id);
-    try {
-      final path = await _pdf.downloadPdfToTemp(c);
-      final res = await OpenFile.open(path);
-      if (res.type != ResultType.done && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Could not open PDF: ${res.message}')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to open PDF: $e')),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _openingId = null);
-    }
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => CompletionDetailScreen(completion: c)),
+    );
   }
 
   @override
@@ -145,8 +129,8 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
         icon: Icons.checklist_rtl,
         title: 'No completed checklists yet',
         subtitle:
-            'Finish a pre-boarding checklist and generate its PDF — it will '
-            'be saved here and visible to your flight school.',
+            'Tap Finish on any checklist to save it here. A PDF is always '
+            'available on demand, and your flight school can see it too.',
       );
     }
     final items = _filtered;
@@ -193,7 +177,6 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
   }
 
   Widget _card(ChecklistCompletion c) {
-    final opening = _openingId == c.id;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -217,18 +200,13 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
           padding: const EdgeInsets.only(top: 4),
           child: Text(
             '${c.completionTypeLabel} · ${c.aircraftType}\n${_dateFmt.format(c.completedAt)}'
-            '${c.hasPdf ? '' : '  ·  (no PDF)'}',
+            '${!c.hasStructuredData && !c.hasPdf ? '  ·  (no data)' : ''}',
             style: TextStyle(fontSize: 12, color: Colors.grey[700]),
           ),
         ),
         isThreeLine: true,
-        trailing: opening
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2))
-            : const Icon(Icons.open_in_new, color: Color(0xFF3A7CA5)),
-        onTap: opening ? null : () => _open(c),
+        trailing: const Icon(Icons.chevron_right, color: Color(0xFF3A7CA5)),
+        onTap: () => _open(c),
       ),
     );
   }
