@@ -127,85 +127,12 @@ class _SignupScreenState extends State<SignupScreen> {
                   "Sign up to get started",
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.black54,
+                    // Dark navy, not a light grey - readable against the
+                    // light background at normal-text contrast ratios.
+                    color: Color(0xFF0C2942),
                   ),
                 ),
                 const SizedBox(height: 32),
-
-                // Subscription costs
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.blue[50],
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.blue),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Subscription Plans',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              const Text(
-                                '£10',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Text(
-                                'per month',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            'or',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Column(
-                            children: [
-                              const Text(
-                                '£100',
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                              Text(
-                                'per year',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: Colors.grey[700],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
 
                 // Error message
                 if (_errorMessage != null)
@@ -460,7 +387,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
                   children: [
                     const Text(
                       "Already have an account? ",
-                      style: TextStyle(color: Colors.black54),
+                      style: TextStyle(color: Color(0xFF0C2942)),
                     ),
                     GestureDetector(
                       onTap: () {
