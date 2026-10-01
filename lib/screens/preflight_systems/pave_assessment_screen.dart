@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 import 'dart:convert';
 
 class PaveAssessmentScreen extends StatefulWidget {
@@ -144,16 +144,106 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
     }
   }
 
-  Future<void> _generatePDF() async {
+  /// Structured snapshot shared by [_finishChecklist] and [_viewAsPdf].
+  Map<String, dynamic> _buildCompletionData() {
+    return {
+      'Pilot Name': _pilotNameController.text,
+      'Date': _dateController.text,
+      if (_flightNumberController.text.isNotEmpty)
+        'Flight Number': _flightNumberController.text,
+      'Pilot (IMSAFE)': {
+        'Illness': _imsafeIllness,
+        'Medication': _imsafeMedication,
+        'Stress': _imsafeStress,
+        'Alcohol': _imsafeAlcohol,
+        'Fatigue': _imsafeFatigue,
+        'Eating': _imsafeEating,
+      },
+      if (_pilotNotesController.text.isNotEmpty)
+        'Pilot Notes': _pilotNotesController.text,
+      'Aircraft': {
+        'Registration': _aircraftRegistrationController.text,
+        'Serviceability': _aircraftServiceability,
+        if (_aircraftDefectsController.text.isNotEmpty)
+          'Defects': _aircraftDefectsController.text,
+      },
+      if (_aircraftNotesController.text.isNotEmpty)
+        'Aircraft Notes': _aircraftNotesController.text,
+      'enVironment': {
+        'Departure Airport': _departureAirportController.text,
+        'Destination Airport': _destinationAirportController.text,
+        'Weather Conditions': _weatherConditionsController.text,
+        'VFR/IFR': _vfrIfrConditions,
+      },
+      if (_environmentNotesController.text.isNotEmpty)
+        'Environment Notes': _environmentNotesController.text,
+      'External Pressures': {
+        'Time Constraints': _timeConstraints,
+        'Passenger Pressure': _passengerPressure,
+      },
+      if (_externalPressuresController.text.isNotEmpty)
+        'External Pressures Notes': _externalPressuresController.text,
+      '5P Assessment': {
+        'Plan': _fivePPlan,
+        'Plane': _fivePPlane,
+        'Pilot': _fivePPilot,
+        'Passengers': _fivePPassengers,
+        'Programming': _fivePProgramming,
+      },
+      'Overall Risk Level': _overallRiskLevel,
+    };
+  }
+
+  /// Writes straight to checklist_completions - no PDF generated or
+  /// uploaded. A PDF (see [_viewAsPdf]) is always available on demand
+  /// afterwards, built fresh from this same stored data. Also keeps the
+  /// existing local 7-day history in SharedPreferences via _saveEntry()
+  /// (unrelated to the Supabase record - a separate, pre-existing
+  /// mechanism, left as-is).
+  Future<void> _finishChecklist() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text(
-                'Please fill in all required fields before generating PDF')),
+        const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
+    try {
+      await _saveEntry();
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        checklistName: 'PAVE Assessment',
+        completionType: 'pave_assessment',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PAVE assessment saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save PAVE assessment completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save assessment.')),
+        );
+      }
+    }
+  }
 
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer - not saved anywhere, just opened locally.
+  Future<void> _viewAsPdf() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -163,271 +253,34 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
       }
       return;
     }
-
     try {
-      final pdf = pw.Document();
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
 
-      pdf.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(40),
-          theme: pw.ThemeData.withFont(base: pdfFont),
-          header: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                "PAVE Risk Assessment & IMSAFE Check",
-                style:
-                    pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold),
-              ),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(height: 10),
-            ],
-          ),
-          footer: (context) => pw.Column(
-            children: [
-              pw.Divider(),
-              pw.SizedBox(height: 5),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Text(
-                    "Generated: ${DateTime.now().toString().split('.')[0]}",
-                    style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
-                  ),
-                  pw.Text(
-                    "Signature: ${_pilotNameController.text}",
-                    style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
-                  ),
-                  pw.Text(
-                    "Page ${context.pageNumber}/${context.pagesCount}",
-                    style: pw.TextStyle(fontSize: 8, color: PdfColors.grey700),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          build: (context) => [
-            // Header Info
-            _pdfSection("Flight Information", [
-              _pdfRow("Pilot Name", _pilotNameController.text),
-              _pdfRow("Date", _dateController.text),
-              _pdfRow("Flight Number", _flightNumberController.text),
-            ]),
-
-            // IMSAFE
-            _pdfSection("I.M.S.A.F.E. Check", [
-              _pdfRow("Illness", _imsafeIllness),
-              _pdfRow("Medication", _imsafeMedication),
-              _pdfRow("Stress", _imsafeStress),
-              _pdfRow("Alcohol", _imsafeAlcohol),
-              _pdfRow("Fatigue", _imsafeFatigue),
-              _pdfRow("Eating/Hydration", _imsafeEating),
-              if (_pilotNotesController.text.isNotEmpty)
-                _pdfRow("Notes", _pilotNotesController.text),
-            ]),
-
-            // Aircraft
-            _pdfSection("Aircraft (PAVE: A)", [
-              _pdfRow("Registration", _aircraftRegistrationController.text),
-              _pdfRow("Serviceability", _aircraftServiceability),
-              if (_aircraftDefectsController.text.isNotEmpty)
-                _pdfRow("Defects", _aircraftDefectsController.text),
-              if (_aircraftNotesController.text.isNotEmpty)
-                _pdfRow("Notes", _aircraftNotesController.text),
-            ]),
-
-            // Environment
-            _pdfSection("enVironment (PAVE: V)", [
-              _pdfRow("Departure", _departureAirportController.text),
-              _pdfRow("Destination", _destinationAirportController.text),
-              _pdfRow("Weather", _weatherConditionsController.text),
-              _pdfRow("Flight Rules", _vfrIfrConditions),
-              if (_environmentNotesController.text.isNotEmpty)
-                _pdfRow("Notes", _environmentNotesController.text),
-            ]),
-
-            // External Pressures
-            _pdfSection("External Pressures (PAVE: E)", [
-              _pdfRow("Time Constraints", _timeConstraints),
-              _pdfRow("Passenger Pressure", _passengerPressure),
-              if (_externalPressuresController.text.isNotEmpty)
-                _pdfRow("Notes", _externalPressuresController.text),
-            ]),
-
-            // 5P Check
-            _pdfSection("5P Assessment", [
-              _pdfRow("Plan", _fivePPlan),
-              _pdfRow("Plane", _fivePPlane),
-              _pdfRow("Pilot", _fivePPilot),
-              _pdfRow("Passengers", _fivePPassengers),
-              _pdfRow("Programming", _fivePProgramming),
-            ]),
-
-            // Overall Risk
-            pw.Container(
-              margin: pw.EdgeInsets.only(top: 20),
-              padding: pw.EdgeInsets.all(16),
-              decoration: pw.BoxDecoration(
-                color: _overallRiskLevel == 'Low'
-                    ? PdfColors.green100
-                    : _overallRiskLevel == 'Medium'
-                        ? PdfColors.orange100
-                        : PdfColors.red100,
-                borderRadius: pw.BorderRadius.circular(8),
-                border: pw.Border.all(
-                  color: _overallRiskLevel == 'Low'
-                      ? PdfColors.green
-                      : _overallRiskLevel == 'Medium'
-                          ? PdfColors.orange
-                          : PdfColors.red,
-                  width: 2,
-                ),
-              ),
-              child: pw.Text(
-                "Overall Risk Level: $_overallRiskLevel",
-                style: pw.TextStyle(
-                  fontSize: 16,
-                  fontWeight: pw.FontWeight.bold,
-                ),
-              ),
-            ),
-
-            pw.SizedBox(height: 30),
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Pilot Signature:",
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 200,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                        border: pw.Border(bottom: pw.BorderSide()),
-                      ),
-                      child: pw.Text(
-                        _pilotNameController.text,
-                        style: pw.TextStyle(
-                            fontSize: 14, fontStyle: pw.FontStyle.italic),
-                      ),
-                    ),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Date:", style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 120,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                        border: pw.Border(bottom: pw.BorderSide()),
-                      ),
-                      child: pw.Text(
-                        _dateController.text,
-                        style: pw.TextStyle(fontSize: 14),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'PAVE & IMSAFE Risk Assessment',
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        completedAt: DateTime.now(),
+        pilotName: _pilotNameController.text,
+        data: _buildCompletionData(),
       );
 
-      await _saveEntry();
-
       final output = await getTemporaryDirectory();
-      final fileName =
-          "PAVE_Assessment_${_dateController.text}_${_pilotNameController.text.replaceAll(' ', '_')}.pdf";
+      final fileName = "PAVE_Assessment_${_dateController.text}.pdf";
       final file = File("${output.path}/$fileName");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      // Record the completion (non-blocking)
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: _aircraftRegistrationController.text.isNotEmpty
-              ? _aircraftRegistrationController.text
-              : 'UNKNOWN',
-          checklistName: 'PAVE Assessment',
-          completionType: 'pave_assessment',
-        );
-      } catch (e) {
-        debugPrint('Failed to record PAVE assessment completion: $e');
-      }
-
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("PDF error: $e")),
+          SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
         );
       }
     }
-  }
-
-  pw.Widget _pdfSection(String title, List<pw.Widget> children) {
-    return pw.Container(
-      margin: pw.EdgeInsets.only(bottom: 16),
-      child: pw.Column(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Container(
-            width: double.infinity,
-            padding: pw.EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: pw.BoxDecoration(
-              color: PdfColors.blue900,
-              borderRadius: pw.BorderRadius.circular(4),
-            ),
-            child: pw.Text(
-              title,
-              style: pw.TextStyle(
-                fontSize: 14,
-                fontWeight: pw.FontWeight.bold,
-                color: PdfColors.white,
-              ),
-            ),
-          ),
-          pw.SizedBox(height: 8),
-          ...children,
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _pdfRow(String label, String value) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.only(bottom: 6, left: 8),
-      child: pw.Row(
-        crossAxisAlignment: pw.CrossAxisAlignment.start,
-        children: [
-          pw.Container(
-            width: 150,
-            child: pw.Text(
-              "$label:",
-              style: pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold),
-            ),
-          ),
-          pw.Expanded(
-            child: pw.Text(
-              value,
-              style: pw.TextStyle(fontSize: 11),
-            ),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -704,21 +557,38 @@ class _PaveAssessmentScreenState extends State<PaveAssessmentScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: _generatePDF,
-              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              onPressed: _finishChecklist,
+              icon: const Icon(Icons.check_circle, color: Colors.white),
               label: const Text(
-                "Generate PDF & Save",
+                "Finish",
                 style:
-                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF87CEEB),
+                backgroundColor: Colors.green[700],
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 textStyle: const TextStyle(fontSize: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _viewAsPdf,
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              label: const Text(
+                "View as PDF",
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+              ),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                side: const BorderSide(color: Color(0xFF87CEEB)),
               ),
             ),
             const SizedBox(height: 40),
