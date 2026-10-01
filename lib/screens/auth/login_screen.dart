@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/config/config.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/auth/signup_screen.dart';
@@ -65,19 +66,23 @@ class _LoginScreenState extends State<LoginScreen> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          tooltip: 'Continue without an account',
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            } else {
-              Navigator.of(context).pushReplacement(
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
-              );
-            }
-          },
-        ),
+        // "Continue without an account" only makes sense when guest access
+        // is allowed at all — hidden entirely while login is required.
+        leading: kRequireLoginForAllFeatures
+            ? null
+            : IconButton(
+                icon: const Icon(Icons.close),
+                tooltip: 'Continue without an account',
+                onPressed: () {
+                  if (Navigator.of(context).canPop()) {
+                    Navigator.of(context).pop();
+                  } else {
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    );
+                  }
+                },
+              ),
       ),
       body: SafeArea(
         child: Center(

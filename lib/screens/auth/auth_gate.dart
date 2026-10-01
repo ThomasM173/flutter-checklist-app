@@ -1,13 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/config/config.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
+import 'package:clearedtogo/screens/auth/login_screen.dart';
 
-/// Decides the first screen. Sign-in is OPTIONAL — checklists, weather and the
-/// training game work without an account — so a guest goes straight to
-/// [HomeScreen]. Only a signed-in flight school admin is routed to their
-/// dedicated dashboard.
+/// Decides the first screen.
+///
+/// When kRequireLoginForAllFeatures is true (current default — see
+/// config.dart for why), a guest is routed to [LoginScreen] instead of
+/// [HomeScreen]. When false, sign-in is optional and a guest goes straight
+/// to [HomeScreen] (checklists, weather and the training game all work
+/// without an account in that mode). A signed-in flight school admin is
+/// always routed to their dedicated dashboard either way.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -42,6 +48,9 @@ class _AuthGateState extends State<AuthGate> {
     final profile = _auth.currentUser;
     if (profile != null && profile.role == UserRole.flightSchoolAdmin) {
       return const FlightSchoolDashboard();
+    }
+    if (profile == null && kRequireLoginForAllFeatures) {
+      return const LoginScreen();
     }
     return const HomeScreen();
   }

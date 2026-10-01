@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
+import 'package:clearedtogo/screens/auth/login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -15,6 +16,7 @@ class _SignupScreenState extends State<SignupScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _fullNameController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
   final _auth = SupabaseAuthService();
   bool _isLoading = false;
   bool _acceptedTerms = false;
@@ -38,17 +40,45 @@ class _SignupScreenState extends State<SignupScreen> {
     });
 
     try {
-      await _auth.signUp(
+      final profile = await _auth.signUp(
         _emailController.text.trim(),
         _passwordController.text,
         fullName: _fullNameController.text.trim().isEmpty
             ? null
             : _fullNameController.text.trim(),
+        inviteCode: _inviteCodeController.text.trim().isEmpty
+            ? null
+            : _inviteCodeController.text.trim(),
         acceptedTerms: _acceptedTerms,
       );
 
-      // Email confirmation is disabled, so signUp returns an active session.
-      if (mounted) {
+      if (!mounted) return;
+
+      if (profile == null) {
+        // Email confirmation is required on this project — no session yet,
+        // so there's nothing to log in to. Tell the pilot what's next.
+        await showDialog<void>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Check your email'),
+            content: const Text(
+              'We sent a confirmation link to your email address. '
+              'Confirm it, then log in below.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        if (mounted) {
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          );
+        }
+      } else {
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
@@ -267,6 +297,24 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 16),
 
+                // Flight school invite code (optional)
+                TextFormField(
+                  controller: _inviteCodeController,
+                  textCapitalization: TextCapitalization.characters,
+                  decoration: InputDecoration(
+                    labelText: 'Flight School Invite Code (optional)',
+                    helperText:
+                        'Leave blank if you\'re not with a flight school',
+                    prefixIcon: const Icon(Icons.school),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    filled: true,
+                    fillColor: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
                 // Confirm password field
                 TextFormField(
                   controller: _confirmPasswordController,
@@ -443,6 +491,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _fullNameController.dispose();
+    _inviteCodeController.dispose();
     super.dispose();
   }
 }

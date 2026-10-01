@@ -128,12 +128,24 @@ class SupabaseAuthService {
     return profile ?? Profile(id: res.user!.id, email: res.user!.email ?? '');
   }
 
-  /// [acceptedTerms] keeps the old signature's guard. Email confirmation is
-  /// disabled in Supabase config, so a session is returned immediately.
-  Future<Profile> signUp(
+  /// [acceptedTerms] keeps the old signature's guard. [inviteCode] is
+  /// optional — passed through as signup metadata and resolved server-side
+  /// by the handle_new_user() trigger (a valid code attaches the new
+  /// profile to that school; empty/invalid falls back to the "Independent
+  /// Pilots" catch-all; never blocks signup).
+  ///
+  /// Returns null if email confirmation is required and no session was
+  /// issued — the project currently HAS confirmations enabled (confirmed
+  /// live via /auth/v1/settings; the "confirmations are disabled" claim in
+  /// supabase/config.toml does not reflect the real dashboard setting), so
+  /// this is the expected path today. Callers must check for null and route
+  /// to a "check your email, then log in" step rather than straight into
+  /// the app — there is no session to load a profile from yet.
+  Future<Profile?> signUp(
     String email,
     String password, {
     String? fullName,
+    String? inviteCode,
     bool acceptedTerms = true,
   }) async {
     if (!acceptedTerms) {
@@ -145,13 +157,17 @@ class SupabaseAuthService {
       data: {
         if (fullName != null && fullName.trim().isNotEmpty)
           'full_name': fullName.trim(),
+        if (inviteCode != null && inviteCode.trim().isNotEmpty)
+          'invite_code': inviteCode.trim(),
       },
     );
     final user = res.user;
     if (user == null) {
-      throw Exception(
-        'Account created. Please sign in.', // confirmations on -> no session
-      );
+      throw Exception('Could not create account. Please try again.');
+    }
+    if (res.session == null) {
+      // Confirmation required — no session yet, so no profile to load.
+      return null;
     }
 
     var profile = await _loadProfile();

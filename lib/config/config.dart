@@ -18,6 +18,19 @@ const bool kDisablePaywallForDev = true;
 ///          knows how to read. No other code changes needed.
 const bool kIapEnabled = false;
 
+/// Requires sign-in before any screen is usable (no guest access).
+///
+/// IMPORTANT: Apple rejected a previous submission under Guideline 5.1.1(v)
+/// specifically for requiring an account to use features that don't need
+/// one. That fix was guest access working without login. This flag reverses
+/// it for the flight-school-accountability rollout, where every pilot must
+/// belong to a tracked flight school. Before the next iOS submission,
+/// reconsider whether this still complies with 5.1.1(v) (e.g. an
+/// "accountless" trial mode may be required again) rather than assuming
+/// this flag alone is fine to ship as-is. Don't remove the ability to flip
+/// this back to false.
+const bool kRequireLoginForAllFeatures = true;
+
 /// App version (display only).
 const String kAppVersion = '1.0.0';
 
