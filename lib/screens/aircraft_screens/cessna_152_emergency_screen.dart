@@ -5,11 +5,11 @@ import 'package:clearedtogo/screens/aircraft_screens/cessna_152_emergency_game.d
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:pdf/widgets.dart' as pdfWidgets;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 
 class Cessna152EmergencyScreen extends StatefulWidget {
   const Cessna152EmergencyScreen({super.key});
@@ -20,7 +20,6 @@ class Cessna152EmergencyScreen extends StatefulWidget {
 }
 
 class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
-  late Map<String, Map<String, bool>> checklistSections;
   static const Map<String, List<String>> emergencyProcedures = {
     "ENGINE POWER LOSS IN FLIGHT": [
       "Carburetor Heat            – ON",
@@ -141,85 +140,80 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
     await prefs.remove('checkedItems');
   }
 
-  Future<void> generatePDF() async {
+  /// emergencyProcedures (ordered steps per section) + _checkedItems (which
+  /// indices are checked) combined into the same {section: {step: checked}}
+  /// shape every other completion flow uses.
+  Map<String, dynamic> _buildCompletionData() {
+    return {
+      for (final entry in emergencyProcedures.entries)
+        entry.key: {
+          for (int i = 0; i < entry.value.length; i++)
+            entry.value[i]: _checkedItems[entry.key]?.contains(i) ?? false,
+        },
+    };
+  }
+
+  /// Writes straight to checklist_completions - no PDF generated or
+  /// uploaded. A PDF (see [_viewAsPdf]) is always available on demand
+  /// afterwards, built fresh from this same stored data.
+  Future<void> _finishChecklist() async {
+    if (!mounted) return;
+    try {
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: 'Cessna 152',
+        checklistName: 'Emergency Procedures',
+        completionType: 'emergency_procedures',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Checklist saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save emergency procedures completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save checklist.')),
+        );
+      }
+    }
+  }
+
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer - not saved anywhere, just opened locally.
+  Future<void> _viewAsPdf() async {
     if (!mounted) return;
     if (!(Platform.isAndroid || Platform.isIOS)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("PDF generation only works on Android/iOS")),
+        const SnackBar(
+            content: Text("PDF generation only works on Android/iOS")),
       );
       return;
     }
-
-    final pdf = pdfWidgets.Document();
     try {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
-      final authService = SupabaseAuthService();
-      final user = authService.currentUser;
+      final user = SupabaseAuthService().currentUser;
 
-      pdf.addPage(
-        pdfWidgets.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
-          build: (context) => [
-            pdfWidgets.Text("Cessna 152 Emergency Checklist",
-                style: pdfWidgets.TextStyle(
-                    fontSize: 24, fontWeight: pdfWidgets.FontWeight.bold)),
-            if (user?.fullName != null)
-              pdfWidgets.Text(
-                "Pilot: ${user!.fullName}",
-                style: pdfWidgets.TextStyle(
-                    fontSize: 12, color: PdfColors.grey800),
-              ),
-            if (user?.licenseNumber != null)
-              pdfWidgets.Text(
-                "License: ${user!.licenseNumber}",
-                style: pdfWidgets.TextStyle(
-                    fontSize: 12, color: PdfColors.grey800),
-              ),
-            if (user?.homeBase != null)
-              pdfWidgets.Text(
-                "Home Base: ${user!.homeBase}",
-                style: pdfWidgets.TextStyle(
-                    fontSize: 12, color: PdfColors.grey800),
-              ),
-            pdfWidgets.SizedBox(height: 10),
-            ...checklistSections.entries.map((entry) => pdfWidgets.Column(
-                  children: [
-                    pdfWidgets.Text(entry.key,
-                        style: pdfWidgets.TextStyle(
-                            fontSize: 18,
-                            fontWeight: pdfWidgets.FontWeight.bold)),
-                    pdfWidgets.SizedBox(height: 5),
-                    ...entry.value.entries.map((item) => pdfWidgets.Text(
-                          "${item.value ? '[x]' : '[ ]'} ${item.key}",
-                          style: pdfWidgets.TextStyle(fontSize: 14),
-                        )),
-                    pdfWidgets.SizedBox(height: 10),
-                  ],
-                )),
-          ],
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'Cessna 152 Emergency Procedures',
+        aircraftType: 'Cessna 152',
+        completedAt: DateTime.now(),
+        pilotName: user?.fullName,
+        licenseNumber: user?.licenseNumber,
+        homeBase: user?.homeBase,
+        data: _buildCompletionData(),
       );
 
       final output = await getTemporaryDirectory();
       final file = File("${output.path}/Cessna_152_Emergency_Procedures.pdf");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      // Record the completion (non-blocking)
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: 'Cessna 152',
-          checklistName: 'Emergency Procedures',
-          completionType: 'emergency_procedures',
-        );
-      } catch (e) {
-        debugPrint('Failed to record emergency procedures completion: $e');
-      }
-
       OpenFile.open(file.path);
     } catch (_) {
       if (mounted) {
@@ -455,11 +449,29 @@ class _Cessna152EmergencyScreenState extends State<Cessna152EmergencyScreen> {
 
           const SizedBox(height: 30),
 
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.check_circle, color: Colors.white),
+              label: const Text('Finish',
+                  style: TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green[700],
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: _finishChecklist,
+            ),
+          ),
+          const SizedBox(height: 16),
           Row(
             children: [
               _iconButton(Icons.refresh, 'Reset', Colors.red, _resetChecklist),
               _iconButton(
-                  Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+                  Icons.picture_as_pdf, 'View as PDF', Colors.blue, _viewAsPdf),
               _iconButton(
                 Icons.info_outline,
                 'Details',
