@@ -7,6 +7,7 @@
   "scripts": {
     "seed": "node seed_dev_user.mjs",
     "seed:devon": "node seed_devon_somerset_school.mjs",
+    "seed:demo": "node seed_demo_environment.mjs",
     "verify": "node verify_schema.mjs",
     "verify:entitlement": "node verify_entitlement.mjs"
   },
