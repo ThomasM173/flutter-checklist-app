@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 
 class FuelUpliftScreen extends StatefulWidget {
   const FuelUpliftScreen({super.key});
@@ -71,14 +71,79 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
         (double.tryParse(_fuelUpliftController.text) ?? 0.0);
   }
 
-  Future<void> _generatePDF() async {
+  /// Structured snapshot shared by [_finishChecklist] and [_viewAsPdf].
+  Map<String, dynamic> _buildCompletionData() {
+    return {
+      'Aircraft Registration': _aircraftRegistrationController.text,
+      'Date': _dateController.text,
+      'Location': _locationController.text,
+      'Pilot Name': _pilotNameController.text,
+      'Pre-Fueling Levels': {
+        'Left Tank (USG)': _preFuelLeftController.text,
+        'Right Tank (USG)': _preFuelRightController.text,
+        'Total Pre-Fuel (USG)': _getTotalPreFuel().toStringAsFixed(1),
+      },
+      'Fuel Uplift': {
+        'Fuel Grade': _fuelGradeController.text,
+        'Supplier': _fuelSupplier,
+        if (_bowserNumberController.text.isNotEmpty)
+          'Bowser Number': _bowserNumberController.text,
+        'Fuel Uplifted (USG)': _fuelUpliftController.text,
+      },
+      'Bowser Water Check': _bowserWaterCheckPassed ? 'PASSED' : 'FAILED',
+      'Total Usable Fuel (USG)': _getTotalPostFuel().toStringAsFixed(1),
+      'Total Usable Fuel (lbs, approx)':
+          (_getTotalPostFuel() * 6).toStringAsFixed(0),
+    };
+  }
+
+  /// Writes straight to checklist_completions - no PDF generated or
+  /// uploaded. A PDF (see [_viewAsPdf]) is always available on demand
+  /// afterwards, built fresh from this same stored data.
+  Future<void> _finishChecklist() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
+    try {
+      await _saveEntry();
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        checklistName: 'Fuel Uplift',
+        completionType: 'fuel_uplift',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Fuel uplift record saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save fuel uplift completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save fuel uplift record.')),
+        );
+      }
+    }
+  }
 
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer - not saved anywhere, just opened locally.
+  Future<void> _viewAsPdf() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -88,312 +153,30 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
       }
       return;
     }
-
     try {
-      final pdf = pw.Document();
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
+      final user = SupabaseAuthService().currentUser;
 
-      final authService = SupabaseAuthService();
-      final user = authService.currentUser;
-
-      pdf.addPage(
-        pw.Page(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(30),
-          theme: pw.ThemeData.withFont(base: pdfFont),
-          build: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text(
-                "FUEL UPLIFT & BOWSER CHECK RECORD",
-                style:
-                    pw.TextStyle(fontSize: 20, fontWeight: pw.FontWeight.bold),
-              ),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(height: 10),
-              if (user?.fullName != null)
-                pw.Text("Pilot: ${user!.fullName}",
-                    style: pw.TextStyle(fontSize: 11)),
-              if (user?.licenseNumber != null)
-                pw.Text("License: ${user!.licenseNumber}",
-                    style: pw.TextStyle(fontSize: 11)),
-              if (user?.homeBase != null)
-                pw.Text("Home Base: ${user!.homeBase}",
-                    style: pw.TextStyle(fontSize: 11)),
-              pw.SizedBox(height: 10),
-              _pdfRow("Aircraft Registration:",
-                  _aircraftRegistrationController.text),
-              _pdfRow("Date:", _dateController.text),
-              _pdfRow("Location:", _locationController.text),
-              _pdfRow("Pilot Name:", _pilotNameController.text),
-              pw.SizedBox(height: 15),
-              pw.Container(
-                padding: pw.EdgeInsets.all(12),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.blue50,
-                  border: pw.Border.all(color: PdfColors.blue),
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("PRE-FUELING LEVELS",
-                        style: pw.TextStyle(
-                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 8),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Left Tank:",
-                            style: pw.TextStyle(fontSize: 11)),
-                        pw.Text("${_preFuelLeftController.text} USG",
-                            style: pw.TextStyle(
-                                fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                      ],
-                    ),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Right Tank:",
-                            style: pw.TextStyle(fontSize: 11)),
-                        pw.Text("${_preFuelRightController.text} USG",
-                            style: pw.TextStyle(
-                                fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                      ],
-                    ),
-                    pw.Divider(),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Total Pre-Fuel:",
-                            style: pw.TextStyle(
-                                fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                        pw.Text("${_getTotalPreFuel().toStringAsFixed(1)} USG",
-                            style: pw.TextStyle(
-                                fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              pw.SizedBox(height: 12),
-              pw.Container(
-                padding: pw.EdgeInsets.all(12),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.green50,
-                  border: pw.Border.all(color: PdfColors.green),
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("FUEL UPLIFT",
-                        style: pw.TextStyle(
-                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 8),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Fuel Grade:",
-                            style: pw.TextStyle(fontSize: 11)),
-                        pw.Text(_fuelGradeController.text,
-                            style: pw.TextStyle(
-                                fontSize: 11, fontWeight: pw.FontWeight.bold)),
-                      ],
-                    ),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Supplier:", style: pw.TextStyle(fontSize: 11)),
-                        pw.Text(_fuelSupplier,
-                            style: pw.TextStyle(fontSize: 11)),
-                      ],
-                    ),
-                    if (_bowserNumberController.text.isNotEmpty)
-                      pw.Row(
-                        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                        children: [
-                          pw.Text("Bowser Number:",
-                              style: pw.TextStyle(fontSize: 11)),
-                          pw.Text(_bowserNumberController.text,
-                              style: pw.TextStyle(fontSize: 11)),
-                        ],
-                      ),
-                    pw.Divider(),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Fuel Uplifted:",
-                            style: pw.TextStyle(
-                                fontSize: 12, fontWeight: pw.FontWeight.bold)),
-                        pw.Text("${_fuelUpliftController.text} USG",
-                            style: pw.TextStyle(
-                                fontSize: 12,
-                                fontWeight: pw.FontWeight.bold,
-                                color: PdfColors.green900)),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              pw.SizedBox(height: 12),
-              pw.Container(
-                padding: pw.EdgeInsets.all(12),
-                decoration: pw.BoxDecoration(
-                  color: _bowserWaterCheckPassed
-                      ? PdfColors.green50
-                      : PdfColors.red50,
-                  border: pw.Border.all(
-                      color: _bowserWaterCheckPassed
-                          ? PdfColors.green
-                          : PdfColors.red),
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("BOWSER WATER CHECK",
-                        style: pw.TextStyle(
-                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 8),
-                    pw.Row(
-                      children: [
-                        pw.Text(
-                          _bowserWaterCheckPassed ? "✅ PASSED" : "❌ FAILED",
-                          style: pw.TextStyle(
-                            fontSize: 12,
-                            fontWeight: pw.FontWeight.bold,
-                            color: _bowserWaterCheckPassed
-                                ? PdfColors.green900
-                                : PdfColors.red900,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (!_bowserWaterCheckPassed)
-                      pw.Text(
-                        "WARNING: Do not use this fuel source until water contamination is resolved!",
-                        style: pw.TextStyle(
-                            fontSize: 10,
-                            color: PdfColors.red900,
-                            fontStyle: pw.FontStyle.italic),
-                      ),
-                  ],
-                ),
-              ),
-              pw.SizedBox(height: 12),
-              pw.Container(
-                padding: pw.EdgeInsets.all(12),
-                decoration: pw.BoxDecoration(
-                  color: PdfColors.orange50,
-                  border: pw.Border.all(color: PdfColors.orange, width: 2),
-                  borderRadius: pw.BorderRadius.circular(4),
-                ),
-                child: pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("TOTAL FUEL ON BOARD",
-                        style: pw.TextStyle(
-                            fontSize: 14, fontWeight: pw.FontWeight.bold)),
-                    pw.SizedBox(height: 8),
-                    pw.Row(
-                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                      children: [
-                        pw.Text("Total Usable Fuel:",
-                            style: pw.TextStyle(
-                                fontSize: 13, fontWeight: pw.FontWeight.bold)),
-                        pw.Text("${_getTotalPostFuel().toStringAsFixed(1)} USG",
-                            style: pw.TextStyle(
-                                fontSize: 16,
-                                fontWeight: pw.FontWeight.bold,
-                                color: PdfColors.orange900)),
-                      ],
-                    ),
-                    pw.SizedBox(height: 4),
-                    pw.Text(
-                      "≈ ${(_getTotalPostFuel() * 6).toStringAsFixed(0)} lbs (at 6 lbs/USG)",
-                      style: pw.TextStyle(
-                          fontSize: 10, fontStyle: pw.FontStyle.italic),
-                    ),
-                  ],
-                ),
-              ),
-              pw.Spacer(),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text("Pilot Signature:",
-                          style: pw.TextStyle(fontSize: 10)),
-                      pw.SizedBox(height: 5),
-                      pw.Container(
-                        width: 200,
-                        padding: pw.EdgeInsets.symmetric(vertical: 8),
-                        decoration: pw.BoxDecoration(
-                            border: pw.Border(bottom: pw.BorderSide())),
-                        child: pw.Text(_pilotNameController.text,
-                            style: pw.TextStyle(
-                                fontSize: 12, fontStyle: pw.FontStyle.italic)),
-                      ),
-                    ],
-                  ),
-                  pw.Column(
-                    crossAxisAlignment: pw.CrossAxisAlignment.start,
-                    children: [
-                      pw.Text("Date/Time:", style: pw.TextStyle(fontSize: 10)),
-                      pw.SizedBox(height: 5),
-                      pw.Container(
-                        width: 150,
-                        padding: pw.EdgeInsets.symmetric(vertical: 8),
-                        decoration: pw.BoxDecoration(
-                            border: pw.Border(bottom: pw.BorderSide())),
-                        child: pw.Text(
-                            "${_dateController.text} ${TimeOfDay.now().format(context as BuildContext)}",
-                            style: pw.TextStyle(fontSize: 12)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'Fuel Uplift & Bowser Check Record',
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        completedAt: DateTime.now(),
+        pilotName: user?.fullName,
+        licenseNumber: user?.licenseNumber,
+        homeBase: user?.homeBase,
+        data: _buildCompletionData(),
       );
-
-      await _saveEntry();
 
       final output = await getTemporaryDirectory();
       final fileName =
           "FuelUplift_${_aircraftRegistrationController.text}_${_dateController.text}.pdf";
       final file = File("${output.path}/$fileName");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: _aircraftRegistrationController.text.isNotEmpty
-              ? _aircraftRegistrationController.text
-              : 'UNKNOWN',
-          checklistName: 'Fuel Uplift',
-          completionType: 'fuel_uplift',
-        );
-      } catch (e) {
-        debugPrint('Failed to record fuel uplift completion: $e');
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Fuel Uplift PDF generated!'),
-              backgroundColor: Colors.green),
-        );
-      }
-
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -402,23 +185,6 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
         );
       }
     }
-  }
-
-  pw.Widget _pdfRow(String label, String value) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.only(bottom: 4),
-      child: pw.Row(
-        children: [
-          pw.Container(
-            width: 140,
-            child: pw.Text(label,
-                style:
-                    pw.TextStyle(fontSize: 11, fontWeight: pw.FontWeight.bold)),
-          ),
-          pw.Text(value, style: pw.TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
   }
 
   @override
@@ -680,17 +446,31 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: _generatePDF,
-              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
-              label: const Text('Generate Fuel Record PDF',
+              onPressed: _finishChecklist,
+              icon: const Icon(Icons.check_circle, color: Colors.white),
+              label: const Text('Finish',
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
+                      color: Colors.white, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF87CEEB),
+                backgroundColor: Colors.green[700],
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 elevation: 3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _viewAsPdf,
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              label: const Text('View as PDF',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                side: const BorderSide(color: Color(0xFF87CEEB)),
               ),
             ),
             const SizedBox(height: 40),
