@@ -10,6 +10,11 @@ class ChecklistCompletion {
   final DateTime? createdAt;
   final String completionType;
 
+  /// Structured form field values captured at Finish time. Null for
+  /// completions created before this column existed (pre-migration rows
+  /// still have their original pdfStoragePath instead).
+  final Map<String, dynamic>? data;
+
   /// Populated only for the flight-school admin list (PostgREST embed of
   /// `profiles.full_name`). Null on the pilot's own list.
   final String? pilotName;
@@ -24,6 +29,7 @@ class ChecklistCompletion {
     this.pdfStoragePath,
     this.createdAt,
     this.completionType = 'checklist',
+    this.data,
     this.pilotName,
   });
 
@@ -41,11 +47,15 @@ class ChecklistCompletion {
           ? DateTime.tryParse(map['created_at'].toString())?.toLocal()
           : null,
       completionType: map['completion_type'] as String? ?? 'checklist',
+      data: map['data'] is Map
+          ? Map<String, dynamic>.from(map['data'] as Map)
+          : null,
       pilotName: profile is Map ? profile['full_name'] as String? : null,
     );
   }
 
   bool get hasPdf => (pdfStoragePath ?? '').isNotEmpty;
+  bool get hasStructuredData => data != null && data!.isNotEmpty;
 
   /// Human-readable label for [completionType], for filters/list rows.
   static const Map<String, String> typeLabels = {

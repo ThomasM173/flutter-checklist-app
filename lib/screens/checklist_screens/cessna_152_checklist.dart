@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pdfWidgets;
-import 'package:pdf/pdf.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 import '../aircraft_screens/cessna_152_emergency_screen.dart';
 import '../aircraft_screens/cessna_152_screen.dart';
 import 'package:clearedtogo/utils/weather_service.dart';
@@ -713,187 +713,90 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
     }
   }
 
-  Future<void> generatePDF() async {
+  /// Structured snapshot of this checklist, shared by [_finishChecklist]
+  /// (saves it) and [_viewAsPdf] (renders it) so both always reflect
+  /// exactly the same state. Drops the internal __weather__ marker key -
+  /// it's a UI flag for "weather items were injected here", not real data.
+  Map<String, dynamic> _buildCompletionData() {
+    final icao = _airportController.text.trim().toUpperCase();
+    return {
+      for (final entry in checklistSections.entries)
+        entry.key: {
+          for (final item in entry.value.entries)
+            if (item.key != '__weather__') item.key: item.value,
+        },
+      if (icao.isNotEmpty) 'Airport (ICAO)': icao,
+    };
+  }
+
+  /// Writes the checklist straight to checklist_completions - no PDF
+  /// generated or uploaded. A PDF (see [_viewAsPdf]) is always available
+  /// on demand afterwards, built fresh from this same stored data.
+  Future<void> _finishChecklist() async {
+    if (!mounted) return;
+    try {
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: 'Cessna 152',
+        checklistName: 'Pre-boarding Checklist',
+        completionType: 'checklist',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Checklist saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save checklist completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save checklist.')),
+        );
+      }
+    }
+  }
+
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer (CompletionPdfBuilder) - not saved anywhere,
+  /// just opened locally. Independent of [_finishChecklist]: works as a
+  /// preview even before the checklist has been saved.
+  Future<void> _viewAsPdf() async {
     if (!mounted) return;
     if (!(Platform.isAndroid || Platform.isIOS)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("PDF generation only works on Android/iOS")),
+        const SnackBar(
+            content: Text("PDF generation only works on Android/iOS")),
       );
       return;
     }
-
-    final pdf = pdfWidgets.Document();
     try {
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pdfWidgets.Font.ttf(fontData);
+      final user = SupabaseAuthService().currentUser;
 
-      pdf.addPage(
-        pdfWidgets.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          margin: pdfWidgets.EdgeInsets.all(40),
-          theme: pdfWidgets.ThemeData.withFont(base: pdfFont),
-          header: (context) {
-            final authService = SupabaseAuthService();
-            final user = authService.currentUser;
-
-            return pdfWidgets.Column(
-              crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
-              children: [
-                pdfWidgets.Text(
-                  "Cessna 152 Checklist",
-                  style: pdfWidgets.TextStyle(
-                    fontSize: 28,
-                    fontWeight: pdfWidgets.FontWeight.bold,
-                  ),
-                ),
-                if (user?.fullName != null ||
-                    user?.licenseNumber != null ||
-                    user?.homeBase != null)
-                  pdfWidgets.SizedBox(height: 8),
-                if (user?.fullName != null)
-                  pdfWidgets.Text(
-                    "Pilot: ${user!.fullName}",
-                    style: pdfWidgets.TextStyle(
-                        fontSize: 12, color: PdfColors.grey800),
-                  ),
-                if (user?.licenseNumber != null)
-                  pdfWidgets.Text(
-                    "License: ${user!.licenseNumber}",
-                    style: pdfWidgets.TextStyle(
-                        fontSize: 12, color: PdfColors.grey800),
-                  ),
-                if (user?.homeBase != null)
-                  pdfWidgets.Text(
-                    "Home Base: ${user!.homeBase}",
-                    style: pdfWidgets.TextStyle(
-                        fontSize: 12, color: PdfColors.grey800),
-                  ),
-                pdfWidgets.Divider(thickness: 2),
-                pdfWidgets.SizedBox(height: 10),
-              ],
-            );
-          },
-          footer: (context) => pdfWidgets.Column(
-            children: [
-              pdfWidgets.Divider(),
-              pdfWidgets.SizedBox(height: 5),
-              pdfWidgets.Row(
-                mainAxisAlignment: pdfWidgets.MainAxisAlignment.spaceBetween,
-                children: [
-                  pdfWidgets.Text(
-                    "Generated: ${DateTime.now().toString().split('.')[0]}",
-                    style: pdfWidgets.TextStyle(
-                        fontSize: 8, color: PdfColors.grey700),
-                  ),
-                  pdfWidgets.Text(
-                    "Page ${context.pageNumber} of ${context.pagesCount}",
-                    style: pdfWidgets.TextStyle(
-                        fontSize: 8, color: PdfColors.grey700),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          build: (context) => [
-            ...checklistSections.entries.map((entry) {
-              return pdfWidgets.Column(
-                crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
-                children: [
-                  pdfWidgets.Container(
-                    width: double.infinity,
-                    padding: pdfWidgets.EdgeInsets.symmetric(
-                        vertical: 8, horizontal: 12),
-                    decoration: pdfWidgets.BoxDecoration(
-                      color: PdfColors.blue900,
-                      borderRadius: pdfWidgets.BorderRadius.circular(4),
-                    ),
-                    child: pdfWidgets.Text(
-                      entry.key,
-                      style: pdfWidgets.TextStyle(
-                        fontSize: 16,
-                        fontWeight: pdfWidgets.FontWeight.bold,
-                        color: PdfColors.white,
-                      ),
-                    ),
-                  ),
-                  pdfWidgets.SizedBox(height: 8),
-                  ...entry.value.entries
-                      .where((item) => item.key != '__weather__')
-                      .map((item) {
-                    return pdfWidgets.Padding(
-                      padding: pdfWidgets.EdgeInsets.only(left: 12, bottom: 6),
-                      child: pdfWidgets.Row(
-                        crossAxisAlignment: pdfWidgets.CrossAxisAlignment.start,
-                        children: [
-                          pdfWidgets.Container(
-                            width: 14,
-                            height: 14,
-                            margin:
-                                pdfWidgets.EdgeInsets.only(right: 8, top: 1),
-                            decoration: pdfWidgets.BoxDecoration(
-                              border: pdfWidgets.Border.all(width: 1.5),
-                              borderRadius: pdfWidgets.BorderRadius.circular(2),
-                            ),
-                            child: item.value
-                                ? pdfWidgets.Center(
-                                    child: pdfWidgets.Text(
-                                      '✓',
-                                      style: pdfWidgets.TextStyle(
-                                        fontSize: 10,
-                                        fontWeight: pdfWidgets.FontWeight.bold,
-                                      ),
-                                    ),
-                                  )
-                                : null,
-                          ),
-                          pdfWidgets.Expanded(
-                            child: pdfWidgets.Text(
-                              item.key,
-                              style: pdfWidgets.TextStyle(
-                                fontSize: 11,
-                                lineSpacing: 1.3,
-                                color: item.key.contains('⚠️') ||
-                                        item.key.contains('VFR minima')
-                                    ? PdfColors.red
-                                    : PdfColors.black,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }),
-                  pdfWidgets.SizedBox(height: 16),
-                ],
-              );
-            }),
-          ],
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'Cessna 152 Pre-boarding Checklist',
+        aircraftType: 'Cessna 152',
+        completedAt: DateTime.now(),
+        pilotName: user?.fullName,
+        licenseNumber: user?.licenseNumber,
+        homeBase: user?.homeBase,
+        data: _buildCompletionData(),
       );
 
       final output = await getTemporaryDirectory();
       final file = File("${output.path}/Cessna_152_Checklist.pdf");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      // Record the completion + upload its PDF to Supabase. Best-effort:
-      // silently skipped for guests, never blocks opening the local file.
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: 'Cessna 152',
-          checklistName: 'Pre-boarding Checklist',
-        );
-      } catch (e) {
-        debugPrint('Failed to record checklist completion: $e');
-      }
-
       OpenFile.open(file.path);
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("PDF error occurred.")),
+          const SnackBar(content: Text("PDF error occurred.")),
         );
       }
     }
@@ -1194,13 +1097,31 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
                   updateChecklist: (key, value) =>
                       updateChecklist(entry.key, key, value),
                 )),
-            SizedBox(height: 30),
+            SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.check_circle, color: Colors.white),
+                label: const Text('Finish',
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green[700],
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: _finishChecklist,
+              ),
+            ),
+            SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _iconButton(Icons.refresh, 'Reset', Colors.red, resetChecklist),
-                _iconButton(
-                    Icons.picture_as_pdf, 'PDF', Colors.blue, generatePDF),
+                _iconButton(Icons.picture_as_pdf, 'View as PDF', Colors.blue,
+                    _viewAsPdf),
                 _iconButton(
                     Icons.info_outline,
                     'Details',

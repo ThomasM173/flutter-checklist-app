@@ -95,6 +95,43 @@ class SupabasePdfService {
     }
   }
 
+  /// Records a completion with structured data only — no PDF generated or
+  /// uploaded. This is what "Finish" calls across every completion flow;
+  /// a PDF (if ever needed) is generated later, on demand, from [data] via
+  /// lib/utils/completion_pdf_builder.dart.
+  Future<ChecklistCompletion?> recordCompletionData({
+    required Map<String, dynamic> data,
+    required String aircraftType,
+    required String checklistName,
+    required String completionType,
+    DateTime? completedAt,
+  }) async {
+    final user = _client.auth.currentUser;
+    if (user == null) {
+      debugPrint(
+          'SupabasePdfService: not signed in — completion not recorded.');
+      return null;
+    }
+
+    final schoolId = SupabaseAuthService.instance.flightSchoolId;
+    final when = (completedAt ?? DateTime.now()).toUtc();
+
+    final inserted = await _client
+        .from('checklist_completions')
+        .insert({
+          'user_id': user.id,
+          'flight_school_id': schoolId,
+          'aircraft_type': aircraftType,
+          'checklist_name': checklistName,
+          'completed_at': when.toIso8601String(),
+          'completion_type': completionType,
+          'data': data,
+        })
+        .select()
+        .single();
+    return ChecklistCompletion.fromMap(inserted);
+  }
+
   Future<List<ChecklistCompletion>> listMyCompletions({
     String? completionType,
   }) async {
