@@ -56,6 +56,9 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^5.0.0
   flutter_launcher_icons: ^0.14.3
+  # Used by tool/prepare_app_icon.dart (already pulled in transitively via
+  # `pdf`, declared directly here since the tool script imports it itself).
+  image: ^4.9.2
 
 # Config for the flutter_launcher_icons generator (dev_dependency above).
 # Run `flutter pub run flutter_launcher_icons` after placing a 1024x1024,
