@@ -115,7 +115,7 @@ class AppDrawer extends StatelessWidget {
                   color: Colors.black,
                 ),
                 title: const Text(
-                  'Premium',
+                  'Flight School',
                   style: TextStyle(
                     color: Colors.black,
                   ),

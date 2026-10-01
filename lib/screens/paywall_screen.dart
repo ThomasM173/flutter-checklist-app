@@ -73,7 +73,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
           SnackBar(
             content: Text(o.result == IapResult.restored
                 ? 'Purchases restored — Premium is active.'
-                : 'Premium unlocked. Thank you!'),
+                : 'Full access unlocked. Thank you!'),
             backgroundColor: Colors.green,
           ),
         );
@@ -134,7 +134,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Premium granted (Dev Mode — no charge).'),
+              content: Text('Full access granted (Dev Mode — no charge).'),
               backgroundColor: Colors.green,
             ),
           );
@@ -230,7 +230,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
     return Scaffold(
       backgroundColor: Colors.grey[200],
       appBar: AppBar(
-        title: const Text('ClearedToGo Premium',
+        title: const Text('ClearedToGo Full Access',
             style: TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
@@ -274,7 +274,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
         const SizedBox(height: 20),
         const Text(
-          'Unlock ClearedToGo Premium',
+          'Unlock Full Access',
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
@@ -299,7 +299,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
               const Icon(Icons.celebration, color: Colors.green, size: 32),
               const SizedBox(height: 8),
               const Text(
-                'Premium features are free during our launch period',
+                'Full access is free during our launch period',
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontSize: 16,
@@ -375,7 +375,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
         const SizedBox(height: 20),
         const Text(
-          'Unlock ClearedToGo Premium',
+          'Unlock Full Access',
           textAlign: TextAlign.center,
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
@@ -391,7 +391,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
 
         // --- Subscription options (title / length / price) ---
         _PlanCard(
-          title: _titleFor(kYearlySubscriptionId, 'Premium — Yearly'),
+          title: _titleFor(kYearlySubscriptionId, 'Full Access — Yearly'),
           length: kIapProductLength[kYearlySubscriptionId] ?? '1 year',
           price: _priceFor(kYearlySubscriptionId, kYearlyPrice),
           highlighted: true,
@@ -401,7 +401,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
         ),
         const SizedBox(height: 12),
         _PlanCard(
-          title: _titleFor(kMonthlySubscriptionId, 'Premium — Monthly'),
+          title: _titleFor(kMonthlySubscriptionId, 'Full Access — Monthly'),
           length: kIapProductLength[kMonthlySubscriptionId] ?? '1 month',
           price: _priceFor(kMonthlySubscriptionId, kMonthlyPrice),
           busy: _busy && _pendingProductId == kMonthlySubscriptionId,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/services/entitlement_service.dart';
+import 'package:clearedtogo/models/flight_school.dart';
 import 'package:clearedtogo/screens/paywall_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
 import 'package:clearedtogo/screens/auth/flight_school_membership_screen.dart';
@@ -20,9 +22,11 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   final _licenceNumberController = TextEditingController();
   final _homeBaseController = TextEditingController();
   final _authService = SupabaseAuthService();
+  late final _entitlementService = EntitlementService(_authService);
   bool _isLoading = false;
   bool _authChecked = false;
   bool _isSignedIn = false;
+  FlightSchool? _flightSchool;
 
   @override
   void initState() {
@@ -41,10 +45,13 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       _homeBaseController.text = user.homeBase ?? '';
     }
 
+    final school = user != null ? await _authService.currentFlightSchool() : null;
+
     if (mounted) {
       setState(() {
         _authChecked = true;
         _isSignedIn = user != null;
+        _flightSchool = school;
       });
     }
   }
@@ -186,13 +193,19 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Premium Status Card
+                        // Flight School Access Status Card
                         Builder(builder: (context) {
-                          final isPremium =
-                              _authService.currentUser?.isPremium ?? false;
-                          // Gold gradient (premium) reads fine with white text/icons,
-                          // but the light grey "Free Account" gradient does not - use
-                          // a dark foreground there so the card stays readable.
+                          final profile = _authService.currentUser;
+                          final isPremium = profile?.isPremium ?? false;
+                          final statusText =
+                              _entitlementService.membershipStatusText(
+                            profile: profile,
+                            school: _flightSchool,
+                          );
+                          // Gold gradient (full access) reads fine with white
+                          // text/icons, but the light grey "no access" gradient
+                          // does not - use a dark foreground there so the card
+                          // stays readable.
                           final fgColor =
                               isPremium ? Colors.white : Colors.black87;
                           final subFgColor =
@@ -227,9 +240,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        isPremium
-                                            ? 'Premium Member'
-                                            : 'Free Account',
+                                        statusText,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -270,7 +281,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                                         vertical: 8,
                                       ),
                                     ),
-                                    child: const Text('Upgrade'),
+                                    child: const Text('Get Full Access'),
                                   ),
                               ],
                             ),

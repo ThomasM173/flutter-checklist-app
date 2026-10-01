@@ -41,7 +41,7 @@ class PremiumFeatureWrapper extends StatelessWidget {
         }
 
         return _PaywallPlaceholder(
-          featureName: featureName ?? 'Premium Feature',
+          featureName: featureName ?? 'Flight School Feature',
           description: description,
         );
       },
@@ -112,7 +112,7 @@ class _PaywallPlaceholder extends StatelessWidget {
 
           // Description
           Text(
-            description ?? 'This is a Premium feature',
+            description ?? 'This feature needs full flight school access',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 14,
@@ -143,7 +143,7 @@ class _PaywallPlaceholder extends StatelessWidget {
               }
             },
             icon: const Icon(Icons.upgrade),
-            label: const Text('Upgrade to Premium'),
+            label: const Text('Get Full Access'),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF87CEEB),
               foregroundColor: Colors.white,
@@ -197,7 +197,7 @@ class InlinePremiumBadge extends StatelessWidget {
             ),
             SizedBox(width: 4),
             Text(
-              'PREMIUM',
+              'FULL ACCESS',
               style: TextStyle(
                 fontSize: 10,
                 fontWeight: FontWeight.bold,

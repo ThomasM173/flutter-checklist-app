@@ -1,5 +1,7 @@
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/config/config.dart';
+import 'package:clearedtogo/models/profile.dart';
+import 'package:clearedtogo/models/flight_school.dart';
 
 /// Service to manage user entitlements and premium features
 ///
@@ -62,11 +64,39 @@ class EntitlementService {
   /// Get a user-friendly message about premium status
   String get premiumStatusMessage {
     if (kDisablePaywallForDev) {
-      return 'Premium access enabled (Dev Mode)';
+      return 'Full access enabled (Dev Mode)';
     }
     if (userHasPremium) {
-      return 'Premium Member';
+      return 'Active Member';
     }
     return 'Free Account';
+  }
+
+  /// Short, user-facing membership status framed around the pilot's actual
+  /// flight school rather than generic "Premium" language, e.g. "Full
+  /// access via Devon & Somerset Flying School" or "Trial: 42 days left".
+  /// Display-only — callers still use userHasPremium for actual access
+  /// checks, this never recomputes entitlement itself.
+  String membershipStatusText({
+    required Profile? profile,
+    required FlightSchool? school,
+  }) {
+    if (kDisablePaywallForDev) {
+      return 'Full access (Dev Mode)';
+    }
+    if (school != null && school.isComped) {
+      return 'Full access via ${school.name}';
+    }
+    final trialEndsAt = profile?.trialEndsAt;
+    if (trialEndsAt != null) {
+      final daysLeft = trialEndsAt.difference(DateTime.now()).inDays;
+      if (daysLeft > 0) {
+        return 'Trial: $daysLeft day${daysLeft == 1 ? '' : 's'} left';
+      }
+    }
+    if (profile?.isPremium ?? false) {
+      return 'Active subscription';
+    }
+    return 'Trial expired';
   }
 }

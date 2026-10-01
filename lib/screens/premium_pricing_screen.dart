@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
+import 'package:clearedtogo/models/flight_school.dart';
 import 'package:clearedtogo/config/config.dart';
 import 'package:clearedtogo/screens/paywall_screen.dart';
 import '../widget/app_drawer.dart';
@@ -17,6 +18,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
   late final _entitlementService = EntitlementService(_authService);
   bool _isProcessing = false;
   bool _isPremium = false;
+  FlightSchool? _flightSchool;
 
   @override
   void initState() {
@@ -27,10 +29,17 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
   Future<void> _checkPremiumStatus() async {
     await _authService.init();
     final isPremium = _entitlementService.userHasPremium;
+    final school = await _authService.currentFlightSchool();
     setState(() {
       _isPremium = isPremium;
+      _flightSchool = school;
     });
   }
+
+  String get _statusText => _entitlementService.membershipStatusText(
+        profile: _authService.currentUser,
+        school: _flightSchool,
+      );
 
   // Only reachable when kIapEnabled is true (see _buildPricingView) — while
   // it's false the button is replaced by a "free during launch" banner, so
@@ -45,7 +54,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Premium access granted! (Dev Mode)'),
+              content: Text('Full access granted! (Dev Mode)'),
               backgroundColor: Colors.green,
             ),
           );
@@ -70,7 +79,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
       drawer: const AppDrawer(currentIndex: -1),
       appBar: AppBar(
         title: const Text(
-          'Premium Membership',
+          'Flight School Access',
           style: TextStyle(color: Colors.black),
         ),
         iconTheme: const IconThemeData(color: Colors.black),
@@ -104,9 +113,9 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
               color: Color(0xFFFFD700),
             ),
             const SizedBox(height: 24),
-            const Text(
-              'You\'re a Premium Member!',
-              style: TextStyle(
+            Text(
+              _statusText,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.black,
@@ -134,7 +143,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    'Your Premium Benefits:',
+                    'Your Flight School Benefits:',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -171,7 +180,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
             ),
             const SizedBox(height: 24),
             const Text(
-              'Upgrade to Premium',
+              'Get Full Access',
               style: TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
@@ -209,7 +218,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
               child: Column(
                 children: [
                   const Text(
-                    'Premium Membership',
+                    'Flight School Access',
                     style: TextStyle(
                       fontSize: 22,
                       fontWeight: FontWeight.bold,
@@ -326,7 +335,7 @@ class _PremiumPricingScreenState extends State<PremiumPricingScreen> {
                     SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Premium features are free during our launch period '
+                        'Full access is free during our launch period '
                         '— no purchase needed.',
                         style: TextStyle(
                           color: Colors.black87,
