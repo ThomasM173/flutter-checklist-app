@@ -5,6 +5,7 @@ import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/auth/signup_screen.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
+import 'package:clearedtogo/screens/business/business_admin_dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -38,11 +39,18 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (!mounted) return;
-      final bool isAdmin = profile.role == UserRole.flightSchoolAdmin;
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(
-          builder: (_) =>
-              isAdmin ? const FlightSchoolDashboard() : const HomeScreen(),
+          builder: (_) {
+            switch (profile.role) {
+              case UserRole.flightSchoolAdmin:
+                return const FlightSchoolDashboard();
+              case UserRole.businessAdmin:
+                return const BusinessAdminDashboard();
+              case UserRole.pilot:
+                return const HomeScreen();
+            }
+          },
         ),
       );
     } catch (e) {

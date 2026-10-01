@@ -1,7 +1,8 @@
 /// Role-based access control roles. Mirrors profiles.role in Supabase.
 enum UserRole {
   pilot,
-  flightSchoolAdmin;
+  flightSchoolAdmin,
+  businessAdmin;
 
   String get displayName {
     switch (this) {
@@ -9,16 +10,34 @@ enum UserRole {
         return 'Pilot';
       case UserRole.flightSchoolAdmin:
         return 'Flight School Admin';
+      case UserRole.businessAdmin:
+        return 'Business Admin';
     }
   }
 
-  /// DB string <-> enum. DB stores 'pilot' | 'flight_school_admin'.
-  String get dbValue =>
-      this == UserRole.flightSchoolAdmin ? 'flight_school_admin' : 'pilot';
+  /// DB string <-> enum. DB stores 'pilot' | 'flight_school_admin' |
+  /// 'business_admin' (see supabase/migrations/20261001100000_flight_school_mandatory.sql).
+  String get dbValue {
+    switch (this) {
+      case UserRole.flightSchoolAdmin:
+        return 'flight_school_admin';
+      case UserRole.businessAdmin:
+        return 'business_admin';
+      case UserRole.pilot:
+        return 'pilot';
+    }
+  }
 
-  static UserRole fromDb(String? value) => value == 'flight_school_admin'
-      ? UserRole.flightSchoolAdmin
-      : UserRole.pilot;
+  static UserRole fromDb(String? value) {
+    switch (value) {
+      case 'flight_school_admin':
+        return UserRole.flightSchoolAdmin;
+      case 'business_admin':
+        return UserRole.businessAdmin;
+      default:
+        return UserRole.pilot;
+    }
+  }
 }
 
 /// App-level user, backed by the Supabase `profiles` row joined with the

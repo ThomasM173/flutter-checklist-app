@@ -4,6 +4,7 @@ import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/models/profile.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/flight_school/flight_school_dashboard.dart';
+import 'package:clearedtogo/screens/business/business_admin_dashboard.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
 
 /// Decides the first screen.
@@ -12,8 +13,8 @@ import 'package:clearedtogo/screens/auth/login_screen.dart';
 /// config.dart for why), a guest is routed to [LoginScreen] instead of
 /// [HomeScreen]. When false, sign-in is optional and a guest goes straight
 /// to [HomeScreen] (checklists, weather and the training game all work
-/// without an account in that mode). A signed-in flight school admin is
-/// always routed to their dedicated dashboard either way.
+/// without an account in that mode). A signed-in flight school admin or
+/// business admin is always routed to their dedicated dashboard either way.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -48,6 +49,9 @@ class _AuthGateState extends State<AuthGate> {
     final profile = _auth.currentUser;
     if (profile != null && profile.role == UserRole.flightSchoolAdmin) {
       return const FlightSchoolDashboard();
+    }
+    if (profile != null && profile.role == UserRole.businessAdmin) {
+      return const BusinessAdminDashboard();
     }
     if (profile == null && kRequireLoginForAllFeatures) {
       return const LoginScreen();
