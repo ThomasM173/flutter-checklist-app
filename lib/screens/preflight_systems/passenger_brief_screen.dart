@@ -2,12 +2,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pw;
-import 'package:pdf/pdf.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 
 class PassengerBriefScreen extends StatefulWidget {
   const PassengerBriefScreen({super.key});
@@ -60,14 +60,83 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
         'pax_registration', _aircraftRegistrationController.text);
   }
 
-  Future<void> _generatePDF() async {
+  /// Structured snapshot shared by [_finishChecklist] and [_viewAsPdf].
+  Map<String, dynamic> _buildCompletionData() {
+    return {
+      'Aircraft Registration': _aircraftRegistrationController.text,
+      'Date': _dateController.text,
+      'Pilot Name': _pilotNameController.text,
+      if (_departureController.text.isNotEmpty)
+        'Departure': _departureController.text,
+      if (_destinationController.text.isNotEmpty)
+        'Destination': _destinationController.text,
+      'Safety Brief Checklist': {
+        'Seat Belts': _seatBelts,
+        'Door Operation': _doorOperation,
+        'Emergency Exit': _emergencyExit,
+        'Fire Extinguisher': _fireExtinguisher,
+        'Life Jackets': _lifejackets,
+        'Smoking Prohibited': _smokingProhibited,
+        'Electronic Devices': _electronicDevices,
+        'Briefing Questions Answered': _briefingQuestions,
+      },
+      'Passengers': _passengers.isEmpty
+          ? ['None recorded']
+          : [
+              for (final p in _passengers)
+                '${p.name} (age ${p.age}, weight ${p.weight})'
+                    '${p.emergencyContact.isNotEmpty ? " - emergency contact: ${p.emergencyContact}" : ""}',
+            ],
+    };
+  }
+
+  /// Writes straight to checklist_completions - no PDF generated or
+  /// uploaded. A PDF (see [_viewAsPdf]) is always available on demand
+  /// afterwards, built fresh from this same stored data.
+  Future<void> _finishChecklist() async {
     if (!_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill in all required fields')),
       );
       return;
     }
+    try {
+      await _saveEntry();
+      await SupabasePdfService().recordCompletionData(
+        data: _buildCompletionData(),
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        checklistName: 'Passenger Brief',
+        completionType: 'passenger_brief',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Passenger brief saved.'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Failed to save passenger brief completion: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not save passenger brief.')),
+        );
+      }
+    }
+  }
 
+  /// On-demand PDF, generated fresh from the current form state via the
+  /// shared compact renderer - not saved anywhere, just opened locally.
+  Future<void> _viewAsPdf() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill in all required fields')),
+      );
+      return;
+    }
     if (!(Platform.isAndroid || Platform.isIOS)) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -77,170 +146,29 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
       }
       return;
     }
-
     try {
-      final pdf = pw.Document();
       final fontData =
           await rootBundle.load("assets/fonts/NotoSans-Regular.ttf");
       final pdfFont = pw.Font.ttf(fontData);
+      final user = SupabaseAuthService().currentUser;
 
-      final authService = SupabaseAuthService();
-      final user = authService.currentUser;
-
-      pdf.addPage(
-        pw.MultiPage(
-          pageFormat: PdfPageFormat.a4,
-          margin: pw.EdgeInsets.all(30),
-          theme: pw.ThemeData.withFont(base: pdfFont),
-          header: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Text("PASSENGER SAFETY BRIEFING RECORD",
-                  style: pw.TextStyle(
-                      fontSize: 20, fontWeight: pw.FontWeight.bold)),
-              pw.Divider(thickness: 2),
-              pw.SizedBox(height: 5),
-            ],
-          ),
-          build: (context) => [
-            if (user?.fullName != null)
-              pw.Text("Pilot: ${user!.fullName}",
-                  style: pw.TextStyle(fontSize: 11)),
-            if (user?.licenseNumber != null)
-              pw.Text("License: ${user!.licenseNumber}",
-                  style: pw.TextStyle(fontSize: 11)),
-            pw.SizedBox(height: 10),
-            _pdfRow("Aircraft:", _aircraftRegistrationController.text),
-            _pdfRow("Date:", _dateController.text),
-            _pdfRow("Pilot:", _pilotNameController.text),
-            _pdfRow("Departure:", _departureController.text),
-            _pdfRow("Destination:", _destinationController.text),
-            _pdfRow("Number of Passengers:", "${_passengers.length}"),
-            pw.SizedBox(height: 15),
-            pw.Text("PASSENGER LIST",
-                style:
-                    pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 8),
-            if (_passengers.isEmpty)
-              pw.Text("No passengers recorded",
-                  style: pw.TextStyle(
-                      fontSize: 11, fontStyle: pw.FontStyle.italic))
-            else
-              pw.Table(
-                border: pw.TableBorder.all(),
-                children: [
-                  pw.TableRow(
-                    decoration: pw.BoxDecoration(color: PdfColors.blue900),
-                    children: [
-                      _pdfCell("Name", bold: true, color: PdfColors.white),
-                      _pdfCell("Age", bold: true, color: PdfColors.white),
-                      _pdfCell("Weight (kg)",
-                          bold: true, color: PdfColors.white),
-                      _pdfCell("Emergency Contact",
-                          bold: true, color: PdfColors.white),
-                    ],
-                  ),
-                  ...List.generate(_passengers.length, (i) {
-                    final p = _passengers[i];
-                    return pw.TableRow(
-                      children: [
-                        _pdfCell(p.name),
-                        _pdfCell(p.age),
-                        _pdfCell(p.weight),
-                        _pdfCell(p.emergencyContact),
-                      ],
-                    );
-                  }),
-                ],
-              ),
-            pw.SizedBox(height: 15),
-            pw.Text("SAFETY BRIEFING COMPLETED",
-                style:
-                    pw.TextStyle(fontSize: 14, fontWeight: pw.FontWeight.bold)),
-            pw.SizedBox(height: 8),
-            _pdfCheckbox("Seat belts operation demonstrated", _seatBelts),
-            _pdfCheckbox(
-                "Door operation and emergency exit explained", _doorOperation),
-            _pdfCheckbox("Emergency exit location pointed out", _emergencyExit),
-            _pdfCheckbox("Fire extinguisher location shown", _fireExtinguisher),
-            _pdfCheckbox(
-                "Lifejackets location shown (if required)", _lifejackets),
-            _pdfCheckbox("Smoking prohibited", _smokingProhibited),
-            _pdfCheckbox(
-                "Electronic devices policy explained", _electronicDevices),
-            _pdfCheckbox("Passengers given opportunity to ask questions",
-                _briefingQuestions),
-            pw.Spacer(),
-            pw.Row(
-              mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-              children: [
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Pilot Signature:",
-                        style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 200,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                          border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_pilotNameController.text,
-                          style: pw.TextStyle(
-                              fontSize: 12, fontStyle: pw.FontStyle.italic)),
-                    ),
-                  ],
-                ),
-                pw.Column(
-                  crossAxisAlignment: pw.CrossAxisAlignment.start,
-                  children: [
-                    pw.Text("Date:", style: pw.TextStyle(fontSize: 10)),
-                    pw.SizedBox(height: 5),
-                    pw.Container(
-                      width: 120,
-                      padding: pw.EdgeInsets.symmetric(vertical: 8),
-                      decoration: pw.BoxDecoration(
-                          border: pw.Border(bottom: pw.BorderSide())),
-                      child: pw.Text(_dateController.text,
-                          style: pw.TextStyle(fontSize: 12)),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+      final pdfBytes = await CompletionPdfBuilder.build(
+        font: pdfFont,
+        title: 'Passenger Safety Brief',
+        aircraftType: _aircraftRegistrationController.text.isNotEmpty
+            ? _aircraftRegistrationController.text
+            : 'UNKNOWN',
+        completedAt: DateTime.now(),
+        pilotName: user?.fullName,
+        licenseNumber: user?.licenseNumber,
+        homeBase: user?.homeBase,
+        data: _buildCompletionData(),
       );
-
-      await _saveEntry();
 
       final output = await getTemporaryDirectory();
       final fileName = "PassengerBrief_${_dateController.text}.pdf";
       final file = File("${output.path}/$fileName");
-      final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
-
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: _aircraftRegistrationController.text.isNotEmpty
-              ? _aircraftRegistrationController.text
-              : 'UNKNOWN',
-          checklistName: 'Passenger Brief',
-          completionType: 'passenger_brief',
-        );
-      } catch (e) {
-        debugPrint('Failed to record passenger brief completion: $e');
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-              content: Text('Passenger Brief PDF generated!'),
-              backgroundColor: Colors.green),
-        );
-      }
-
       OpenFile.open(file.path);
     } catch (e) {
       if (mounted) {
@@ -251,57 +179,6 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
     }
   }
 
-  pw.Widget _pdfCheckbox(String label, bool checked) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.only(bottom: 4),
-      child: pw.Row(
-        children: [
-          pw.Container(
-            width: 12,
-            height: 12,
-            decoration: pw.BoxDecoration(
-                border: pw.Border.all(),
-                color: checked ? PdfColors.green : null),
-            child: checked
-                ? pw.Center(
-                    child: pw.Text("✓",
-                        style:
-                            pw.TextStyle(fontSize: 10, color: PdfColors.white)))
-                : pw.SizedBox(),
-          ),
-          pw.SizedBox(width: 8),
-          pw.Text(label, style: pw.TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
-  }
-
-  pw.Widget _pdfCell(String text, {bool bold = false, PdfColor? color}) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.all(6),
-      child: pw.Text(text,
-          style: pw.TextStyle(
-              fontSize: 10,
-              fontWeight: bold ? pw.FontWeight.bold : null,
-              color: color)),
-    );
-  }
-
-  pw.Widget _pdfRow(String label, String value) {
-    return pw.Padding(
-      padding: pw.EdgeInsets.only(bottom: 4),
-      child: pw.Row(
-        children: [
-          pw.Container(
-              width: 140,
-              child: pw.Text(label,
-                  style: pw.TextStyle(
-                      fontSize: 11, fontWeight: pw.FontWeight.bold))),
-          pw.Text(value, style: pw.TextStyle(fontSize: 11)),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -498,17 +375,31 @@ class _PassengerBriefScreenState extends State<PassengerBriefScreen> {
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
-              onPressed: _generatePDF,
-              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
-              label: const Text('Generate Passenger Brief PDF',
+              onPressed: _finishChecklist,
+              icon: const Icon(Icons.check_circle, color: Colors.white),
+              label: const Text('Finish',
                   style: TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.bold)),
+                      color: Colors.white, fontWeight: FontWeight.bold)),
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF87CEEB),
+                backgroundColor: Colors.green[700],
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8)),
                 elevation: 3,
+              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton.icon(
+              onPressed: _viewAsPdf,
+              icon: const Icon(Icons.picture_as_pdf, color: Colors.black),
+              label: const Text('View as PDF',
+                  style: TextStyle(
+                      color: Colors.black, fontWeight: FontWeight.bold)),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+                side: const BorderSide(color: Color(0xFF87CEEB)),
               ),
             ),
             const SizedBox(height: 40),
