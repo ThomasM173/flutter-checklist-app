@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:clearedtogo/config/config.dart';
@@ -228,7 +229,7 @@ class _PaywallScreenState extends State<PaywallScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text('ClearedToGo Full Access',
             style: TextStyle(color: Colors.black)),

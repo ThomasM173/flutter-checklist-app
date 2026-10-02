@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/env.dart';
 import 'services/supabase_auth_service.dart';
 import 'routes.dart';
+import 'theme/app_colors.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -47,31 +48,56 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'NotoSans',
-        brightness: Brightness.dark,
-        primaryColor: const Color(0xFF87CEEB),
-        scaffoldBackgroundColor: Colors.black,
+        brightness: Brightness.light,
+        useMaterial3: true,
+        primaryColor: AppColors.navy,
+        scaffoldBackgroundColor: AppColors.pageBackground,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.navy,
+          brightness: Brightness.light,
+          primary: AppColors.navy,
+          secondary: AppColors.skyBlue,
+          tertiary: AppColors.orange,
+          surface: AppColors.cardBackground,
+        ),
+        cardTheme: const CardThemeData(
+          color: AppColors.cardBackground,
+          surfaceTintColor: Colors.transparent,
+        ),
+        dialogTheme: const DialogThemeData(
+          backgroundColor: AppColors.cardBackground,
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: AppColors.cardBackground,
+          foregroundColor: AppColors.bodyText,
+          iconTheme: IconThemeData(color: AppColors.bodyText),
+        ),
+        textTheme: ThemeData.light().textTheme.apply(
+              bodyColor: AppColors.bodyText,
+              displayColor: AppColors.bodyText,
+            ),
         checkboxTheme: CheckboxThemeData(
           fillColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF87CEEB);
+              return AppColors.skyBlue;
             }
             return Colors.white;
           }),
           checkColor: WidgetStateProperty.resolveWith((states) => Colors.white),
-          side: const BorderSide(color: Color(0xFF87CEEB), width: 1.5),
+          side: const BorderSide(color: AppColors.skyBlue, width: 1.5),
           overlayColor: WidgetStateProperty.resolveWith((states) {
-            return const Color(0xFF87CEEB).withValues(alpha: 0.15);
+            return AppColors.skyBlue.withValues(alpha: 0.15);
           }),
         ),
         radioTheme: RadioThemeData(
           fillColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF87CEEB);
+              return AppColors.skyBlue;
             }
             return Colors.white;
           }),
           overlayColor: WidgetStateProperty.resolveWith((states) {
-            return const Color(0xFF87CEEB).withValues(alpha: 0.15);
+            return AppColors.skyBlue.withValues(alpha: 0.15);
           }),
         ),
         inputDecorationTheme: InputDecorationTheme(
@@ -80,11 +106,11 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: Colors.grey),
+            borderSide: const BorderSide(color: AppColors.border),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(6),
-            borderSide: const BorderSide(color: Color(0xFF87CEEB), width: 2),
+            borderSide: const BorderSide(color: AppColors.skyBlue, width: 2),
           ),
         ),
       ),

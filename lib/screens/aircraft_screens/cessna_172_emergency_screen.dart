@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/aircraft_screens/cessna_172_emergency_game.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -267,7 +268,7 @@ class _Cessna172EmergencyScreenState extends State<Cessna172EmergencyScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         backgroundColor: Colors.redAccent,
         title: const Text(

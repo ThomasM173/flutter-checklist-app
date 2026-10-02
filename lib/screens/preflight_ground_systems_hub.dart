@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/preflight_systems/pave_assessment_screen.dart';
 import 'package:clearedtogo/screens/preflight_systems/weight_balance_screen.dart';
 import 'package:clearedtogo/screens/preflight_systems/tech_log_screen.dart';
@@ -57,7 +58,7 @@ class PreflightGroundSystemsHub extends StatelessWidget {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text(
           "Pre-Flight & Ground Systems",

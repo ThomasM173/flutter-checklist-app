@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/checklist_completion.dart';
@@ -96,7 +97,8 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
   Future<void> _open(ChecklistCompletion c) async {
     if (!c.hasStructuredData && !c.hasPdf) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No data was stored for this completion.')),
+        const SnackBar(
+            content: Text('No data was stored for this completion.')),
       );
       return;
     }
@@ -108,7 +110,7 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text('Checklist Completions',
             style: TextStyle(color: Colors.black)),
@@ -173,7 +175,7 @@ class _SchoolCompletionsScreenState extends State<SchoolCompletionsScreen> {
     return Column(
       children: [
         Container(
-          color: Colors.grey[100],
+          color: AppColors.cardBackground,
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
           child: Column(
             children: [

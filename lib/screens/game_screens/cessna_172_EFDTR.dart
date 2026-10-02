@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'dart:math';
 
 class Cessna172EFDTR extends StatefulWidget {
@@ -107,7 +108,7 @@ class _Cessna172EFDTR extends State<Cessna172EFDTR> {
     final question = questions[currentIndex];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text("🚨 Engine Failure During Takeoff Roll"),
         backgroundColor: Colors.orange[400],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'dart:math';
 
 class PiperPA28EFATRNA extends StatefulWidget {
@@ -128,7 +129,7 @@ class _PiperPA28EFATRNA extends State<PiperPA28EFATRNA> {
     final question = questions[currentIndex];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text("🚨 Engine Failure After Takeoff (RWY NOT Available)"),
         backgroundColor: Colors.orange[400],

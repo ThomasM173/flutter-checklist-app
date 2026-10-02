@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'dart:math';
 
 class Cessna152EFATRNA extends StatefulWidget {
@@ -128,7 +129,7 @@ class _Cessna152EFATRNA extends State<Cessna152EFATRNA> {
     final question = questions[currentIndex];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text("🚨 Engine Failure After Takeoff (RWY NOT Available)"),
         backgroundColor: Colors.orange[400],
@@ -197,7 +198,7 @@ class GameOverScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text("Game Over"),
         backgroundColor: Colors.orange[400],

@@ -4,6 +4,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -577,7 +578,7 @@ class _PiperPA28ChecklistScreenState extends State<PiperPA28ChecklistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text(
           "Piper PA28 - Pre-Flight Checklist",

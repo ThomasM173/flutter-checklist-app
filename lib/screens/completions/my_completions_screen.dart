@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 
 import '../../models/checklist_completion.dart';
@@ -73,7 +74,8 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
   Future<void> _open(ChecklistCompletion c) async {
     if (!c.hasStructuredData && !c.hasPdf) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('No data was stored for this completion.')),
+        const SnackBar(
+            content: Text('No data was stored for this completion.')),
       );
       return;
     }
@@ -85,7 +87,7 @@ class _MyCompletionsScreenState extends State<MyCompletionsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title:
             const Text('My Checklists', style: TextStyle(color: Colors.black)),

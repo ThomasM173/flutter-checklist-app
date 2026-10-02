@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'dart:math';
 
 class PiperPA28ElecFire extends StatefulWidget {
@@ -130,7 +131,7 @@ class _PiperPA28ElecFire extends State<PiperPA28ElecFire> {
     final question = questions[currentIndex];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text("🚨 Electrical Fire In Flight"),
         backgroundColor: Colors.orange[400],

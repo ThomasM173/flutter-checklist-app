@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:uuid/uuid.dart';
 import '../../services/supabase_auth_service.dart';
 import '../../repositories/local_checklist_repository.dart';
@@ -188,13 +189,13 @@ class _ChecklistEditorScreenState extends State<ChecklistEditorScreen> {
             ),
         ],
       ),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       body: Column(
         children: [
           // Aircraft type selector
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.grey[100],
+            color: AppColors.cardBackground,
             child: DropdownButtonFormField<String>(
               initialValue: _selectedAircraftType,
               decoration: InputDecoration(

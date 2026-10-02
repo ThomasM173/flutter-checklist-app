@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:intl/intl.dart';
 import 'package:open_file/open_file.dart';
@@ -21,8 +22,7 @@ class CompletionDetailScreen extends StatefulWidget {
   const CompletionDetailScreen({super.key, required this.completion});
 
   @override
-  State<CompletionDetailScreen> createState() =>
-      _CompletionDetailScreenState();
+  State<CompletionDetailScreen> createState() => _CompletionDetailScreenState();
 }
 
 class _CompletionDetailScreenState extends State<CompletionDetailScreen> {
@@ -49,8 +49,8 @@ class _CompletionDetailScreenState extends State<CompletionDetailScreen> {
       );
 
       final output = await getTemporaryDirectory();
-      final file = File(
-          "${output.path}/Completion_${widget.completion.id}.pdf");
+      final file =
+          File("${output.path}/Completion_${widget.completion.id}.pdf");
       await file.writeAsBytes(pdfBytes);
       await OpenFile.open(file.path);
     } catch (e) {
@@ -90,9 +90,10 @@ class _CompletionDetailScreenState extends State<CompletionDetailScreen> {
   Widget build(BuildContext context) {
     final c = widget.completion;
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
-        title: Text(c.checklistName, style: const TextStyle(color: Colors.black)),
+        title:
+            Text(c.checklistName, style: const TextStyle(color: Colors.black)),
         iconTheme: const IconThemeData(color: Colors.black),
         flexibleSpace: Container(
           decoration: const BoxDecoration(
@@ -113,8 +114,8 @@ class _CompletionDetailScreenState extends State<CompletionDetailScreen> {
               padding: const EdgeInsets.all(16),
               child: Card(
                 elevation: 1,
-                shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -133,8 +134,8 @@ class _CompletionDetailScreenState extends State<CompletionDetailScreen> {
                       if (c.pilotName != null) ...[
                         const SizedBox(height: 4),
                         Text('Pilot: ${c.pilotName}',
-                            style:
-                                TextStyle(color: Colors.grey[700], fontSize: 13)),
+                            style: TextStyle(
+                                color: Colors.grey[700], fontSize: 13)),
                       ],
                     ],
                   ),
@@ -235,7 +236,8 @@ class _DataList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 6),
               ...map.entries.map((e) => _kv(e.key, e.value)),
             ],
@@ -253,7 +255,8 @@ class _DataList extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 14)),
               const SizedBox(height: 6),
               ...value.map((v) => Padding(
                     padding: const EdgeInsets.only(bottom: 2),
@@ -295,7 +298,8 @@ class _DataList extends StatelessWidget {
               child: Text(
                 '$value',
                 textAlign: TextAlign.end,
-                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                style:
+                    const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
               ),
             ),
         ],

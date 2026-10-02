@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/flight_conditions_screen.dart';
 import 'package:clearedtogo/screens/learning_game_screen.dart';
 import 'package:clearedtogo/screens/checklist_screens/cessna_172_checklist.dart';
@@ -199,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       drawer: const AppDrawer(currentIndex: 0),
       appBar: AppBar(
         flexibleSpace: Container(
@@ -244,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onBottomNavTap,
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.navy,
         selectedItemColor: Colors.greenAccent,
         unselectedItemColor: Colors.white,
         showUnselectedLabels: true,

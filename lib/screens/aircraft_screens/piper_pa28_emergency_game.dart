@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/game_screens/piper_pa28_EFATRA.dart';
 import 'package:clearedtogo/screens/game_screens/piper_pa28_EFATRNA.dart';
 import 'package:clearedtogo/screens/game_screens/piper_pa28_EFDTR.dart';
@@ -49,7 +50,7 @@ class _PiperPA28EmergencyGameState extends State<PiperPA28EmergencyGame> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text('Select Emergency Game Scenario'),
         backgroundColor: Colors.orange[400],

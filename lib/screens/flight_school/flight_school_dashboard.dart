@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import '../../models/flight_school.dart';
 import '../../services/supabase_auth_service.dart';
@@ -128,7 +129,7 @@ class _FlightSchoolDashboardState extends State<FlightSchoolDashboard> {
         iconTheme: const IconThemeData(color: Colors.black),
       ),
       drawer: _buildDrawer(context),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

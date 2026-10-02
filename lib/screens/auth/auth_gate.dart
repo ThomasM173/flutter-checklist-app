@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/config/config.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/models/profile.dart';
@@ -41,7 +42,7 @@ class _AuthGateState extends State<AuthGate> {
   Widget build(BuildContext context) {
     if (!_ready) {
       return const Scaffold(
-        backgroundColor: Colors.black,
+        backgroundColor: AppColors.pageBackground,
         body: Center(child: CircularProgressIndicator(color: Colors.red)),
       );
     }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/game_screens/cessna_152_EFATRA.dart';
 import 'package:clearedtogo/screens/game_screens/cessna_152_EFATRNA.dart';
 import 'package:clearedtogo/screens/game_screens/cessna_152_EFDTR.dart';
@@ -95,7 +96,7 @@ class _Cessna152EmergencyGameState extends State<Cessna152EmergencyGame> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text(
           'Select Emergency Game Scenario',

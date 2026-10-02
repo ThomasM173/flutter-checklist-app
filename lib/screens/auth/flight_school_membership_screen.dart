@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 import 'package:clearedtogo/models/flight_school.dart';
@@ -167,7 +168,7 @@ class _FlightSchoolMembershipScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title:
             const Text('Flight School', style: TextStyle(color: Colors.black)),

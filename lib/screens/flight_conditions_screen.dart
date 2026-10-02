@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import '../utils/weather_service.dart';
 import '../widget/bottom_nav_bar.dart';
 import '../widget/app_drawer.dart';
@@ -87,7 +88,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                       style: const TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Colors.grey[200],
+                        fillColor: AppColors.cardBackground,
                         hintText: 'ICAO (e.g. EGLL)',
                         hintStyle: const TextStyle(color: Colors.black54),
                         border: OutlineInputBorder(
@@ -351,7 +352,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
                 return SizedBox(
                   width: 160,
                   child: Card(
-                    color: Colors.grey[200],
+                    color: AppColors.cardBackground,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8)),
                     child: Padding(
@@ -415,7 +416,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
     }
 
     return Card(
-      color: Colors.grey[100],
+      color: AppColors.cardBackground,
       margin: const EdgeInsets.symmetric(vertical: 6),
       child: Padding(
         padding: const EdgeInsets.all(12),
@@ -493,7 +494,7 @@ class _FlightConditionsScreenState extends State<FlightConditionsScreen> {
       );
 
   Widget _dataCard(List<Widget> children) => Card(
-        color: Colors.grey[100],
+        color: AppColors.cardBackground,
         margin: const EdgeInsets.symmetric(vertical: 8),
         child: Padding(
             padding: const EdgeInsets.all(12),

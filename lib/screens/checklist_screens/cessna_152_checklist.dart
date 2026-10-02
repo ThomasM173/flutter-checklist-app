@@ -2,6 +2,7 @@
 
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -825,7 +826,7 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: Text(
           "Cessna 152 - Pre-Flight Checklist",

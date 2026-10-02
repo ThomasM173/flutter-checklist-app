@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import '../widget/app_drawer.dart';
 import '../widget/bottom_nav_bar.dart';
 
@@ -32,7 +33,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
       ),
       drawer: const AppDrawer(currentIndex: 0),
       bottomNavigationBar: const BottomNavBar(currentIndex: 0),
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
