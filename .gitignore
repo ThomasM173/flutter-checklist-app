@@ -63,3 +63,6 @@ supabase/.branches/
 supabase/.temp/
 supabase/.env
 
+# Dev credentials - internal passwords, never commit these!
+docs/DEV_CREDENTIALS.md
+
