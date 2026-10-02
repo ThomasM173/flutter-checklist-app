@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
@@ -21,6 +23,29 @@ class _SignupScreenState extends State<SignupScreen> {
   bool _isLoading = false;
   bool _acceptedTerms = false;
   String? _errorMessage;
+
+  String _friendlyError(Object e) {
+    if (e is sb.AuthException) {
+      switch (e.code) {
+        case 'user_already_exists':
+        case 'email_exists':
+          return 'An account with this email already exists. Try logging in instead.';
+        case 'weak_password':
+          return 'That password is too weak — use at least 8 characters with a mix of letters and numbers.';
+        case 'over_email_send_rate_limit':
+          return 'Too many attempts. Please wait a moment and try again.';
+      }
+      if (e.message.toLowerCase().contains('already registered') ||
+          e.message.toLowerCase().contains('already exists')) {
+        return 'An account with this email already exists. Try logging in instead.';
+      }
+      return e.message;
+    }
+    if (e is sb.PostgrestException && e.code == 'P0002') {
+      return 'Invalid invite code. Double-check it with your flight school and try again.';
+    }
+    return 'Something went wrong creating your account. Please try again.';
+  }
 
   Future<void> _handleSignup() async {
     if (!_formKey.currentState!.validate()) {
@@ -85,7 +110,7 @@ class _SignupScreenState extends State<SignupScreen> {
       }
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
+        _errorMessage = _friendlyError(e);
       });
     } finally {
       if (mounted) {
@@ -99,7 +124,7 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -271,9 +296,9 @@ class _SignupScreenState extends State<SignupScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.cardBackground,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey[300]!),
+                    border: Border.all(color: AppColors.border),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,7 +349,7 @@ By clicking "I agree to the Liability Terms & Conditions" below, you acknowledge
                             ''',
                             style: TextStyle(
                               fontSize: 12,
-                              color: Colors.grey[800],
+                              color: AppColors.subtleText,
                               height: 1.5,
                             ),
                           ),

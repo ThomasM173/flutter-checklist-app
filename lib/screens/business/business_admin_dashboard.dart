@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:intl/intl.dart';
 
 import '../../services/business_admin_service.dart';
 import '../../services/supabase_auth_service.dart';
-import '../home_screen.dart';
 
 /// business_admin's read-only, platform-wide dashboard. Deliberately
 /// simple per spec: totals, an entitlement breakdown, completion counts,
@@ -15,8 +15,7 @@ class BusinessAdminDashboard extends StatefulWidget {
   const BusinessAdminDashboard({super.key});
 
   @override
-  State<BusinessAdminDashboard> createState() =>
-      _BusinessAdminDashboardState();
+  State<BusinessAdminDashboard> createState() => _BusinessAdminDashboardState();
 }
 
 class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
@@ -55,7 +54,7 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text('Business Dashboard',
             style: TextStyle(color: Colors.black)),
@@ -83,10 +82,8 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
             onPressed: () async {
               await SupabaseAuthService().logout();
               if (mounted) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const HomeScreen()),
-                  (route) => false,
-                );
+                Navigator.of(context)
+                    .pushNamedAndRemoveUntil('/login', (route) => false);
               }
             },
           ),
@@ -141,16 +138,16 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
           Row(
             children: [
               Expanded(
-                  child: _statCard('All Time', '${s.totalCompletions}',
-                      Icons.fact_check)),
+                  child: _statCard(
+                      'All Time', '${s.totalCompletions}', Icons.fact_check)),
               const SizedBox(width: 12),
               Expanded(
                   child: _statCard('Last 7 Days', '${s.completionsThisWeek}',
                       Icons.date_range)),
               const SizedBox(width: 12),
               Expanded(
-                  child: _statCard('Last 30 Days',
-                      '${s.completionsThisMonth}', Icons.calendar_month)),
+                  child: _statCard('Last 30 Days', '${s.completionsThisMonth}',
+                      Icons.calendar_month)),
             ],
           ),
           const SizedBox(height: 16),
@@ -165,7 +162,9 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
         padding: const EdgeInsets.only(bottom: 8, top: 4),
         child: Text(title,
             style: const TextStyle(
-                fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black)),
       );
 
   Widget _statCard(String label, String value, IconData icon) {
@@ -180,7 +179,9 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
             const SizedBox(height: 8),
             Text(value,
                 style: const TextStyle(
-                    fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black)),
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black)),
             const SizedBox(height: 4),
             Text(label,
                 textAlign: TextAlign.center,
@@ -221,7 +222,8 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
                                 style: const TextStyle(color: Colors.black))),
                         Text('${r.$2}',
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold, color: Colors.black)),
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
                       ],
                     ),
                   ))

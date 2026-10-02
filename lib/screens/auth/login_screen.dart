@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as sb;
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/config/config.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/models/profile.dart';
@@ -21,6 +23,33 @@ class _LoginScreenState extends State<LoginScreen> {
   final _auth = SupabaseAuthService();
   bool _isLoading = false;
   String? _errorMessage;
+
+  String _friendlyError(Object e) {
+    if (e is sb.AuthException) {
+      switch (e.code) {
+        case 'invalid_credentials':
+          return 'Incorrect email or password, try again.';
+        case 'email_not_confirmed':
+          return 'Please confirm your email before logging in — check your inbox for the confirmation link.';
+        case 'user_banned':
+          return 'This account has been suspended. Contact support for help.';
+        case 'over_request_rate_limit':
+        case 'over_email_send_rate_limit':
+          return 'Too many attempts. Please wait a moment and try again.';
+        case 'user_not_found':
+          return 'Incorrect email or password, try again.';
+      }
+      if (e.message.toLowerCase().contains('invalid login credentials')) {
+        return 'Incorrect email or password, try again.';
+      }
+      return e.message;
+    }
+    final text = e.toString().replaceAll('Exception: ', '');
+    if (text.toLowerCase().contains('invalid email or password')) {
+      return 'Incorrect email or password, try again.';
+    }
+    return 'Something went wrong signing in. Please try again.';
+  }
 
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) {
@@ -55,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
     } catch (e) {
       setState(() {
-        _errorMessage = e.toString().replaceAll('Exception: ', '');
+        _errorMessage = _friendlyError(e);
       });
     } finally {
       if (mounted) {
@@ -69,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -228,15 +257,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.grey[300],
+                      color: AppColors.cardBackground,
                       borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: AppColors.border),
                     ),
                     child: const Text(
                       'By logging in, you agree to our terms and conditions.',
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 11,
-                        color: Colors.black54,
+                        color: AppColors.subtleText,
                       ),
                     ),
                   ),

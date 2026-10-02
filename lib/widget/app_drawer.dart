@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/screens/contact_us.dart';
 import 'package:clearedtogo/screens/about_us.dart';
 import 'package:clearedtogo/screens/privacy_policy.dart';
@@ -7,11 +8,10 @@ import 'package:clearedtogo/screens/faq_screen.dart';
 import 'package:clearedtogo/screens/recent_updates_screen.dart';
 import 'package:clearedtogo/screens/auth/account_details_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
-import 'package:clearedtogo/screens/premium_pricing_screen.dart';
+import 'package:clearedtogo/screens/auth/flight_school_membership_screen.dart';
 import 'package:clearedtogo/screens/completions/my_completions_screen.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
-import '../screens/home_screen.dart';
 
 class AppDrawer extends StatelessWidget {
   final int currentIndex;
@@ -28,12 +28,12 @@ class AppDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: AppColors.cardBackground,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
           DrawerHeader(
-            decoration: const BoxDecoration(color: Color(0xFF87CEEB)),
+            decoration: const BoxDecoration(gradient: AppColors.headerGradient),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -45,183 +45,165 @@ class AppDrawer extends StatelessWidget {
                 const SizedBox(height: 8),
                 const Text(
                   'ClearedToGo',
-                  style: TextStyle(color: Colors.black, fontSize: 20),
+                  style: TextStyle(color: Colors.white, fontSize: 20),
                 ),
               ],
             ),
           ),
           ListTile(
-            leading: const Icon(Icons.home, color: Colors.black),
-            title: const Text('Home', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.home, color: AppColors.bodyText),
+            title: const Text('Home',
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () {
               Navigator.pop(context);
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (_) => const HomeScreen()),
+              Navigator.pushReplacementNamed(context, '/home');
+            },
+          ),
+          ListTile(
+            leading:
+                const Icon(Icons.picture_as_pdf, color: AppColors.bodyText),
+            title: const Text('My Checklists',
+                style: TextStyle(color: AppColors.bodyText)),
+            subtitle: const Text('Completed checklist PDFs',
+                style: TextStyle(color: AppColors.subtleText, fontSize: 12)),
+            onTap: () => _navigate(context, const MyCompletionsScreen()),
+          ),
+          FutureBuilder<_FlightSchoolStatus>(
+            future: _loadFlightSchoolStatus(),
+            builder: (context, snapshot) {
+              final status = snapshot.data;
+              return ListTile(
+                leading:
+                    const Icon(Icons.school, color: AppColors.bodyText),
+                title: const Text('Flight School',
+                    style: TextStyle(color: AppColors.bodyText)),
+                subtitle: status == null
+                    ? null
+                    : Text(status.statusText,
+                        style: const TextStyle(
+                            color: AppColors.subtleText, fontSize: 12)),
+                onTap: () =>
+                    _navigate(context, const FlightSchoolMembershipScreen()),
               );
             },
           ),
           ListTile(
-            leading: const Icon(Icons.map, color: Colors.black),
-            title:
-                const Text('Contact Us', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.person, color: AppColors.bodyText),
+            title: const Text('Account Details',
+                style: TextStyle(color: AppColors.bodyText)),
+            onTap: () => _navigate(context, const AccountDetailsScreen()),
+          ),
+          const Divider(color: AppColors.border),
+          ListTile(
+            leading: const Icon(Icons.map, color: AppColors.bodyText),
+            title: const Text('Contact Us',
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const ContactUs()),
           ),
           ListTile(
-            leading: const Icon(Icons.info, color: Colors.black),
-            title:
-                const Text('About Us', style: TextStyle(color: Colors.black)),
+            leading: const Icon(Icons.info, color: AppColors.bodyText),
+            title: const Text('About Us',
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const AboutUsScreen()),
           ),
           ListTile(
-            leading: const Icon(Icons.privacy_tip, color: Colors.black),
+            leading: const Icon(Icons.privacy_tip, color: AppColors.bodyText),
             title: const Text('Privacy Policy',
-                style: TextStyle(color: Colors.black)),
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const PrivacyPolicyScreen()),
           ),
           ListTile(
-            leading: const Icon(Icons.gavel, color: Colors.black),
+            leading: const Icon(Icons.gavel, color: AppColors.bodyText),
             title: const Text('CAA Compliance',
-                style: TextStyle(color: Colors.black)),
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const CAAComplianceScreen()),
           ),
           ListTile(
-            leading: const Icon(Icons.question_answer, color: Colors.black),
-            title: const Text('FAQ', style: TextStyle(color: Colors.black)),
+            leading:
+                const Icon(Icons.question_answer, color: AppColors.bodyText),
+            title: const Text('FAQ',
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const FAQScreen()),
           ),
           ListTile(
-            leading: const Icon(Icons.update, color: Colors.black),
+            leading: const Icon(Icons.update, color: AppColors.bodyText),
             title: const Text('Recent Updates',
-                style: TextStyle(color: Colors.black)),
+                style: TextStyle(color: AppColors.bodyText)),
             onTap: () => _navigate(context, const RecentUpdatesScreen()),
           ),
-          const Divider(color: Colors.black),
-          ListTile(
-            leading: const Icon(Icons.picture_as_pdf, color: Colors.black),
-            title: const Text('My Checklists',
-                style: TextStyle(color: Colors.black)),
-            subtitle: const Text('Completed checklist PDFs',
-                style: TextStyle(color: Colors.black54, fontSize: 12)),
-            onTap: () => _navigate(context, const MyCompletionsScreen()),
-          ),
-          FutureBuilder<bool>(
-            future: _checkPremiumStatus(),
-            builder: (context, snapshot) {
-              final isPremium = snapshot.data ?? false;
-              return ListTile(
-                leading: const Icon(
-                  Icons.workspace_premium,
-                  color: Colors.black,
-                ),
-                title: const Text(
-                  'Flight School',
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                ),
-                trailing: isPremium
-                    ? const Icon(Icons.check_circle,
-                        color: Colors.green, size: 20)
-                    : null,
-                onTap: () {
-                  _navigate(context, const PremiumPricingScreen());
-                },
-              );
-            },
-          ),
+          const Divider(color: AppColors.border),
           FutureBuilder<bool>(
             future: _checkSignedIn(),
             builder: (context, snapshot) {
               final signedIn = snapshot.data ?? false;
 
-              // Sign-in is optional. Everything else in this drawer works
-              // without an account, so guests just get a way to sign in;
-              // only signed-in users see account management / logout.
+              // Sign-in is optional only when kRequireLoginForAllFeatures is
+              // false; under the mandatory-login default this branch is not
+              // reachable in practice (AuthGate routes signed-out users to
+              // LoginScreen before the drawer can ever build), but it's kept
+              // so the drawer still degrades sensibly if that flag flips.
               if (!signedIn) {
                 return ListTile(
-                  leading: const Icon(Icons.login, color: Colors.black),
+                  leading: const Icon(Icons.login, color: AppColors.bodyText),
                   title: const Text('Login / Sign Up',
-                      style: TextStyle(color: Colors.black)),
-                  subtitle: const Text(
-                    'Optional — for saved history & premium',
-                    style: TextStyle(color: Colors.black54, fontSize: 12),
-                  ),
+                      style: TextStyle(color: AppColors.bodyText)),
                   onTap: () => _navigate(context, const LoginScreen()),
                 );
               }
 
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  ListTile(
-                    leading: const Icon(Icons.person, color: Colors.black),
-                    title: const Text('Account Details',
-                        style: TextStyle(color: Colors.black)),
-                    onTap: () =>
-                        _navigate(context, const AccountDetailsScreen()),
-                  ),
-                  ListTile(
-                    leading: const Icon(Icons.logout, color: Colors.red),
-                    title: const Text('Logout',
-                        style: TextStyle(
-                            color: Colors.red, fontWeight: FontWeight.bold)),
-                    onTap: () async {
-                      // Show confirmation dialog
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Logout'),
-                          content:
-                              const Text('Are you sure you want to logout?'),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Cancel'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: TextButton.styleFrom(
-                                  foregroundColor: Colors.red),
-                              child: const Text('Logout'),
-                            ),
-                          ],
+              return ListTile(
+                leading: const Icon(Icons.logout, color: Colors.red),
+                title: const Text('Logout',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold)),
+                onTap: () async {
+                  final confirmed = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('Logout'),
+                      content:
+                          const Text('Are you sure you want to logout?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text('Cancel'),
                         ),
-                      );
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          style:
+                              TextButton.styleFrom(foregroundColor: Colors.red),
+                          child: const Text('Logout'),
+                        ),
+                      ],
+                    ),
+                  );
 
-                      if (confirmed == true && context.mounted) {
-                        await SupabaseAuthService().logout();
-                        if (context.mounted) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (_) => const HomeScreen()),
-                            (route) => false,
-                          );
-                        }
-                      }
-                    },
-                  ),
-                ],
+                  if (confirmed == true && context.mounted) {
+                    await SupabaseAuthService().logout();
+                    if (context.mounted) {
+                      Navigator.of(context)
+                          .pushNamedAndRemoveUntil('/login', (route) => false);
+                    }
+                  }
+                },
               );
             },
-          ),
-          const Divider(color: Colors.black),
-          ListTile(
-            leading: const Icon(Icons.close, color: Colors.black),
-            title:
-                const Text('Close Menu', style: TextStyle(color: Colors.black)),
-            onTap: () => Navigator.pop(context),
           ),
         ],
       ),
     );
   }
 
-  Future<bool> _checkPremiumStatus() async {
+  Future<_FlightSchoolStatus> _loadFlightSchoolStatus() async {
     final authService = SupabaseAuthService();
     await authService.init();
     final entitlementService = EntitlementService(authService);
-    return entitlementService.userHasPremium;
+    final school = await authService.currentFlightSchool();
+    final statusText = entitlementService.membershipStatusText(
+      profile: authService.currentUser,
+      school: school,
+    );
+    return _FlightSchoolStatus(statusText: statusText);
   }
 
   Future<bool> _checkSignedIn() async {
@@ -229,4 +211,9 @@ class AppDrawer extends StatelessWidget {
     await authService.init();
     return authService.isSignedIn;
   }
+}
+
+class _FlightSchoolStatus {
+  final String statusText;
+  const _FlightSchoolStatus({required this.statusText});
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:clearedtogo/theme/app_colors.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/services/entitlement_service.dart';
 import 'package:clearedtogo/models/flight_school.dart';
-import 'package:clearedtogo/screens/paywall_screen.dart';
 import 'package:clearedtogo/screens/auth/login_screen.dart';
 import 'package:clearedtogo/screens/auth/flight_school_membership_screen.dart';
 import 'package:clearedtogo/screens/home_screen.dart';
-import 'package:clearedtogo/config/config.dart';
 
 class AccountDetailsScreen extends StatefulWidget {
   const AccountDetailsScreen({super.key});
@@ -45,7 +44,8 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
       _homeBaseController.text = user.homeBase ?? '';
     }
 
-    final school = user != null ? await _authService.currentFlightSchool() : null;
+    final school =
+        user != null ? await _authService.currentFlightSchool() : null;
 
     if (mounted) {
       setState(() {
@@ -163,7 +163,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
+      backgroundColor: AppColors.pageBackground,
       appBar: AppBar(
         title: const Text(
           "Account Details",
@@ -193,96 +193,40 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Flight School Access Status Card
+                        // Flight School Access Status
                         Builder(builder: (context) {
                           final profile = _authService.currentUser;
-                          final isPremium = profile?.isPremium ?? false;
                           final statusText =
                               _entitlementService.membershipStatusText(
                             profile: profile,
                             school: _flightSchool,
                           );
-                          // Gold gradient (full access) reads fine with white
-                          // text/icons, but the light grey "no access" gradient
-                          // does not - use a dark foreground there so the card
-                          // stays readable.
-                          final fgColor =
-                              isPremium ? Colors.white : Colors.black87;
-                          final subFgColor =
-                              isPremium ? Colors.white70 : Colors.black54;
                           return Container(
                             padding: const EdgeInsets.all(16),
                             margin: const EdgeInsets.only(bottom: 24),
                             decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                colors: isPremium
-                                    ? [
-                                        const Color(0xFFFFD700),
-                                        const Color(0xFFFFA500)
-                                      ]
-                                    : [Colors.grey[300]!, Colors.grey[400]!],
-                              ),
+                              color: AppColors.cardBackground,
                               borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.navy),
                             ),
                             child: Row(
                               children: [
-                                Icon(
-                                  isPremium
-                                      ? Icons.workspace_premium
-                                      : Icons.lock,
-                                  color: fgColor,
+                                const Icon(
+                                  Icons.workspace_premium,
+                                  color: AppColors.navy,
                                   size: 32,
                                 ),
                                 const SizedBox(width: 16),
                                 Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        statusText,
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          color: fgColor,
-                                        ),
-                                      ),
-                                      if (kDisablePaywallForDev)
-                                        Text(
-                                          'Dev Mode Enabled',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: subFgColor,
-                                          ),
-                                        ),
-                                    ],
+                                  child: Text(
+                                    statusText,
+                                    style: const TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: AppColors.bodyText,
+                                    ),
                                   ),
                                 ),
-                                if (!isPremium)
-                                  TextButton(
-                                    onPressed: () async {
-                                      final result =
-                                          await Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (_) => const PaywallScreen(),
-                                        ),
-                                      );
-                                      if (result == true && mounted) {
-                                        setState(() {
-                                          _loadAccountDetails();
-                                        });
-                                      }
-                                    },
-                                    style: TextButton.styleFrom(
-                                      backgroundColor: Colors.white,
-                                      foregroundColor: Colors.black,
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 16,
-                                        vertical: 8,
-                                      ),
-                                    ),
-                                    child: const Text('Get Full Access'),
-                                  ),
                               ],
                             ),
                           );
@@ -304,7 +248,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.grey[300]!),
+                              border: Border.all(color: AppColors.border),
                             ),
                             child: const Row(
                               children: [
@@ -321,7 +265,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                Icon(Icons.chevron_right, color: Colors.grey),
+                                Icon(Icons.chevron_right, color: AppColors.subtleText),
                               ],
                             ),
                           ),
@@ -378,7 +322,7 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             filled: true,
-                            fillColor: Colors.grey[200],
+                            fillColor: AppColors.cardBackground,
                             helperText: 'Email cannot be changed',
                           ),
                         ),
@@ -458,10 +402,10 @@ class _AccountDetailsScreenState extends State<AccountDetailsScreen> {
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
-                                  'Your details are stored on your Supabase account. Keep them up to date for accurate records.',
+                                  'Your details are stored on your account. Keep them up to date for accurate records.',
                                   style: TextStyle(
                                     fontSize: 13,
-                                    color: Colors.grey[800],
+                                    color: AppColors.subtleText,
                                   ),
                                 ),
                               ),
