@@ -4,9 +4,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'config/env.dart';
+import 'config/config.dart';
 import 'services/supabase_auth_service.dart';
 import 'routes.dart';
 import 'theme/app_colors.dart';
+
+/// App-wide so the auth-state listener below can navigate from outside any
+/// widget's own BuildContext (e.g. a session invalidated by a token expiry
+/// or an admin deleting the account, not a user-initiated logout button).
+final navigatorKey = GlobalKey<NavigatorState>();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -35,6 +41,25 @@ Future<void> main() async {
 
   await SupabaseAuthService.instance.init();
 
+  // Forces a signed-out session back to LoginScreen from anywhere in the
+  // app, not just through the logout button - covers a token expiring, a
+  // session being revoked, or an admin deleting the account mid-use.
+  // Skips the very first boot-time emission: AuthGate already decides the
+  // correct initial screen from that same already-signed-out state, so
+  // reacting to it here too would just be a redundant, racy extra
+  // navigation before the first frame has necessarily settled.
+  var skippedInitialAuthState = false;
+  SupabaseAuthService.instance.authStateChanges.listen((profile) {
+    if (!skippedInitialAuthState) {
+      skippedInitialAuthState = true;
+      return;
+    }
+    if (profile == null && kRequireLoginForAllFeatures) {
+      navigatorKey.currentState
+          ?.pushNamedAndRemoveUntil('/login', (route) => false);
+    }
+  });
+
   runApp(const MyApp());
 }
 
@@ -44,6 +69,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       title: 'ClearedToGo',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
