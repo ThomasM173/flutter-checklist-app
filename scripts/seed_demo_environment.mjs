@@ -14,6 +14,12 @@
 //   * one "Demo Flight School" (comped, separate from the real Devon &
 //     Somerset design-partner school — demo activity never touches real data)
 //   * two demo pilots under it, with obviously-fake names
+//   * one flight_school_admin for the Demo Flight School —
+//     thomasmalins@proton.me unless SEED_DEMO_SCHOOL_ADMIN_EMAIL overrides
+//     it. If a flight_school_admin already exists for this school with a
+//     different email, that email is updated via the Supabase Admin API
+//     (auth.admin.updateUserById) rather than left alone or edited directly
+//     on auth.users.
 //   * a handful of checklist_completions rows across both pilots, spread
 //     over the last couple of weeks so Phase 10/11 dashboards have
 //     something real-looking to display
@@ -61,6 +67,8 @@ const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
 
 const BUSINESS_ADMIN_EMAIL =
   process.env.SEED_BUSINESS_ADMIN_EMAIL || "weareclearedtogo@gmail.com";
+const DEMO_SCHOOL_ADMIN_EMAIL =
+  process.env.SEED_DEMO_SCHOOL_ADMIN_EMAIL || "thomasmalins@proton.me";
 const DEMO_SCHOOL_NAME = "Demo Flight School";
 const DEMO_PILOT_1 = { email: "demo.pilot1@clearedtogo.test", fullName: "Alex Morgan" };
 const DEMO_PILOT_2 = { email: "demo.pilot2@clearedtogo.test", fullName: "Jamie Chen" };
@@ -153,7 +161,50 @@ async function main() {
     pilots.push({ ...result, email: p.email, fullName: p.fullName });
   }
 
-  // 4. Seed checklist_completions (idempotent-ish: only insert if --reset
+  // 4. Flight school admin for the Demo Flight School ---------------------
+  let schoolAdmin;
+  {
+    const { data: members, error: membersErr } = await admin
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("flight_school_id", school.id)
+      .eq("role", "flight_school_admin");
+    if (membersErr) throw membersErr;
+
+    if (members.length > 0) {
+      const existingAdminId = members[0].id;
+      const { data: authUser, error: getErr } =
+        await admin.auth.admin.getUserById(existingAdminId);
+      if (getErr) throw getErr;
+      const currentEmail = authUser.user.email;
+
+      if (currentEmail?.toLowerCase() === DEMO_SCHOOL_ADMIN_EMAIL.toLowerCase()) {
+        schoolAdmin = { user: authUser.user, password: null, created: false };
+        console.log(`Demo Flight School admin already correct: ${DEMO_SCHOOL_ADMIN_EMAIL}`);
+      } else {
+        // Update via the Admin API, not a raw auth.users edit.
+        const { data: updated, error: updateErr } =
+          await admin.auth.admin.updateUserById(existingAdminId, {
+            email: DEMO_SCHOOL_ADMIN_EMAIL,
+            email_confirm: true,
+          });
+        if (updateErr) throw updateErr;
+        schoolAdmin = { user: updated.user, password: null, created: false };
+        console.log(`Updated existing Demo Flight School admin email: ${currentEmail} -> ${DEMO_SCHOOL_ADMIN_EMAIL}`);
+      }
+    } else {
+      const result = await ensureUser(DEMO_SCHOOL_ADMIN_EMAIL, "Demo Flight School Admin");
+      const { error } = await admin
+        .from("profiles")
+        .update({ role: "flight_school_admin", flight_school_id: school.id })
+        .eq("id", result.user.id);
+      if (error) throw error;
+      schoolAdmin = result;
+      console.log(`Created Demo Flight School admin: ${DEMO_SCHOOL_ADMIN_EMAIL}`);
+    }
+  }
+
+  // 5. Seed checklist_completions (idempotent-ish: only insert if --reset
   //    or none exist yet for these pilots, so a plain re-run doesn't pile
   //    up duplicates) ------------------------------------------------------
   const [pilot1, pilot2] = pilots;
@@ -243,6 +294,9 @@ async function main() {
     console.log(`Demo pilot     : ${p.fullName} <${p.email}>`);
     console.log(`  password     : ${p.password ?? "(unchanged — already existed; re-run with --reset for a fresh one)"}`);
   }
+  console.log("");
+  console.log(`School admin   : ${DEMO_SCHOOL_ADMIN_EMAIL}`);
+  console.log(`  password     : ${schoolAdmin.password ?? "(unchanged — already existed with this email; no new password)"}`);
   console.log(line);
 }
 
