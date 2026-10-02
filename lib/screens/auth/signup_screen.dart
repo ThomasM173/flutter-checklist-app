@@ -64,16 +64,26 @@ class _SignupScreenState extends State<SignupScreen> {
       _errorMessage = null;
     });
 
+    final inviteCode = _inviteCodeController.text.trim();
+
     try {
+      final codeIsValid = await _auth.validateInviteCode(inviteCode);
+      if (!codeIsValid) {
+        setState(() {
+          _errorMessage = 'Invalid invite code. Double-check it with your '
+              'flight school and try again.';
+          _isLoading = false;
+        });
+        return;
+      }
+
       final profile = await _auth.signUp(
         _emailController.text.trim(),
         _passwordController.text,
         fullName: _fullNameController.text.trim().isEmpty
             ? null
             : _fullNameController.text.trim(),
-        inviteCode: _inviteCodeController.text.trim().isEmpty
-            ? null
-            : _inviteCodeController.text.trim(),
+        inviteCode: inviteCode,
         acceptedTerms: _acceptedTerms,
       );
 
@@ -249,14 +259,14 @@ class _SignupScreenState extends State<SignupScreen> {
                 ),
                 const SizedBox(height: 16),
 
-                // Flight school invite code (optional)
+                // Flight school invite code (required)
                 TextFormField(
                   controller: _inviteCodeController,
                   textCapitalization: TextCapitalization.characters,
                   decoration: InputDecoration(
-                    labelText: 'Flight School Invite Code (optional)',
-                    helperText:
-                        'Leave blank if you\'re not with a flight school',
+                    labelText: 'Flight School Invite Code',
+                    helperText: 'Not with a real school? Ask your '
+                        'business_admin for the Independent Pilots code',
                     prefixIcon: const Icon(Icons.school),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -264,6 +274,12 @@ class _SignupScreenState extends State<SignupScreen> {
                     filled: true,
                     fillColor: Colors.white,
                   ),
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'An invite code is required to create an account';
+                    }
+                    return null;
+                  },
                 ),
                 const SizedBox(height: 16),
 

@@ -267,6 +267,17 @@ class SupabaseAuthService {
 
   // --- Flight school membership (invite-code flow) ---------------------
 
+  /// Pre-signup check: does this code match a real flight school? Callable
+  /// anon (no session yet) via the validate_invite_code() SECURITY DEFINER
+  /// function - returns a bare boolean only, never exposes school details.
+  Future<bool> validateInviteCode(String code) async {
+    final result = await _client.rpc(
+      'validate_invite_code',
+      params: {'p_code': code.trim()},
+    );
+    return result as bool;
+  }
+
   Future<Profile?> joinFlightSchool(String inviteCode) async {
     await _client.rpc(
       'join_flight_school',

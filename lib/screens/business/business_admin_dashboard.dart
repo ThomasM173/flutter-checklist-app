@@ -253,12 +253,14 @@ class _BusinessAdminDashboardState extends State<BusinessAdminDashboard> {
         child: DataTable(
           columns: const [
             DataColumn(label: Text('School')),
+            DataColumn(label: Text('Invite Code')),
             DataColumn(label: Text('Pilots')),
             DataColumn(label: Text('Last Active')),
           ],
           rows: s.perSchool
               .map((school) => DataRow(cells: [
                     DataCell(Text(school.name)),
+                    DataCell(Text(school.inviteCode ?? '—')),
                     DataCell(Text('${school.pilotCount}')),
                     DataCell(Text(school.lastActive != null
                         ? _dateFmt.format(school.lastActive!)

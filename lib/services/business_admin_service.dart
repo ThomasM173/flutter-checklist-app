@@ -16,7 +16,7 @@ class BusinessAdminService {
   Future<BusinessDashboardStats> loadStats() async {
     final schoolsRows = await _client
         .from('flight_schools')
-        .select('id, name, plan_type');
+        .select('id, name, plan_type, invite_code');
     final pilotRows = await _client
         .from('profiles')
         .select(
@@ -93,6 +93,7 @@ class BusinessAdminService {
       for (final s in schools)
         SchoolSummary(
           name: s['name'] as String,
+          inviteCode: s['invite_code'] as String?,
           pilotCount: pilotCountBySchool[s['id'] as String] ?? 0,
           lastActive: lastActiveBySchool[s['id'] as String],
         ),
@@ -141,10 +142,12 @@ class BusinessDashboardStats {
 
 class SchoolSummary {
   final String name;
+  final String? inviteCode;
   final int pilotCount;
   final DateTime? lastActive;
   const SchoolSummary({
     required this.name,
+    required this.inviteCode,
     required this.pilotCount,
     this.lastActive,
   });
