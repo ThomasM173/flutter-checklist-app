@@ -1,0 +1,59 @@
+workflows:
+  ios-app-store:
+    name: ClearedToGo iOS (App Store)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: codemagic_appstore_connect
+    environment:
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.clearedtogo.app
+      groups:
+        - supabase_client
+      vars:
+        XCODE_WORKSPACE: "Runner.xcworkspace"
+        XCODE_SCHEME: "Runner"
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Write .env from Codemagic variables
+        script: |
+          # The app loads SUPABASE_URL/SUPABASE_ANON_KEY from a bundled .env
+          # at runtime (lib/config/env.dart via flutter_dotenv) - .env is
+          # gitignored, so it doesn't exist on this fresh checkout. Generate
+          # it from the "supabase_client" environment variable group set up
+          # in the Codemagic UI (see docs/overnight_report_2026-10-12.md for
+          # exactly which variables to add there).
+          echo "SUPABASE_URL=$SUPABASE_URL" > "$CM_BUILD_DIR/.env"
+          echo "SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY" >> "$CM_BUILD_DIR/.env"
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install CocoaPods dependencies
+        script: |
+          cd ios && pod install
+      - name: Set up code signing
+        script: |
+          # Uses the app_store_connect integration above to fetch/create a
+          # distribution certificate and provisioning profile automatically.
+          # $BUNDLE_ID is set by ios_signing.bundle_identifier above.
+          keychain initialize
+          app-store-connect fetch-signing-files "$BUNDLE_ID" \
+            --type IOS_APP_STORE \
+            --create
+          keychain add-certificates
+          xcode-project use-profiles
+      - name: Flutter build ipa
+        script: |
+          flutter build ipa --release \
+            --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - /tmp/xcodebuild_logs/*.log
+      - flutter_drive.log
+    publishing:
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false

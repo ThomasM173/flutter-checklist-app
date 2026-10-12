@@ -4,8 +4,8 @@ publish_to: 'none' # Private app - do not publish to pub.dev
 
 # Version format: MAJOR.MINOR.PATCH+BUILD_NUMBER
 # - versionName (Android) = 1.0.1
-# - versionCode (Android) = 8
-version: 1.0.1+9
+# - versionCode (Android) = 100
+version: 1.0.1+100
 
 environment:
   sdk: ^3.6.1
