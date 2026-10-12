@@ -65,4 +65,6 @@ supabase/.env
 
 # Dev credentials - internal passwords, never commit these!
 docs/DEV_CREDENTIALS.md
+docs/APPLE_REVIEW_NOTES.md
+docs/APPLE_RESUBMIT_CHECKLIST.md
 
