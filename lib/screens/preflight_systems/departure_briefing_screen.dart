@@ -9,6 +9,7 @@ import 'package:open_file/open_file.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/widgets/sign_in_prompt.dart';
 
 class DepartureBriefingScreen extends StatefulWidget {
   const DepartureBriefingScreen({super.key});
@@ -194,17 +195,25 @@ class _DepartureBriefingScreenState extends State<DepartureBriefingScreen> {
       final pdfBytes = await pdf.save();
       await file.writeAsBytes(pdfBytes);
 
-      try {
-        await SupabasePdfService().recordCompletion(
-          pdfBytes: pdfBytes,
-          aircraftType: _aircraftRegistrationController.text.isNotEmpty
-              ? _aircraftRegistrationController.text
-              : 'UNKNOWN',
-          checklistName: 'Departure Briefing',
-          completionType: 'departure_briefing',
-        );
-      } catch (e) {
-        debugPrint('Failed to record departure briefing completion: $e');
+      // The PDF above is generated and opened locally either way - that part
+      // works for a guest. Saving the completion to the account is the part
+      // that needs sign-in, and unlike the other 11 flows this one is a
+      // silent best-effort today (no error shown on failure), so a guest
+      // gets an explicit prompt here rather than just losing the cloud
+      // record with no feedback at all.
+      if (mounted && await requireSignInToSave(context)) {
+        try {
+          await SupabasePdfService().recordCompletion(
+            pdfBytes: pdfBytes,
+            aircraftType: _aircraftRegistrationController.text.isNotEmpty
+                ? _aircraftRegistrationController.text
+                : 'UNKNOWN',
+            checklistName: 'Departure Briefing',
+            completionType: 'departure_briefing',
+          );
+        } catch (e) {
+          debugPrint('Failed to record departure briefing completion: $e');
+        }
       }
 
       if (mounted) {

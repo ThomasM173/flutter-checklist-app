@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/utils/completion_pdf_builder.dart';
+import 'package:clearedtogo/widgets/sign_in_prompt.dart';
 
 class FuelUpliftScreen extends StatefulWidget {
   const FuelUpliftScreen({super.key});
@@ -108,6 +109,7 @@ class _FuelUpliftScreenState extends State<FuelUpliftScreen> {
       );
       return;
     }
+    if (!await requireSignInToSave(context)) return;
     try {
       await _saveEntry();
       await SupabasePdfService().recordCompletionData(

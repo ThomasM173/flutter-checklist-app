@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
 import 'package:clearedtogo/models/flight_school.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
+import 'package:clearedtogo/screens/auth/login_screen.dart';
 
 /// Lets a signed-in pilot join a flight school by invite code, see the school
 /// they're currently in, and leave it. Reached from Account Details.
@@ -187,7 +188,9 @@ class _FlightSchoolMembershipScreenState
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+          : !_authService.isSignedIn
+              ? _buildSignInPrompt(context)
+              : SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -312,6 +315,51 @@ class _FlightSchoolMembershipScreenState
                 ],
               ),
             ),
+    );
+  }
+
+  Widget _buildSignInPrompt(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.school_outlined,
+                size: 72, color: AppColors.subtleText),
+            const SizedBox(height: 16),
+            const Text(
+              'Sign in to manage your flight school',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.bodyText),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Joining a flight school links your completed checklists to '
+              'it so your instructors can review them.',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 13, color: AppColors.subtleText),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const LoginScreen()),
+                );
+                if (mounted) _load();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.skyBlue,
+                foregroundColor: AppColors.bodyText,
+              ),
+              child: const Text('Login / Sign Up'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

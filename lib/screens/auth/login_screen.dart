@@ -251,6 +251,40 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                     ),
                   ),
+
+                  // "Continue without an account" - only shown when guest
+                  // bypass is allowed (see kAllowGuestBypass in config.dart).
+                  if (kAllowGuestBypass) ...[
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          _auth.enableGuestMode();
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                                builder: (_) => const HomeScreen()),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.cardBackground,
+                          foregroundColor: AppColors.navy,
+                          side: const BorderSide(color: AppColors.navy),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        child: const Text(
+                          'Continue without an account',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
 
                   // Disclaimer

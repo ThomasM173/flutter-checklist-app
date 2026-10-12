@@ -1,6 +1,8 @@
 /// App configuration constants.
 library;
 
+import 'package:flutter/foundation.dart' show defaultTargetPlatform, TargetPlatform;
+
 /// Dev bypass for the paywall.
 /// true  -> all premium checks pass without a purchase (local testing).
 /// false -> real StoreKit entitlement is enforced.
@@ -30,6 +32,14 @@ const bool kIapEnabled = false;
 /// this flag alone is fine to ship as-is. Don't remove the ability to flip
 /// this back to false.
 const bool kRequireLoginForAllFeatures = true;
+
+/// Apple rejected mandatory login under 5.1.1(v). Flip to true on all
+/// platforms to allow bypass everywhere. Only matters while
+/// kRequireLoginForAllFeatures is true — shows a "Continue without an
+/// account" button on the sign-in screen and lets AuthGate + the global
+/// signed-out listener leave a guest alone instead of bouncing them to
+/// /login.
+final bool kAllowGuestBypass = defaultTargetPlatform == TargetPlatform.iOS;
 
 /// App version (display only).
 const String kAppVersion = '1.0.0';

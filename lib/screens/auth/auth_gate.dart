@@ -12,10 +12,12 @@ import 'package:clearedtogo/screens/auth/login_screen.dart';
 ///
 /// When kRequireLoginForAllFeatures is true (current default — see
 /// config.dart for why), a guest is routed to [LoginScreen] instead of
-/// [HomeScreen]. When false, sign-in is optional and a guest goes straight
-/// to [HomeScreen] (checklists, weather and the training game all work
-/// without an account in that mode). A signed-in flight school admin or
-/// business admin is always routed to their dedicated dashboard either way.
+/// [HomeScreen] — unless they've already tapped "Continue without an
+/// account" (SupabaseAuthService.isGuestMode, gated by kAllowGuestBypass),
+/// in which case they stay on HomeScreen. When kRequireLoginForAllFeatures
+/// is false, sign-in is optional and every guest goes straight to
+/// [HomeScreen] regardless. A signed-in flight school admin or business
+/// admin is always routed to their dedicated dashboard either way.
 class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
@@ -54,7 +56,7 @@ class _AuthGateState extends State<AuthGate> {
     if (profile != null && profile.role == UserRole.businessAdmin) {
       return const BusinessAdminDashboard();
     }
-    if (profile == null && kRequireLoginForAllFeatures) {
+    if (profile == null && kRequireLoginForAllFeatures && !_auth.isGuestMode) {
       return const LoginScreen();
     }
     return const HomeScreen();

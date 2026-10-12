@@ -14,6 +14,7 @@ import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 import '../aircraft_screens/cessna_152_emergency_screen.dart';
 import '../aircraft_screens/cessna_152_screen.dart';
 import 'package:clearedtogo/utils/weather_service.dart';
+import 'package:clearedtogo/widgets/sign_in_prompt.dart';
 
 class Cessna152ChecklistScreen extends StatefulWidget {
   const Cessna152ChecklistScreen({super.key});
@@ -735,6 +736,7 @@ class _Cessna152ChecklistScreenState extends State<Cessna152ChecklistScreen> {
   /// on demand afterwards, built fresh from this same stored data.
   Future<void> _finishChecklist() async {
     if (!mounted) return;
+    if (!await requireSignInToSave(context)) return;
     try {
       await SupabasePdfService().recordCompletionData(
         data: _buildCompletionData(),

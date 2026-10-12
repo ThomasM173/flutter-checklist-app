@@ -54,7 +54,9 @@ Future<void> main() async {
       skippedInitialAuthState = true;
       return;
     }
-    if (profile == null && kRequireLoginForAllFeatures) {
+    if (profile == null &&
+        kRequireLoginForAllFeatures &&
+        !SupabaseAuthService.instance.isGuestMode) {
       navigatorKey.currentState
           ?.pushNamedAndRemoveUntil('/login', (route) => false);
     }

@@ -16,6 +16,7 @@ import 'package:clearedtogo/utils/completion_pdf_builder.dart';
 import '../aircraft_screens/piper_pa28_emergency_screen.dart';
 import '../aircraft_screens/piper_pa28_screen.dart';
 import 'package:clearedtogo/utils/weather_service.dart';
+import 'package:clearedtogo/widgets/sign_in_prompt.dart';
 
 class PiperPA28ChecklistScreen extends StatefulWidget {
   const PiperPA28ChecklistScreen({super.key});
@@ -489,6 +490,7 @@ class _PiperPA28ChecklistScreenState extends State<PiperPA28ChecklistScreen> {
   /// on demand afterwards, built fresh from this same stored data.
   Future<void> _finishChecklist() async {
     if (!mounted) return;
+    if (!await requireSignInToSave(context)) return;
     try {
       await SupabasePdfService().recordCompletionData(
         data: _buildCompletionData(),

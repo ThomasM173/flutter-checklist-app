@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clearedtogo/services/supabase_pdf_service.dart';
 import 'package:clearedtogo/services/supabase_auth_service.dart';
 import 'package:clearedtogo/utils/completion_pdf_builder.dart';
+import 'package:clearedtogo/widgets/sign_in_prompt.dart';
 import 'dart:convert';
 
 class TechLogScreen extends StatefulWidget {
@@ -116,6 +117,7 @@ class _TechLogScreenState extends State<TechLogScreen> {
       );
       return;
     }
+    if (!await requireSignInToSave(context)) return;
     try {
       await _saveEntry();
       await SupabasePdfService().recordCompletionData(

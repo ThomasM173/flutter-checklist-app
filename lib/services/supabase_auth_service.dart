@@ -34,6 +34,16 @@ class SupabaseAuthService {
 
   bool get isSignedIn => _client.auth.currentUser != null;
 
+  /// Set only by the "Continue without an account" button on LoginScreen
+  /// (see kAllowGuestBypass). AuthGate and the global signed-out listener
+  /// in main.dart both check this before bouncing a signed-out user back to
+  /// /login, so a guest can stay on HomeScreen. Cleared on a real sign-in
+  /// (no longer a guest) and on sign-out (back to the normal login prompt,
+  /// not an automatic guest continuation).
+  bool _isGuest = false;
+  bool get isGuestMode => _isGuest;
+  void enableGuestMode() => _isGuest = true;
+
   final _controller = StreamController<Profile?>.broadcast();
 
   /// Emits whenever the profile is (re)loaded or cleared.
@@ -81,6 +91,7 @@ class SupabaseAuthService {
       _controller.add(null);
       return null;
     }
+    _isGuest = false; // a real session always takes precedence over guest
     final premium = await _fetchHasPremiumAccess();
     try {
       final row = await _client
@@ -189,6 +200,7 @@ class SupabaseAuthService {
   Future<void> signOut() async {
     await _client.auth.signOut();
     _profile = null;
+    _isGuest = false;
     _controller.add(null);
   }
 
