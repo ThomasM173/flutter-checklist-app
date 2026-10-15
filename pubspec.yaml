@@ -81,9 +81,12 @@ flutter:
   assets:
     - assets/fonts/NotoSans-Regular.ttf
     - assets/images/
-    # Client environment (gitignored; see .env.example). Bundled so
-    # flutter_dotenv can read it at runtime.
-    - .env
+    # .env is intentionally NOT listed here. It's gitignored, so a fresh
+    # checkout (e.g. Codemagic) has none - declaring a missing path as an
+    # asset fails the build outright, not just at runtime. lib/config/
+    # env.dart's fallback constants (the same public URL/anon key) cover
+    # that case. A local .env is no longer read at all as a result - it's
+    # kept around for documentation/.env.example purposes only.
 
 
   # To add assets to your application, add an assets section, like this:

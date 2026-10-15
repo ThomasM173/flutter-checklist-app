@@ -27,8 +27,15 @@ Future<void> main() async {
     return true;
   };
 
-  // Client env (gitignored .env, bundled as an asset). See .env.example.
-  await dotenv.load(fileName: '.env');
+  // Client env (gitignored .env, no longer a bundled asset - see
+  // pubspec.yaml). A fresh checkout (e.g. Codemagic with no .env written at
+  // build time) simply has none; Env's fallback constants cover that case,
+  // so a missing file here is expected, not an error to crash on.
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    debugPrint('main: no .env found, using Env fallback constants: $e');
+  }
 
   // Initialise Supabase (replaces Amplify.configure). Deliberately not
   // wrapped in a swallow-all try/catch: a missing/invalid URL or key is a
